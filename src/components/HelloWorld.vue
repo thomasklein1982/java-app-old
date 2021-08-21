@@ -20,11 +20,13 @@
   </p>
   <Button label="Test! 123" icon="pi pi-file"></Button>
   <Dialog :visible="true"></Dialog>
+  <start-screen></start-screen>
 </template>
 
 <script setup>
 import { defineProps, reactive } from 'vue'
 import CodeMirror from "./CodeMirror.vue";
+import StartScreen from "./StartScreen.vue"
 
 console.log(CodeMirror);
 
