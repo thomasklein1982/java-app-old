@@ -14,17 +14,10 @@ import EditorScreen from './components/EditorScreen.vue';
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
-/*import {VueRouter} from "vue-router";
-
-let vueRouter=VueRouter.createRouter({
-  history: VueRouter.createWebHashHistory(),
-  routes: [{
-    path: "/",
-    component: EditorScreen
-  }]
-})*/
+import router from "./router";
 
 let app=createApp(App);
+app.use(router);
 app.use(PrimeVue.default);
 app.component('Button',Button);
 app.component('Dialog',Dialog.default);

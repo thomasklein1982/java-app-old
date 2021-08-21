@@ -14,13 +14,41 @@ export default {
           icon: 'pi pi-fw pi-file',
           items: [
             {
-              label: 'Neues Projekt',
-              icon: 'pi pi-add',
+              label: 'Neu',
+              icon: 'pi pi-file',
               command: (ev)=>{
-                console.log(ev);
+                
+              }
+            },
+            {
+              label: 'Hochladen',
+              icon: 'pi pi-upload',
+              command: (ev)=>{
+                
+              }
+            },
+            {
+              label: 'Herunterladen',
+              icon: 'pi pi-download',
+              command: (ev)=>{
+                
               }
             }
           ]
+        },
+        {
+          label: 'Ausführen',
+          icon: 'pi pi-play',
+          command: (ev)=>{
+            
+          }
+        },
+        {
+          label: 'Einstellungen',
+          icon: 'pi pi-cog',
+          command: (ev)=>{
+            
+          }
         }
       ]
     };

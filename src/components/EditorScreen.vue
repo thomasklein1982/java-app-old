@@ -1,13 +1,16 @@
 <template>
   <div style="width: 100%; height: 100%">
     <EditorMenubar/>
-    
+    <CodeMirror v-show="!useBlockEditor"/>
+    <BlockEditor v-show="useBlockEditor"/>
   </div>
 </template>
 
 <script>
 import { Project } from "../classes/Project.js";
 import EditorMenubar from "./EditorMenubar.vue";
+import CodeMirror from "./CodeMirror.vue";
+import BlockEditor from "./BlockEditor.vue"
 
 export default {
   data(){
@@ -30,7 +33,9 @@ export default {
     }
   },
   components: {
-    EditorMenubar: EditorMenubar
+    EditorMenubar: EditorMenubar,
+    CodeMirror,
+    BlockEditor
   }
 }
 </script>
