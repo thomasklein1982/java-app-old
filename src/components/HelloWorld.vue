@@ -8,13 +8,15 @@
     |
     <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Documentation</a>
   </p>
+  <code-mirror></code-mirror>
 
+  
   <button type="button" @click="state.count++">
     count is: {{ state.count }}
   </button>
   <p>
     Edit
-    <code>components/HelloWorld.vue</code> to test hot module replacement. hab ich nicht?
+    <code>components/HelloWorld.vue</code> to test hot module replacement. hab ich a nicht?
   </p>
   <Button label="Test! 123" icon="pi pi-file"></Button>
   <Dialog :visible="true"></Dialog>
@@ -22,6 +24,9 @@
 
 <script setup>
 import { defineProps, reactive } from 'vue'
+import CodeMirror from "./CodeMirror.vue";
+
+console.log(CodeMirror);
 
 defineProps({
   msg: String
