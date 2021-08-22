@@ -9,11 +9,13 @@ import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import * as Dialog  from "primevue/dialog";
 import Menubar from 'primevue/menubar';
-import EditorScreen from './components/EditorScreen.vue';
+import Sidebar from 'primevue/sidebar';
+import Panel from 'primevue/panel';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
+import './style.css';
 import router from "./router";
 
 let app=createApp(App);
@@ -25,4 +27,6 @@ app.component('Checkbox',Checkbox);
 app.component('InputText',InputText);
 app.component('InputNumber',InputNumber);
 app.component('Menubar',Menubar);
+app.component('Sidebar',Sidebar);
+app.component('Panel',Panel);
 app.mount('#app');

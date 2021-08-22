@@ -1,8 +1,12 @@
 <template>
-  <div style="width: 100%; height: 100%">
+  <div style="width: 100%; height: 100%; overflow: hidden" :style="{display: 'flex', 'flex-direction': 'column'}">
     <EditorMenubar/>
-    <CodeMirror v-show="!useBlockEditor"/>
-    <BlockEditor v-show="useBlockEditor"/>
+    <div :style="{flex: 1, display: 'flex', 'flex-direction': 'row'}">
+      <ProjectExplorer/>
+      <CodeMirror v-show="!useBlockEditor"/>
+      <BlockEditor v-show="useBlockEditor"/>
+    </div>
+    
   </div>
 </template>
 
@@ -10,7 +14,8 @@
 import { Project } from "../classes/Project.js";
 import EditorMenubar from "./EditorMenubar.vue";
 import CodeMirror from "./CodeMirror.vue";
-import BlockEditor from "./BlockEditor.vue"
+import BlockEditor from "./BlockEditor.vue";
+import ProjectExplorer from './ProjectExplorer.vue';
 
 export default {
   data(){
@@ -35,7 +40,8 @@ export default {
   components: {
     EditorMenubar: EditorMenubar,
     CodeMirror,
-    BlockEditor
+    BlockEditor,
+    ProjectExplorer
   }
 }
 </script>

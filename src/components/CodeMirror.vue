@@ -1,5 +1,5 @@
 <template>
-  <div ref="editor">
+  <div id="editor" ref="editor">
   </div>
 </template>
 
@@ -31,5 +31,10 @@ export default {
 </script>
 
 <style scoped>
-
+  #editor{
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
