@@ -5,6 +5,7 @@
       <ProjectExplorer 
         :project="project"
         @class-selected="openClazz"
+        @add-clazz="addClazz"
       />
       <CodeMirror ref="codemirror" v-show="!useBlockEditor"/>
       <BlockEditor v-show="useBlockEditor"/>
@@ -43,6 +44,9 @@ export default {
       if(this.currentClazz===c) return;
       this.currentClazz=c;
       this.$refs.codemirror.setClazz(this.currentClazz);
+    },
+    addClazz(){
+      
     }
   },
   components: {

@@ -31,3 +31,8 @@
 .p-panel .p-panel-content{
   padding: 0;
 }
+
+.project-explorer.p-tree .p-tree-container .p-treenode div.p-treenode-content.p-highlight{
+  background-color: gray;
+  color: white;
+}

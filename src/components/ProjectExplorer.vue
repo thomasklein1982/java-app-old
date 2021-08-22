@@ -11,19 +11,28 @@
         <template #icons>
           <Button class="p-button-rounded p-button-text" icon="pi pi-times" @click="show=false"/>
         </template>
+        {{selectedKey}}
         <Tree 
           :value="treeNodes"
           selectionMode="single"
           v-model:selectionKeys="selectedKey"
           @node-select="nodeSelected"
-        />
+          class="project-explorer"
+        >
+          <template #cmds>
+            <Button @click="$refs.dialogNewClazz.open()" icon="pi pi-plus" class="p-button-rounded"></Button>
+          </template>
+        </Tree>
 
       </Panel>
     </transition>
+    <NewClazz ref="dialogNewClazz" :clazzes="project.clazzes"></NewClazz>
   </div>
 </template>
 
 <script>
+import NewClazz from './dialogs/NewClazz.vue';
+
 export default {
   props: {
     project: Object
@@ -35,13 +44,13 @@ export default {
           key: 'clazzes',
           selectable: false,
           label: 'Klassen',
+          type: 'clazzes-root',
           children: ((project)=>{
             var list=[];
             list.push({
-              key: 'cmd-add-class',
-              label: 'Neue Klasse',
-              icon: 'plus',
-              type: 'cmd'
+              key: 'cmds',
+              type: 'cmds',
+              selectable: false
             });
             for(var i=0;i<project.clazzes.length;i++){
               let c=project.clazzes[i];
@@ -58,6 +67,7 @@ export default {
         {
           key: 'ressources',
           label: 'Ressourcen',
+          selectable: false,
           children: [
               
           ]
@@ -68,19 +78,19 @@ export default {
   data(){
     return {
       show: true,
-      selectedKey: null
+      selectedKey: {'clazzes-0': true}
     };
   },
   methods: {
     nodeSelected(node){
-      if(node.key==='cmd-add-clazz'){
-        
-      }
       if(node.type==='clazz'){
         this.$emit("clazz-selected",node.data);
       }
       
     }
+  },
+  components: {
+    NewClazz
   }
 }
 </script>
