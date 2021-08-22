@@ -10,8 +10,7 @@ const offscreenEditor=new EditorView({
       }),
       java()
     ]
-  }),
-  parent: document.offscreenEditor
+  })
 });
 offscreenEditor.textLength=0;
 
@@ -24,14 +23,11 @@ export async function parseJava(src){
     });
   });
   let viewUpdate=await p;
-
+  offscreenEditor.textLength=src.length;
   return viewUpdate;
 }
 
 function parsingDone(viewUpdate){
+  if(!parsingResolve) return;
   parsingResolve(viewUpdate);
-}
-
-export async function parseJavaClass(src){
-  var viewUpdate=await parseJava(src);
 }

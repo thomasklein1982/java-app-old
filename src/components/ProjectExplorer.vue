@@ -11,7 +11,6 @@
         <template #icons>
           <Button class="p-button-rounded p-button-text" icon="pi pi-times" @click="show=false"/>
         </template>
-        {{selectedKey}}
         <Tree 
           :value="treeNodes"
           selectionMode="single"
@@ -22,15 +21,19 @@
           <template #cmds>
             <Button @click="$refs.dialogNewClazz.open()" icon="pi pi-plus" class="p-button-rounded"></Button>
           </template>
+          <template #clazz="data">
+            {{data.node.label}} <Badge v-if="data.node.data.errors && data.node.data.errors.length>0" severity="danger" :value="data.node.data.errors.length"/>
+          </template>
         </Tree>
 
       </Panel>
     </transition>
-    <NewClazz ref="dialogNewClazz" :clazzes="project.clazzes"></NewClazz>
+    <NewClazz ref="dialogNewClazz" :clazzes="project.clazzes" @ok="addClazz"></NewClazz>
   </div>
 </template>
 
 <script>
+import { nextTick } from '@vue/runtime-core';
 import NewClazz from './dialogs/NewClazz.vue';
 
 export default {
@@ -83,10 +86,19 @@ export default {
   },
   methods: {
     nodeSelected(node){
+      console.log(node);
       if(node.type==='clazz'){
         this.$emit("clazz-selected",node.data);
       }
       
+    },
+    addClazz(name){
+      this.$emit('add-clazz',name);
+      nextTick(()=>{
+        var key={};
+        key['clazzes-'+(this.project.clazzes.length-1)]= true;
+        this.selectedKey=key;
+      });
     }
   },
   components: {

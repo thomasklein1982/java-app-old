@@ -45,12 +45,12 @@ export default {
     this.editor=editor;
   },
   methods: {
-    update(viewUpdate){
+    async update(viewUpdate){
       this.errors=[];
       var state=viewUpdate.state;
       var src=state.doc.toString();
       this.clazz.setSrcTreeAndState(src,state);
-      this.errors=this.clazz.compile();
+      this.errors=await this.clazz.compile();
       console.log(this.clazz.toString());
       console.log(this.errors);
     },

@@ -3,8 +3,10 @@ import {Attribute} from "./Attribute"
 import {Error} from "./Error"
 
 export class Clazz{
-  constructor(){
-    
+  constructor(name){
+    this.name=name;
+    this.errors=null;
+    this.src="class "+this.name+"{\n  \n}";
   }
 
   toString(){
@@ -39,6 +41,7 @@ export class Clazz{
    */
   compileMethods(project){
     let errors=[];
+    this.errors=this.errors.concat(errors);
     return errors;
   }
 
@@ -47,9 +50,13 @@ export class Clazz{
     this.compileDefinition();
   }
 
-  compile(){
+  async compile(fromSource){
+    if(fromSource){
+      await this.generateTreeAndState(this.src);
+    }
     let errors=this.compileDefinition();
     errors=errors.concat(this.compileMethods());
+    this.errors=errors;
     return errors;
   }
 
@@ -58,6 +65,7 @@ export class Clazz{
    */
   compileDefinition(){
     var errors=[];
+    this.errors=errors;
     let src=this.src;
     let state=this.state;
     let tree=this.tree;

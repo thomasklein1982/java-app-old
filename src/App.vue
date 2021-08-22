@@ -8,6 +8,7 @@
       v-show="screen==='editor'"
       ref="editor"
     />
+    
   </div>
 </template>
 
@@ -44,4 +45,5 @@ export default{
 #app {
   font-family: sans-serif;
 }
+
 </style>

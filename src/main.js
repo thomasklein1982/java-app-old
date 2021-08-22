@@ -1,7 +1,5 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import { EditorView,EditorState,basicSetup } from "@codemirror/basic-setup";
-import { java } from "@codemirror/lang-java";
 import  * as PrimeVue  from "primevue/config";
 import  Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
@@ -12,6 +10,7 @@ import Menubar from 'primevue/menubar';
 import Sidebar from 'primevue/sidebar';
 import Panel from 'primevue/panel';
 import Tree from 'primevue/tree';
+import Badge from 'primevue/badge';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -31,4 +30,5 @@ app.component('Menubar',Menubar);
 app.component('Sidebar',Sidebar);
 app.component('Panel',Panel);
 app.component('Tree',Tree);
+app.component('Badge',Badge);
 app.mount('#app');
