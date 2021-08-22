@@ -1,7 +1,7 @@
 <template>
   <div id="root">
     <transition name="fade">
-      <Button @click="show=true" v-show="!show" style="position: absolute; left: 0; top: 50%" icon="pi pi-chevron-right" id=""></Button>
+      <Button @click="show=true" v-show="!show" style="z-index: 2; position: absolute; left: 0; top: 50%" icon="pi pi-chevron-right" id=""></Button>
     </transition>
     <transition name="fade">
       <Panel class="panel-full" id="panel" v-show="show">
@@ -22,7 +22,7 @@
             <Button @click="$refs.dialogNewClazz.open()" icon="pi pi-plus" class="p-button-rounded"></Button>
           </template>
           <template #clazz="data">
-            {{data.node.label}} <Badge v-if="data.node.data.errors && data.node.data.errors.length>0" severity="danger" :value="data.node.data.errors.length"/>
+            {{data.node.label.length>16? data.node.label.substring(0,13)+"...":data.node.label}} <Badge v-if="data.node.data.errors && data.node.data.errors.length>0" severity="danger" :value="data.node.data.errors.length"/>
           </template>
         </Tree>
 
@@ -111,7 +111,6 @@ export default {
   #root{
     display: flex;
     flex-direction: column;
-    max-width: 20rem;
   }
   #panel{
     flex: 1;

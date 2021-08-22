@@ -6,8 +6,8 @@
     <small style="min-height: 3rem" id="name-help" class="p-error">{{nameFehler}}</small>
   </div>
   <template #footer>
+    <Button label="No" icon="pi pi-times" @click="close()" class="p-button-text"/>
     <Button @click="confirm()" :disabled="nameFehler!==null" label="OK" icon="pi pi-check" />
-    <Button label="No" icon="pi pi-times" class="p-button-text"/>
   </template>
 </Dialog>
 </template>

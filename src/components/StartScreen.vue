@@ -4,35 +4,43 @@
       <p>Wähle eine der folgenden Möglichkeiten:</p>
       <div>
         
-        <Button style="margin: 0.5rem; display: block" icon="pi pi-replay" @click="" label="Letzte App wiederherstellen"/>
-        <Button style="margin: 0.5rem; display: block" icon="pi pi-file" @click="clickNewApp()" label="Neue App erstellen"/>
+        <Button :disabled="lastProject===null" style="margin: 0.5rem; display: block" icon="pi pi-replay" @click="restoreApp()" label="Letzte App wiederherstellen"/>
+        <Button style="margin: 0.5rem; display: block" icon="pi pi-file" @click="createNewApp()" label="Neue App erstellen"/>
         <Button style="margin: 0.5rem; display: block" icon="pi pi-upload" @click="clickUploadApp()" label="App hochladen"/>
       </div>
       <div>
-        <Checkbox binary input-id="use-blocks" v-model="useBlockEditor"></Checkbox>
+        <Checkbox binary id="use-blocks" v-model="useBlockEditor"></Checkbox>
         <label for="use-blocks">Block-Editor verwenden</label>
       </div>
-
-      <DialogNewProject @ok="createNewApp" ref="dialogNewProject"/>
     </div>
 </template>
 
 <script>
-import DialogNewProject from "./dialogs/NewProject.vue";
 import {Project} from "../classes/Project.js";
+import { loadLocally } from "../functions/helper.js";
+import { STORAGE_PROJECT } from "../consts/strings.js";
 
 export default {
   data(){
     return {
-      useBlockEditor: true
+      useBlockEditor: false,
+      lastProject: null
     }
   },
+  mounted(){
+    loadLocally(STORAGE_PROJECT).then((p)=>{
+      this.lastProject=p;
+      console.log('letzte daten geladen',p);
+    });
+  },
   methods: {
-    clickNewApp(){
-      this.$refs.dialogNewProject.open();
+    async restoreApp(){
+      var p=new Project();
+      await p.fromSaveString(this.lastProject);
+      this.$emit('open-project',p,this.useBlockEditor);
     },
-    async createNewApp(name){
-      var p=new Project(name);
+    async createNewApp(){
+      var p=new Project();
       await p.initialize();
       this.$emit('open-project',p,this.useBlockEditor);
     },
@@ -43,9 +51,6 @@ export default {
       await p.fromSaveString(pc);
       this.$emit('open-project',p,this.useBlockEditor);
     }
-  },
-  components: {
-    DialogNewProject: DialogNewProject
   }
 }
 </script>

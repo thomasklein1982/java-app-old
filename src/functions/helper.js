@@ -1,3 +1,4 @@
+
 export function download(data,filename,mime,noDownload){
   window.URL =  window.URL || window.webkitURL;
   if(!filename) filename="Download.txt";
@@ -100,4 +101,20 @@ export async function upload(options){
   });
   var q=await p;
   return q;
+}
+
+export async function saveLocally(key,data){
+  var s=JSON.stringify(data);
+  var c=LZString.compress(s);
+  await localforage.setItem(key,c);
+}
+
+export async function loadLocally(key){
+  var c=await localforage.getItem(key);
+  if(c===undefined || c===null){
+    return null;
+  }
+  var s=LZString.decompress(c);
+  var data=JSON.parse(s);
+  return data;
 }

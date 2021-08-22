@@ -16,6 +16,8 @@ import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import './style.css';
+import './lib/lzstring.js';
+import './lib/localforage.min.js';
 import router from "./router";
 
 let app=createApp(App);

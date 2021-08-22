@@ -1,6 +1,15 @@
 <template>
-  <div id="editor" ref="editor">
+  <div id="root">
+    <div id="editor" ref="editor"></div>
+    <div v-if="clazz && clazz.errors" id="errors">
+      <table>
+        <tr v-for="(e,i) in clazz.errors" :key="'error'+i">
+          <td>Zeile {{e.line.number}}, Spalte {{e.col}}:</td><td>{{e.message}} </td>
+        </tr>
+      </table>
+    </div>
   </div>
+  
 </template>
 
 <script>
@@ -12,7 +21,6 @@ export default {
   data(){
     return {
       clazz: null,
-      errors: [],
       editor: null
     };
   },
@@ -46,13 +54,12 @@ export default {
   },
   methods: {
     async update(viewUpdate){
-      this.errors=[];
       var state=viewUpdate.state;
       var src=state.doc.toString();
       this.clazz.setSrcTreeAndState(src,state);
-      this.errors=await this.clazz.compile();
+      await this.clazz.compile();
       console.log(this.clazz.toString());
-      console.log(this.errors);
+
     },
     setClazz(clazz){
       this.clazz=clazz;
@@ -66,10 +73,17 @@ export default {
 </script>
 
 <style scoped>
-  #editor{
+  #root{
     flex: 1;
-    overflow-y: auto;
+    overflow-y: hidden;
     display: flex;
     flex-direction: column;
+  }
+  #editor{
+    flex: 1;
+    overflow-y:auto;
+  }
+  #errors{
+    color: red;
   }
 </style>

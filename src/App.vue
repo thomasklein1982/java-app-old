@@ -5,7 +5,7 @@
       @open-project="openProject"
     />
     <EditorScreen
-      v-show="screen==='editor'"
+      v-else-if="screen==='editor'"
       ref="editor"
     />
     
@@ -15,11 +15,12 @@
 <script>
 import StartScreen from "./components/StartScreen.vue";
 import EditorScreen from "./components/EditorScreen.vue";
+import { nextTick } from '@vue/runtime-core';
 
 export default{
   data(){
     return {
-      screen: 'editor'
+      screen: 'start'
     }
   },
   methods: {
@@ -27,8 +28,11 @@ export default{
       this.screen=name;
     },
     openProject: function(project,useBlockEditor){
-      this.$refs.editor.openProject(project,useBlockEditor);
+      
       this.showScreen("editor");
+      nextTick(()=>{
+        this.$refs.editor.openProject(project,useBlockEditor);
+      });
     }
   },
   components: {

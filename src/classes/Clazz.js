@@ -7,6 +7,7 @@ export class Clazz{
     this.name=name;
     this.errors=null;
     this.src="class "+this.name+"{\n  \n}";
+    this.clazzBody=null;
   }
 
   toString(){
@@ -47,23 +48,19 @@ export class Clazz{
 
   async compileDefinitionFromSource(src){
     await this.generateTreeAndState(src);
-    this.compileDefinition();
+    this.compileMemberDeclarations();
   }
 
   async compile(fromSource){
     if(fromSource){
       await this.generateTreeAndState(this.src);
     }
-    let errors=this.compileDefinition();
-    errors=errors.concat(this.compileMethods());
-    this.errors=errors;
-    return errors;
+    this.compileDeclaration();
+    this.compileMemberDeclarations();
+    this.compileMethods();
   }
 
-  /**
-   * Kompiliert alle deklarativen Aspekte der Klasse, nicht aber die Methoden
-   */
-  compileDefinition(){
+  compileDeclaration(){
     var errors=[];
     this.errors=errors;
     let src=this.src;
@@ -78,41 +75,53 @@ export class Clazz{
         node=node.nextSibling;
       }
       this.name=src.substring(node.from,node.to);
-      while(node.nextSibling && node.name!=="ClassBody"){
-        node=node.nextSibling;
-      }
+      node=node.nextSibling;
       if(node.name!=="ClassBody"){
-        errors.push(new Error("'{' erwartet",this.node,this.state));
+        errors.push(new Error("'{' erwartet",node,this.state));
       }else{
-        /**Klassenkoerper parsen: */
-        node=node.firstChild.nextSibling;
-        while(node.nextSibling){
-          if(node.name==="FieldDeclaration"){
-            var a=new Attribute();
-            errors=errors.concat(a.fromCodeTree(src,node,state));
-            if(this.attributes[a.name]){
-              errors.push(new Error("Es gibt bereits ein Attribut namens '"+a.name+"'.",node,state));
-            }else{
-              this.attributes[a.name]=a;
-            }
-          }else{
-            errors.push(new Error("Attributs- oder Methodendeklaration erwartet.",node,state));
-          }
-          node=node.nextSibling;
-        }
-        if(node.type.isError || !node.name==="}"){
-          errors.push(new Error("Hier fehlt eine '}'",node,state));
-        }
-        node=node.parent;
-        while(node){
-          if(node.nextSibling){
-            errors.push(new Error("Nach Abschluss der Klasse darf kein weiterer Code folgen",node.nextSibling,state));
-            break;
-          }
-          node=node.parent;
-        }
+        this.clazzBody=node;
       }
-      return errors;
     }
+    return errors;
+  }
+
+  /**
+   * Kompiliert alle Member-Deklarationen
+   */
+  compileMemberDeclarations(){
+    let tree=this.tree;
+    let state=this.state;
+    let errors=this.errors;
+    var node=this.clazzBody;
+    if(!node) return;
+    /**Klassenkoerper parsen: */
+    node=node.firstChild.nextSibling;
+    while(node.nextSibling){
+      if(node.name==="FieldDeclaration"){
+        var a=new Attribute();
+        errors=errors.concat(a.fromCodeTree(src,node,state));
+        if(this.attributes[a.name]){
+          errors.push(new Error("Es gibt bereits ein Attribut namens '"+a.name+"'.",node,state));
+        }else{
+          this.attributes[a.name]=a;
+        }
+      }else{
+        errors.push(new Error("Attributs- oder Methodendeklaration erwartet.",node,state));
+      }
+      node=node.nextSibling;
+    }
+    if(node.type.isError || !node.name==="}"){
+      errors.push(new Error("Hier fehlt eine '}'",node,state));
+    }
+    node=node.parent;
+    while(node){
+      if(node.nextSibling){
+        errors.push(new Error("Nach Abschluss der Klasse darf kein weiterer Code folgen",node.nextSibling,state));
+        break;
+      }
+      node=node.parent;
+    }
+    this.errors=errors;
+    return errors;
   }
 }

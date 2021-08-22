@@ -9,6 +9,9 @@
       />
       <CodeMirror ref="codemirror" v-show="!useBlockEditor"/>
       <BlockEditor v-show="useBlockEditor"/>
+      <Outline
+        :project="project"
+      />
     </div>
     
   </div>
@@ -21,6 +24,9 @@ import EditorMenubar from "./EditorMenubar.vue";
 import CodeMirror from "./CodeMirror.vue";
 import BlockEditor from "./BlockEditor.vue";
 import ProjectExplorer from './ProjectExplorer.vue';
+import Outline from './Outline.vue';
+import { saveLocally } from '../functions/helper.js';
+import { STORAGE_PROJECT } from '../consts/strings.js';
 
 export default {
   data(){
@@ -31,6 +37,9 @@ export default {
     };
   },
   mounted(){
+    let timer=setInterval(()=>{
+      saveLocally(STORAGE_PROJECT,this.project.toSaveString());
+    },1000);
     this.openProject(this.project);
   },
   methods: {
@@ -57,7 +66,8 @@ export default {
     EditorMenubar: EditorMenubar,
     CodeMirror,
     BlockEditor,
-    ProjectExplorer
+    ProjectExplorer,
+    Outline
   }
 }
 </script>

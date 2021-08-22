@@ -9,7 +9,9 @@ export class Project{
   }
   async initialize(){
     var c=this.clazzes[0];
-    await c.compileDefinitionFromSource(c.src);
+    await c.generateTreeAndState(c.src);
+    c.compileDeclaration();
+    c.compileMemberDeclarations();
   }
   deleteClazzes(){
     while(this.clazzes.length>0) this.clazzes.pop();
@@ -34,7 +36,8 @@ export class Project{
       var src=o.clazzesSourceCode[i];
       var c=new Clazz();
       await c.generateTreeAndState(src);
-      c.compileDefinition();
+      c.compileDeclaration();
+      c.compileMemberDeclarations();
       this.clazzes.push(c);
     }
   }
