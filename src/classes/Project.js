@@ -3,13 +3,15 @@ import { Clazz } from "./Clazz";
 export class Project{
   constructor(name){
     this.clazzes=[];
+    var c=new Clazz();
+    c.src="class App{\n\n  public static void main(String[] args){\n    new App();\n  }\n}";
+    c.name="App";
+    this.clazzes.push(c);
     this.name=name;
   }
   async initialize(){
-    this.deleteClazzes();
-    var c=new Clazz();
-    await c.compileDefinitionFromSource("class App extends JavaApp{\n\n  public static void main(String[] args){\n    new App();\n  }\n}");
-    this.clazzes.push(c);
+    var c=this.clazzes[0];
+    await c.compileDefinitionFromSource(c.src);
   }
   deleteClazzes(){
     while(this.clazzes.length>0) this.clazzes.pop();

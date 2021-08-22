@@ -27,3 +27,7 @@
 .panel-full .p-panel-content{
   flex: 1;
 }
+
+.p-panel .p-panel-content{
+  padding: 0;
+}

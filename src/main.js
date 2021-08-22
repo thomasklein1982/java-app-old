@@ -11,6 +11,7 @@ import * as Dialog  from "primevue/dialog";
 import Menubar from 'primevue/menubar';
 import Sidebar from 'primevue/sidebar';
 import Panel from 'primevue/panel';
+import Tree from 'primevue/tree';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -29,4 +30,5 @@ app.component('InputNumber',InputNumber);
 app.component('Menubar',Menubar);
 app.component('Sidebar',Sidebar);
 app.component('Panel',Panel);
+app.component('Tree',Tree);
 app.mount('#app');

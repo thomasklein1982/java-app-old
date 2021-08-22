@@ -2,8 +2,11 @@
   <div style="width: 100%; height: 100%; overflow: hidden" :style="{display: 'flex', 'flex-direction': 'column'}">
     <EditorMenubar/>
     <div :style="{flex: 1, display: 'flex', 'flex-direction': 'row'}">
-      <ProjectExplorer/>
-      <CodeMirror v-show="!useBlockEditor"/>
+      <ProjectExplorer 
+        :project="project"
+        @class-selected="openClazz"
+      />
+      <CodeMirror ref="codemirror" v-show="!useBlockEditor"/>
       <BlockEditor v-show="useBlockEditor"/>
     </div>
     
@@ -21,20 +24,25 @@ export default {
   data(){
     return {
       useBlockEditor: false,
-      project: new Project()
+      project: new Project(),
+      currentClazz: null
     };
+  },
+  mounted(){
+    this.openProject(this.project);
   },
   methods: {
     openProject(p,useBlockEditor){
+      console.log("open project");
       this.project=p;
       this.useBlockEditor=useBlockEditor;
-      this.clickClazz(this.project.clazzes[0]);
+      this.openClazz(this.project.clazzes[0]);
     },
-    clickClazz(c){
+    openClazz(c){
+      
       if(this.currentClazz===c) return;
-      //this.openDrawer=false;
       this.currentClazz=c;
-      //this.codeEditor.setClazz(this.currentClazz);
+      this.$refs.codemirror.setClazz(this.currentClazz);
     }
   },
   components: {
