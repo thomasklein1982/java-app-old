@@ -1,6 +1,6 @@
 export class Modifiers{
   constructor(){
-    this.visibility=null;
+    this.visibility='public';
     this.isStatic=false;
   }
   toString(){

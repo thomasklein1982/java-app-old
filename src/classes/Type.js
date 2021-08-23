@@ -6,7 +6,12 @@ export class Type{
   }
 
   toString(){
-    var t="Typ '"+this.name+"' "+this.dimension+" "+this.isPrimitive;
+    var t=this.name;
+    var brackets=this.dimension;
+    while(brackets>0){
+      brackets--;
+      t+="[]";
+    }
     return t;
   }
 

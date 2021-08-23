@@ -1,6 +1,7 @@
 import { parseJava } from "../functions/parseJava";
 import {Attribute} from "./Attribute"
 import {Error} from "./Error"
+import { Method } from "./Method";
 
 export class Clazz{
   constructor(name){
@@ -89,6 +90,8 @@ export class Clazz{
    * Kompiliert alle Member-Deklarationen
    */
   compileMemberDeclarations(){
+    this.attributes={};
+    let src=this.src;
     let tree=this.tree;
     let state=this.state;
     let errors=this.errors;
@@ -100,11 +103,19 @@ export class Clazz{
       if(node.name==="FieldDeclaration"){
         var a=new Attribute();
         errors=errors.concat(a.fromCodeTree(src,node,state));
-        if(this.attributes[a.name]){
-          errors.push(new Error("Es gibt bereits ein Attribut namens '"+a.name+"'.",node,state));
-        }else{
-          this.attributes[a.name]=a;
+        let attr=a.getSingleAttributes();
+        for(var i=0;i<attr.length;i++){
+          let sa=attr[i];
+          if(this.attributes[sa.name]){
+            errors.push(new Error("Es gibt bereits ein Attribut namens '"+sa.name+"'.",node,state));
+          }else{
+            this.attributes[sa.name]=sa;
+          }
         }
+      }else if(node.name==='MethodDeclaration'){
+        let m=new Method();
+        errors=errors.concat(m.fromCodeTree(src,node,state));
+        this.methods.push(m);
       }else{
         errors.push(new Error("Attributs- oder Methodendeklaration erwartet.",node,state));
       }
