@@ -1,12 +1,12 @@
 <template>
-  <div id="root">
-    <div id="clazzname">
+  <div class="umlclazz">
+    <div class="clazzname">
       {{clazz.name}}
     </div>
-    <div id="attributes">
+    <div class="attributes">
       <UmlMember :member="a" v-for="(a,i) in clazz.attributes" :key="'attr'+i"></UmlMember>
     </div>
-    <div id="methods">
+    <div class="methods">
       <UmlMember :member="a" v-for="(a,i) in clazz.methods" :key="'attr'+i"></UmlMember>
     </div>
   </div>
@@ -26,19 +26,20 @@ export default {
 </script>
 
 <style scoped>
-  #root{
+  .umlclazz{
     border: 1pt solid black;
     border-radius: 0.1rem;
+    margin-top: 0.3rem;
   }
-  #clazzname{
+  .clazzname{
     border-bottom: 1pt solid black;
     text-align: center;
     font-weight: bold;
   }
-  #attributes{
+  .attributes{
     border-bottom: 1pt solid black;
   }
-  #attributes,#methods{
+  .attributes,.methods{
     min-height: 1rem;
   }
 </style>

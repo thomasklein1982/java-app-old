@@ -6,6 +6,7 @@ import { Method } from "./Method";
 export class Clazz{
   constructor(name){
     this.name=name;
+    this.superClazz=null;
     this.errors=null;
     this.src="class "+this.name+"{\n  \n}";
     this.clazzBody=null;

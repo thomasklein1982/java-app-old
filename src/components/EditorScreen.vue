@@ -1,11 +1,16 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden" :style="{display: 'flex', 'flex-direction': 'column'}">
-    <EditorMenubar/>
-    <div :style="{flex: 1, display: 'flex', 'flex-direction': 'row', 'overflow-y': 'hidden'}">
+  <div style="width: 100%; height: 100%; overflow: hidden" :style="{display: 'flex', flexDirection: 'column'}">
+    <EditorMenubar
+      @download="downloadProject"
+      @upload="uploadProject"
+    />
+    <div :style="{flex: 1, display: 'flex', flexDirection: 'row', overflowY: 'hidden'}">
       <ProjectExplorer 
         :project="project"
+        :current-clazz="currentClazz"
         @clazz-selected="openClazz"
         @add-clazz="addClazz"
+        @delete-clazz="deleteClazz"
       />
       <CodeMirror ref="codemirror" v-show="!useBlockEditor"/>
       <BlockEditor v-show="useBlockEditor"/>
@@ -25,8 +30,10 @@ import CodeMirror from "./CodeMirror.vue";
 import BlockEditor from "./BlockEditor.vue";
 import ProjectExplorer from './ProjectExplorer.vue';
 import Outline from './Outline.vue';
-import { saveLocally } from '../functions/helper.js';
+import { download, saveLocally, upload } from '../functions/helper.js';
+import { createAppCode, extractProjectCodeFromAppCode } from "../functions/appcode.js";
 import { STORAGE_PROJECT } from '../consts/strings.js';
+import { uploadProject } from "../functions/uploadProject.js";
 
 export default {
   data(){
@@ -43,7 +50,15 @@ export default {
     this.openProject(this.project);
   },
   methods: {
-    openProject(p,useBlockEditor){
+    downloadProject(){
+      download(createAppCode(this.project),this.project.getName(),"text/html");
+    },
+    async uploadProject(){
+      let p=await uploadProject();
+      if(!p) return;
+      this.openProject(p,this.useBlockEditor);
+    },
+    async openProject(p,useBlockEditor){
       console.log("open project");
       this.project=p;
       this.useBlockEditor=useBlockEditor;
@@ -59,7 +74,13 @@ export default {
       var c=new Clazz(name);
       this.project.clazzes.push(c);
       console.log(this.project);
-      c.compile(true);
+      this.openClazz(c);
+    },
+    deleteClazz(clazz){
+      if(this.project.deleteClazz(clazz)){
+        this.openClazz(this.project.clazzes[0]);
+        this.project.compile();
+      }
     }
   },
   components: {

@@ -19,6 +19,7 @@
 import {Project} from "../classes/Project.js";
 import { loadLocally } from "../functions/helper.js";
 import { STORAGE_PROJECT } from "../consts/strings.js";
+import { uploadProject } from "../functions/uploadProject.js";
 
 export default {
   data(){
@@ -45,10 +46,8 @@ export default {
       this.$emit('open-project',p,this.useBlockEditor);
     },
     async clickUploadApp(){
-      let file=await upload();
-      var pc=extractProjectCodeFromAppCode(file.code);
-      var p=new Project();
-      await p.fromSaveString(pc);
+      let p=await uploadProject();
+      if(!p) return;
       this.$emit('open-project',p,this.useBlockEditor);
     }
   }

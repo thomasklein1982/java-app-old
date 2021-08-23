@@ -82,8 +82,16 @@ export default {
   #editor{
     flex: 1;
     overflow-y:auto;
+    display: flex;
+    flex-direction: column;
   }
   #errors{
     color: red;
+  }
+</style>
+
+<style>
+  .cm-editor{
+    flex: 1;
   }
 </style>

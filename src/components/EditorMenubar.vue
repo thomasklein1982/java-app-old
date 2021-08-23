@@ -24,14 +24,14 @@ export default {
               label: 'Hochladen',
               icon: 'pi pi-upload',
               command: (ev)=>{
-                
+                this.$emit('upload');
               }
             },
             {
               label: 'Herunterladen',
               icon: 'pi pi-download',
               command: (ev)=>{
-                
+                this.$emit('download');
               }
             }
           ]

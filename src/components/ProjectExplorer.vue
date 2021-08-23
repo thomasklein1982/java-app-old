@@ -1,5 +1,7 @@
 <template>
   <div id="root">
+    <ConfirmPopup/>
+    <Toast/>
     <transition name="fade">
       <Button @click="show=true" v-show="!show" style="z-index: 2; position: absolute; left: 0; top: 50%" icon="pi pi-chevron-right" id=""></Button>
     </transition>
@@ -14,7 +16,7 @@
         <Tree 
           :value="treeNodes"
           selectionMode="single"
-          v-model:selectionKeys="selectedKey"
+          :selectionKeys="selectedKey"
           @node-select="nodeSelected"
           class="project-explorer"
         >
@@ -22,7 +24,12 @@
             <Button @click="$refs.dialogNewClazz.open()" icon="pi pi-plus" class="p-button-rounded"></Button>
           </template>
           <template #clazz="data">
-            {{data.node.label.length>16? data.node.label.substring(0,13)+"...":data.node.label}} <Badge v-if="data.node.data.errors && data.node.data.errors.length>0" severity="danger" :value="data.node.data.errors.length"/>
+            <div :style="{display: 'flex', minHeight: '2.4rem', alignItems: 'center'}">
+              <div :style="{flex: 1}">
+                {{data.node.label.length>16? data.node.label.substring(0,13)+"...":data.node.label}} <Badge v-if="data.node.data.errors && data.node.data.errors.length>0" severity="danger" :value="data.node.data.errors.length"/>
+              </div>
+              <Button v-if="data.node.data===currentClazz && currentClazz!==project.clazzes[0]" @click="clickRemoveClazz($event,data.node.data)" icon="pi pi-trash"/>
+            </div>
           </template>
         </Tree>
 
@@ -38,9 +45,24 @@ import NewClazz from './dialogs/NewClazz.vue';
 
 export default {
   props: {
-    project: Object
+    project: Object,
+    currentClazz: Object
+  },
+  watch: {
+    currentClazz(nv,ov){
+      let index=this.project.clazzes.indexOf(nv);
+      let r={};
+      r['clazzes-'+index]=true;
+      this.selectedKey=r;
+    }
   },
   computed: {
+    /**selectedKey(){
+      let index=this.project.clazzes.indexOf(this.currentClazz);
+      let r={};
+      r['clazzes-'+index]=true;
+      return r;        
+    },*/
     treeNodes(){
       return [
         {
@@ -86,7 +108,7 @@ export default {
   },
   methods: {
     nodeSelected(node){
-      console.log(node);
+      console.log("tree node selected");
       if(node.type==='clazz'){
         this.$emit("clazz-selected",node.data);
       }
@@ -94,10 +116,19 @@ export default {
     },
     addClazz(name){
       this.$emit('add-clazz',name);
-      nextTick(()=>{
-        var key={};
-        key['clazzes-'+(this.project.clazzes.length-1)]= true;
-        this.selectedKey=key;
+    },
+    clickRemoveClazz(event,clazz){
+      this.$confirm.require({
+          target: event.currentTarget,
+          message: 'Wollen Sie die Klasse '+clazz.name+' wirklich löschen?',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            this.$emit('delete-clazz',clazz);
+            this.$toast.add({severity:'info', summary:'Klasse gelöscht', detail:'Die Klasse "'+clazz.name+'" wurde gelöscht.', life: 3000});
+          },
+          reject: () => {
+
+          }
       });
     }
   },
@@ -121,4 +152,15 @@ export default {
   .p-tree{
     padding: 0;
   }
-</style>>
+
+  
+</style>
+
+<style>
+  .project-explorer .p-treenode-leaf .p-treenode-content>button{
+    display: none;
+  }
+  .project-explorer .p-treenode-leaf .p-treenode-content>.p-treenode-label{
+    flex: 1;
+  }
+</style>

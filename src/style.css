@@ -1,3 +1,8 @@
+body,html{
+  position: fixed;
+  overflow: hidden;
+}
+
 .p-panel div.p-panel-header{
   padding-top: 0;
   padding-bottom: 0;
