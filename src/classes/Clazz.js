@@ -10,6 +10,8 @@ export class Clazz{
     this.errors=null;
     this.src="class "+this.name+"{\n  \n}";
     this.clazzBody=null;
+    this.attributes={};
+    this.methods=[];
   }
 
   toString(){
@@ -42,8 +44,12 @@ export class Clazz{
    * Kompiliert alle Methoden der Klasse
    * @param {Project} project 
    */
-  compileMethods(project){
+  compileMethods(src,node,state,project){
     let errors=[];
+    for(let i=0;i<this.methods.length;i++){
+      let m=this.methods[i];
+      errors=errors.concat(m.compileBody(src,node,state,project));
+    }
     this.errors=this.errors.concat(errors);
     return errors;
   }
@@ -115,7 +121,7 @@ export class Clazz{
         }
       }else if(node.name==='MethodDeclaration'){
         let m=new Method();
-        errors=errors.concat(m.fromCodeTree(src,node,state));
+        errors=errors.concat(m.compileDeclaration(src,node,state));
         this.methods.push(m);
       }else{
         errors.push(new Error("Attributs- oder Methodendeklaration erwartet.",node,state));

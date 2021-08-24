@@ -1,3 +1,4 @@
+import { CodeBlock } from "./CodeBlock";
 import { Modifiers } from "./Modifiers";
 import { ParameterList } from "./Parameters";
 import { Type } from "./Type";
@@ -7,6 +8,8 @@ export class Method{
     this.name=null;
     this.params=null;
     this.type=null;
+    this.body=null;
+    this.errors=[];
   }
   getSignatureString(){
     var t=this.name+"(";
@@ -20,8 +23,8 @@ export class Method{
     return t;
   }
 
-  fromCodeTree(src,node,state){
-    var errors=[];
+  compileDeclaration(src,node,state){
+    let errors=[];
     node=node.firstChild;
     var m=new Modifiers();
     this.modifiers=m;
@@ -56,6 +59,16 @@ export class Method{
         errors.push(new Error("'}' erwartet",node,state));
       }
     }
+    node=node.nextSibling;
+    this.bodyNode=node;
+    return errors;
+  }
+
+  compileBody(src,node,state,project){
+    let errors=[];
+    this.body=new CodeBlock();
+    errors=errors.concat(this.body.compile(src,node,state,project));
+    this.errors=errors;
     return errors;
   }
 }
