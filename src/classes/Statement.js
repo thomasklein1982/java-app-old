@@ -3,16 +3,16 @@ export class Statement{
 
   }
 
-  fromCodeTree(src,node,state){
+  compile(node,source,scope){
     let errors=[];
     console.log("new statement",node);
     if(node.name==="ExpressionStatement"){
       node=node.firstChild;
       if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
-        errors.push(new Error("';' erwartet.",node,state));
+        errors.push(source.createError("';' erwartet.",node));
       }
       if(node.name==="AssignmentExpression"){
-        
+
       }
     }
     console.log("statement end");

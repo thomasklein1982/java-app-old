@@ -1,4 +1,3 @@
-import { Error } from "./Error";
 import { Type } from "./Type";
 
 export class ParameterList{
@@ -16,13 +15,13 @@ export class ParameterList{
     return t;
   }
 
-  fromCodeTree(src,node,state){
+  compile(node,source){
     let errors=[];
     node=node.firstChild;
     node=node.nextSibling;
     while(node.name==="FormalParameter"){
       let p=new Parameter();
-      p.fromCodeTree(src,node,state);
+      p.compile(node,source);
       this.parameters.push(p);
       node=node.nextSibling;
       if(node.name!==","){
@@ -32,7 +31,7 @@ export class ParameterList{
       }
     }
     if(node.type.isError || node.name!==")"){
-      new Error("')' erwartet",node,state);
+      errors.push(source.createError("')' erwartet",node));
     }else{
       node=node.nextSibling;
     }
@@ -51,24 +50,23 @@ export class Parameter{
     return this.type.toString()+" "+this.name;
   };
 
-  fromCodeTree(src,node,state){
+  compile(node,source){
     let errors=[];
     
     node=node.firstChild;
     if(node.name.indexOf("Type")>=0){
       var t=new Type;
-      errors=errors.concat(t.fromCodeTree(src,node,state));
+      errors=errors.concat(t.compile(node,source));
       this.type=t;
     }else{
 
     }
     node=node.nextSibling;
     if(node.name==='Definition'){
-      this.name=src.substring(node.from,node.to);
+      this.name=source.getText(node);
     }else{
-      errors.push(new Error("Parametername erwartet",node,state));
+      errors.push(source.createError("Parametername erwartet",node));
     }
-    window.node=node;
     return errors;
   }
 }

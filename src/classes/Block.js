@@ -1,16 +1,17 @@
 import { Error } from "./Error";
 import { Statement } from "./Statement";
 
-export class CodeBlock{
+export class Block{
   constructor(){
 
   }
-  compile(src,node,state,project,method,localScope,indent){
+  compile(node,source,scope){
     this.statements=[];
+    let src,state;
     let errors=[];
     node=node.firstChild;
     if(node.type.isError || node.name!=='{'){
-      errors.push(new Error("'{' erwartet",node,state));
+      errors.push(source.createError("'{' erwartet",node));
       return errors;
     }
     node=node.nextSibling;
@@ -21,16 +22,16 @@ export class CodeBlock{
         open=false;
       }else{
         if(node.type.isError || node.name.indexOf('Statement')<0){
-          errors.push(new Error("Anweisung erwartet.",node,state));
+          errors.push(source.createError("Anweisung erwartet.",node));
         }else{
           let s=new Statement();
-          errors=errors.concat(s.fromCodeTree(src,node,state));
+          errors=errors.concat(s.compile(node,source,scope));
           this.statements.push(s);
         }
       }
     }
     if(open){
-      errors.push(new Error("Die Methode wird nicht geschlossen.",node,state));
+      errors.push(source.createError("Die Methode wird nicht geschlossen.",node));
     }
     return errors;
   }

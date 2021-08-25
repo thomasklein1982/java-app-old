@@ -1,6 +1,6 @@
 export class Error{
-  constructor(message,node,state){
-    this.line=state.doc.lineAt(node.from);
+  constructor(message,node,source){
+    this.line=source.state.doc.lineAt(node.from);
     this.col=node.from-this.line.from;
     this.message=message;
   }

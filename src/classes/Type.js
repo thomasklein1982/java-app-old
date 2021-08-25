@@ -15,24 +15,24 @@ export class Type{
     return t;
   }
 
-  fromCodeTree(src,node,state){
+  compile(node,source){
     var errors=[];
     if(node.name==="PrimitiveType"){
-      this.name=src.substring(node.from,node.to);
+      this.name=source.getText(node);
       this.dimension=0;
       this.isPrimitive=true;
     }else if(node.name==="TypeName"){
-      this.name=src.substring(node.from,node.to);
+      this.name=source.getText(node);
       this.dimension=0;
       this.isPrimitive=false;
     }else if(node.name==="ArrayType"){
       node=node.firstChild;
       if(node.name==="PrimitiveType"){
         this.isPrimitive=true;
-        this.name=src.substring(node.from,node.to);
+        this.name=source.getText(node);
       }else{
         this.isPrimitive=false;
-        this.name=src.substring(node.from,node.to);
+        this.name=source.getText(node);
       }
       node=node.nextSibling;
       var parent=node;
@@ -43,14 +43,14 @@ export class Type{
         if(node.name==="["){
           
         }else{
-          errors.push(new Error("'[' erwartet.",node,state));
+          errors.push(source.createError("'[' erwartet.",node));
           break;
         }
         node=node.nextSibling;
         if(node.name==="]"){
           
         }else{
-          errors.push(new Error("']' erwartet.",node,state));
+          errors.push(source.createError("']' erwartet.",node));
           break;
         }
         parent=parent.nextSibling;
