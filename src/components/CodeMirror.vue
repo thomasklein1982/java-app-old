@@ -4,7 +4,7 @@
     <div v-if="clazz && clazz.errors" id="errors">
       <table>
         <tr v-for="(e,i) in clazz.errors" :key="'error'+i">
-          <td>Zeile {{e.line.number}}, Spalte {{e.col}}:</td><td>{{e.message}} </td>
+          <td>{{e.line.number}}:{{e.col}}:</td><td>{{e.message}} </td>
         </tr>
       </table>
     </div>
@@ -18,6 +18,9 @@
   import {keymap} from "@codemirror/view"
 import {indentWithTab} from "@codemirror/commands"
 export default {
+  props: {
+    project: Object
+  },
   data(){
     return {
       clazz: null,
@@ -57,9 +60,8 @@ export default {
       var state=viewUpdate.state;
       var src=state.doc.toString();
       this.clazz.setSrcTreeAndState(src,state);
-      await this.clazz.compile();
-      console.log(this.clazz.toString());
-
+      await this.clazz.compile(this.project);
+      
     },
     setClazz(clazz){
       this.clazz=clazz;
@@ -93,5 +95,8 @@ export default {
 <style>
   .cm-editor{
     flex: 1;
+  }
+  #errors{
+    font-family: monospace;
   }
 </style>

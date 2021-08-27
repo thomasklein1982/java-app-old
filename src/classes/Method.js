@@ -35,9 +35,7 @@ export class Method{
       node=node.nextSibling;
     }
     if(node.name.indexOf("Type")>=0){
-      var t=new Type();
-      errors=errors.concat(t.compile(node,source));
-      this.type=t;
+      this.type=Type.compile(node,source,this.clazz.project,errors);
     }else if(node.name==='void'){
       this.type=null;
     }
@@ -51,7 +49,7 @@ export class Method{
     node=node.nextSibling;
 
     if(node.name==='FormalParameters'){
-      let list=new ParameterList();
+      let list=new ParameterList(this);
       errors=errors.concat(list.compile(node,source));
       this.params=list;
     }
@@ -66,10 +64,10 @@ export class Method{
     return errors;
   }
 
-  compileBody(source,project){
+  compileBody(source){
     let errors=[];
-    this.body=new Block();
-    let scope=new Scope(project,this);
+    this.body=new Block(this);
+    let scope=new Scope(this.clazz.project,this);
     errors=errors.concat(this.body.compile(this.bodyNode,source,scope));
     this.errors=errors;
     return errors;

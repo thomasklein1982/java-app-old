@@ -1,7 +1,8 @@
 import { Type } from "./Type";
 
 export class ParameterList{
-  constructor(){
+  constructor(method){
+    this.method=method;
     this.parameters=[];
   }
 
@@ -20,8 +21,8 @@ export class ParameterList{
     node=node.firstChild;
     node=node.nextSibling;
     while(node.name==="FormalParameter"){
-      let p=new Parameter();
-      p.compile(node,source);
+      let p=new Parameter(this);
+      errors=errors.concat(p.compile(node,source));
       this.parameters.push(p);
       node=node.nextSibling;
       if(node.name!==","){
@@ -35,18 +36,19 @@ export class ParameterList{
     }else{
       node=node.nextSibling;
     }
-    console.log(this.parameters);
     return errors;
   }
 }
 
 export class Parameter{
-  constructor(){
+  constructor(list){
+    this.list=list;
     this.type=null;
     this.name=null;
   }
 
   toString(){
+    if(!this.type) return "???";
     return this.type.toString()+" "+this.name;
   };
 
@@ -55,9 +57,7 @@ export class Parameter{
     
     node=node.firstChild;
     if(node.name.indexOf("Type")>=0){
-      var t=new Type;
-      errors=errors.concat(t.compile(node,source));
-      this.type=t;
+      this.type=Type.compile(node,source,this.list.method.clazz.project,errors);
     }else{
 
     }

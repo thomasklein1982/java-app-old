@@ -1,9 +1,10 @@
+import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
 
 export class Project{
   constructor(){
     this.clazzes=[];
-    var c=new Clazz("App");
+    var c=new Clazz("App",this);
     c.src="class App{\n\n  public static void main(String[] args){\n    new App();\n  }\n}";
     this.clazzes.push(c);
   }
@@ -20,6 +21,12 @@ export class Project{
         return c;
       }
     }
+    return null;
+  }
+  getType(name){
+    let t=Java.datatypes[name];
+    if(t) return t;
+    return this.getClazzNyName(name);
   }
   /**Kompiliert das gesamte Projekt */
   async compile(fromSource){
@@ -51,14 +58,17 @@ export class Project{
     /**Member-Deklarationen: */
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      c.compileMemberDeclarations();
+      c.compileMemberDeclarations(this);
+    }
+
+    /**Methoden: */
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      c.compileMethods(this);
     }
   }
   deleteClazzes(){
     while(this.clazzes.length>0) this.clazzes.pop();
-  }
-  addClazz(c){
-    this.clazzes.push(c);
   }
   deleteClazz(c){
     let index=this.clazzes.indexOf(c);
@@ -84,7 +94,7 @@ export class Project{
     this.deleteClazzes();
     for(var i=0;i<o.clazzesSourceCode.length;i++){
       var src=o.clazzesSourceCode[i];
-      var c=new Clazz();
+      var c=new Clazz(null,this);
       c.src=src;
       this.clazzes.push(c);
     }

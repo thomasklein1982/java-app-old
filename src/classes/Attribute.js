@@ -3,7 +3,8 @@ import {Modifiers} from "./Modifiers"
 import {Error} from "./Error"
 
 export class Attribute{
-  constructor(){
+  constructor(clazz){
+    this.clazz=clazz;
     this.type=null;
     this.name=null;
     this.modifiers=null;
@@ -17,7 +18,7 @@ export class Attribute{
     let array=[];
     for(let i=0;i<this.name.length;i++){
       let n=this.name[i];
-      let a=new Attribute();
+      let a=new Attribute(this.clazz);
       a.type=this.type;
       a.name=n;
       a.modifiers=this.modifiers;
@@ -26,10 +27,6 @@ export class Attribute{
     return array;
   }
 
-  toString(){
-    var t="Attribut(e) '"+this.name+"' vom Typ "+this.type+" mit: "+this.modifiers;
-    return t;
-  }
   compile(node,source){
     var errors=[];
     node=node.firstChild;
@@ -40,9 +37,7 @@ export class Attribute{
       node=node.nextSibling;
     }
     if(node.name.indexOf("Type")>=0){
-      var t=new Type();
-      errors=errors.concat(t.compile(node,source));
-      this.type=t;
+      this.type=Type.compile(node,source,this.clazz.project,errors);
       node=node.nextSibling;
     }
     /**beliebig viele Variablennamen, mit Komma getrennt */

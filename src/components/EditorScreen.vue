@@ -12,7 +12,7 @@
         @add-clazz="addClazz"
         @delete-clazz="deleteClazz"
       />
-      <CodeMirror ref="codemirror" v-show="!useBlockEditor"/>
+      <CodeMirror :project="project" ref="codemirror" v-show="!useBlockEditor"/>
       <BlockEditor v-show="useBlockEditor"/>
       <Outline
         :project="project"
@@ -65,15 +65,13 @@ export default {
       this.openClazz(this.project.clazzes[0]);
     },
     openClazz(c){
-      console.log(c,this.currentClazz===c);
       if(this.currentClazz===c) return;
       this.currentClazz=c;
       this.$refs.codemirror.setClazz(this.currentClazz);
     },
     addClazz(name){
-      var c=new Clazz(name);
+      var c=new Clazz(name,this.project);
       this.project.clazzes.push(c);
-      console.log(this.project);
       this.openClazz(c);
     },
     deleteClazz(clazz){

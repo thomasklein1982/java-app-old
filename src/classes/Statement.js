@@ -1,21 +1,14 @@
-export class Statement{
-  constructor(){
+import { CompileFunctions } from "../language/CompileFunctions";
+import { Value } from "./Value";
 
+
+export class Statement{
+  constructor(block){
+    this.block=block;
   }
 
-  compile(node,source,scope){
-    let errors=[];
-    console.log("new statement",node);
-    if(node.name==="ExpressionStatement"){
-      node=node.firstChild;
-      if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
-        errors.push(source.createError("';' erwartet.",node));
-      }
-      if(node.name==="AssignmentExpression"){
-
-      }
-    }
-    console.log("statement end");
-    return errors;
+  compile(node,source,scope,errors){
+    let f=CompileFunctions.get(node,source,errors);
+    return f(node,source,scope,errors);
   }
 }

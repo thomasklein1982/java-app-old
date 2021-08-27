@@ -5,14 +5,15 @@ import { Method } from "./Method";
 import { Source } from "./Source";
 
 export class Clazz{
-  constructor(name){
+  constructor(name,project){
     this.name=name;
+    this.project=project;
     this.superClazz=null;
     this.errors=null;
     this.src="class "+this.name+"{\n  \n}";
     this.clazzBody=null;
     this.attributes={};
-    this.methods=[];
+    this.methods={};
   }
 
   toString(){
@@ -23,6 +24,18 @@ export class Clazz{
       t+="\n\  "+at;
     }
     return t;
+  }
+
+  getMethods(name,isStatic){
+    let m=this.methods[name];
+    if(m){
+      if(isStatic && m.isStatic() || !isStatic && !m.isStatic()){
+        return m;
+      }
+    }
+    if(this.superClazz){
+      return this.superClazz.getMethods(name);
+    }
   }
 
   async generateTreeAndState(src){
@@ -36,27 +49,8 @@ export class Clazz{
     this.superClazz=null;
     this.attributes={};
     this.constructors=[];
-    this.methods=[];
+    this.methods={};
     this.source=new Source(src,state);
-  }
-
-  /**
-   * Kompiliert alle Methoden der Klasse
-   * @param {Project} project 
-   */
-  compileMethods(node,source,project){
-    let errors=[];
-    for(let i=0;i<this.methods.length;i++){
-      let m=this.methods[i];
-      errors=errors.concat(m.compileBody(source,project));
-    }
-    this.errors=this.errors.concat(errors);
-    return errors;
-  }
-
-  async compileDefinitionFromSource(src){
-    await this.generateTreeAndState(src);
-    this.compileMemberDeclarations();
   }
 
   async compile(fromSource){
@@ -102,7 +96,7 @@ export class Clazz{
     node=node.firstChild.nextSibling;
     while(node.nextSibling){
       if(node.name==="FieldDeclaration"){
-        var a=new Attribute();
+        var a=new Attribute(this);
         errors=errors.concat(a.compile(node,this.source));
         let attr=a.getSingleAttributes();
         for(var i=0;i<attr.length;i++){
@@ -116,7 +110,10 @@ export class Clazz{
       }else if(node.name==='MethodDeclaration'){
         let m=new Method(this);
         errors=errors.concat(m.compileDeclaration(node,this.source));
-        this.methods.push(m);
+        if(!this.methods[m.name]){
+          this.methods[m.name]=[];
+        }
+        this.methods[m.name].push(m);
       }else{
         errors.push(this.source.createError("Attributs- oder Methodendeklaration erwartet.",node));
       }
@@ -134,6 +131,24 @@ export class Clazz{
       node=node.parent;
     }
     this.errors=errors;
+    return errors;
+  }
+
+  /**
+   * Kompiliert alle Methoden der Klasse
+   * @param {Project} project 
+   */
+   compileMethods(project){
+    let errors=[];
+    for(let mi in this.methods){
+      let ms=this.methods[mi];
+      for(let i=0;i<ms.length;i++){
+        let m=ms[i];
+        errors=errors.concat(m.compileBody(this.source));
+      }
+    }
+    
+    this.errors=this.errors.concat(errors);
     return errors;
   }
 }

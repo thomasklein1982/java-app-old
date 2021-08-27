@@ -1,43 +1,43 @@
-export class Type{
-  constructor(name,dimension,isPrimitive,superType){
-    this.name=name;
-    this.dimension=dimension;
-    this.isPrimitive=isPrimitive;
-  }
+import { BaseType } from "./BaseType";
 
+export class Type{
+  constructor(baseType,dimension){
+    this.baseType=baseType;
+    this.dimension=dimension;
+  }
   toString(){
-    var t=this.name;
-    var brackets=this.dimension;
-    while(brackets>0){
-      brackets--;
+    let t=this.baseType.name;
+    let d=this.dimension;
+    while(d>0){
       t+="[]";
+      d--;
     }
     return t;
   }
-
-  compile(node,source){
-    var errors=[];
+  static compile(node,source,project,errors){
+    let name,dimension,isPrimitive;
+    let startNode=node;
     if(node.name==="PrimitiveType"){
-      this.name=source.getText(node);
-      this.dimension=0;
-      this.isPrimitive=true;
+      name=source.getText(node);
+      dimension=0;
+      isPrimitive=true;
     }else if(node.name==="TypeName"){
-      this.name=source.getText(node);
-      this.dimension=0;
-      this.isPrimitive=false;
+      name=source.getText(node);
+      dimension=0;
+      isPrimitive=false;
     }else if(node.name==="ArrayType"){
       node=node.firstChild;
       if(node.name==="PrimitiveType"){
-        this.isPrimitive=true;
-        this.name=source.getText(node);
+        isPrimitive=true;
+        name=source.getText(node);
       }else{
-        this.isPrimitive=false;
-        this.name=source.getText(node);
+        isPrimitive=false;
+        name=source.getText(node);
       }
       node=node.nextSibling;
       var parent=node;
       /**jetzt Folge von [] */
-      this.dimension=0;
+      dimension=0;
       while(parent){
         node=parent.firstChild;
         if(node.name==="["){
@@ -54,9 +54,22 @@ export class Type{
           break;
         }
         parent=parent.nextSibling;
-        this.dimension++;
+        dimension++;
       }
     }
-    return errors;
+    let basetype=project.getType(name);
+    if(!basetype){
+      errors.push(source.createError("Es gibt keinen Datentyp '"+name+"'.",startNode));
+      basetype=new BaseType(name,null,null,"Unbekannter Datentyp",false);
+    }
+    return new Type(basetype,dimension);
+  }
+  isSubtypeOf(type){
+    if(type===this){
+      return true;
+    }
+    if(this.supertype){
+      return this.supertype.isSubtypeOf(type);
+    }
   }
 }

@@ -7,14 +7,12 @@ export class Block{
   }
   compile(node,source,scope){
     this.statements=[];
-    let src,state;
     let errors=[];
     node=node.firstChild;
     if(node.type.isError || node.name!=='{'){
       errors.push(source.createError("'{' erwartet",node));
       return errors;
     }
-    node=node.nextSibling;
     let open=true;
     while(node.nextSibling){
       node=node.nextSibling;
@@ -24,8 +22,8 @@ export class Block{
         if(node.type.isError || node.name.indexOf('Statement')<0){
           errors.push(source.createError("Anweisung erwartet.",node));
         }else{
-          let s=new Statement();
-          errors=errors.concat(s.compile(node,source,scope));
+          let s=new Statement(this);
+          s.compile(node,source,scope,errors);
           this.statements.push(s);
         }
       }
