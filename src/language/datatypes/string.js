@@ -1,4 +1,4 @@
-export function defineString(string,char){
+export function defineString(datatypes){
   let m={
     a: {
   
@@ -12,7 +12,7 @@ export function defineString(string,char){
         }
       },
       {
-        params: [string],
+        params: [datatypes.string],
         info: "Erzeugt einen String, der aus den gleichen Zeichen besteht wie der übergebene String.",
         exec: function(s){
           return new String(s);
@@ -20,7 +20,7 @@ export function defineString(string,char){
       },
       {
         params: [{
-          type: char,
+          type: datatypes.char,
           dim: 1
         }],
         info: "Erzeugt einen neuen String aus dem char-Array.",
@@ -34,8 +34,8 @@ export function defineString(string,char){
       }
     ],
     m: [
-  
+      
     ]
   }
-  string.defineMembers(m);
+  datatypes.String.defineMembers(m);
 }

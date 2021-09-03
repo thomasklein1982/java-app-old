@@ -1,6 +1,6 @@
 
 
-export function defineObject(object,string,boolean){
+export function defineObject(datatypes){
   let m={
     a: {},
     c: [
@@ -14,8 +14,8 @@ export function defineObject(object,string,boolean){
     m: {
       equals: {
         info: "Prueft, ob dieses und das angegebene Objekt identisch sind.",
-        params: [object],
-        returns: boolean,
+        params: [datatypes.object],
+        returns: datatypes.boolean,
         exec: function(a){
           return this===a;
         }
@@ -23,9 +23,9 @@ export function defineObject(object,string,boolean){
       toString: {
         info: "Wandelt das Objekt in einen String um.",
         params: [],
-        returns: string,
+        returns: datatypes.String,
       }
     }
   }
-  object.defineMembers(m);
+  datatypes.Object.defineMembers(m);
 }

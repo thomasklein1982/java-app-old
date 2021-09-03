@@ -3,6 +3,7 @@ import { ExpressionStatement } from "./compile/ExpressionStatement";
 import { StringLiteral } from "./compile/StringLiteral";
 import { ArgumentList } from "./compile/ArgumentList";
 import {Identifier} from "./compile/Identifier";
+import { FieldAccess } from "./compile/FieldAccess";
 
 function doNothing(){}
 
@@ -16,6 +17,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess
   }
 }

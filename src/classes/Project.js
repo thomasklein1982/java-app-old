@@ -14,7 +14,7 @@ export class Project{
     c.compileDeclaration();
     c.compileMemberDeclarations();
   }
-  getClazzNyName(name){
+  getClazzByName(name){
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       if(c.name===name){
@@ -23,10 +23,10 @@ export class Project{
     }
     return null;
   }
-  getType(name){
+  getTypeByName(name){
     let t=Java.datatypes[name];
     if(t) return t;
-    return this.getClazzNyName(name);
+    return this.getClazzByName(name);
   }
   /**Kompiliert das gesamte Projekt */
   async compile(fromSource){

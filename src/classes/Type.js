@@ -57,7 +57,7 @@ export class Type{
         dimension++;
       }
     }
-    let basetype=project.getType(name);
+    let basetype=project.getTypeByName(name);
     if(!basetype){
       errors.push(source.createError("Es gibt keinen Datentyp '"+name+"'.",startNode));
       basetype=new BaseType(name,null,null,"Unbekannter Datentyp",false);

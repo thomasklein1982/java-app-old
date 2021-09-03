@@ -1,3 +1,5 @@
+import { Java } from "../language/java";
+
 export class Scope{
   constructor(project,method){
     this.project=project;
@@ -22,8 +24,12 @@ export class Scope{
     return null;
   }
 
-  getClazz(name){
-    return this.project.getClazzByName(name);
+  getClazzByName(name){
+    let c=this.project.getClazzByName(name);
+    if(!c){
+      c=Java.datatypes[name];
+    }
+    return c;
   }
 
 }

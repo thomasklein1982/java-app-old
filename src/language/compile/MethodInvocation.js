@@ -1,4 +1,5 @@
 import { ArgumentList } from "./ArgumentList";
+import { FieldAccess } from "./FieldAccess";
 
 export function MethodInvocation(node,source,scope,errors){
   node=node.firstChild;
@@ -7,6 +8,8 @@ export function MethodInvocation(node,source,scope,errors){
   console.log(node);
   if(node.name==="Identifier"){
 
+  }else if(node.name==="FieldAccess"){
+    let fa=FieldAccess(node,source,scope,errors);
   }
   if(node.name==="MethodName"){
     mn=source.getText(node);
