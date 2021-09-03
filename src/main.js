@@ -24,6 +24,19 @@ import './lib/lzstring.js';
 import './lib/localforage.min.js';
 import router from "./router";
 
+import { registerSW } from 'virtual:pwa-register'
+
+const updateSW = registerSW({
+  onNeedRefresh() {
+    let a=confirm("Updaten?");
+    if(a){
+      updateSW();
+      window.location.reload();
+    }
+  },
+  onOfflineReady() {},
+})
+
 let app=createApp(App);
 app.use(router);
 app.use(PrimeVue.default);
