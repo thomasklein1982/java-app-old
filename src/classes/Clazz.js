@@ -1,12 +1,13 @@
 import { parseJava } from "../functions/parseJava";
 import {Attribute} from "./Attribute"
-import {Error} from "./Error"
 import { Method } from "./Method";
 import { Source } from "./Source";
 
 export class Clazz{
   constructor(name,project){
     this.name=name;
+    this.cannotBeInstantiated=false;
+    this.description="";
     this.project=project;
     this.superClazz=null;
     this.errors=null;
@@ -14,6 +15,54 @@ export class Clazz{
     this.clazzBody=null;
     this.attributes={};
     this.methods={};
+  }
+
+  getAttribute(name,static){
+    if(this.isPrimitive){
+      return {
+        error: "'"+this.name+"' ist ein primitiver Datentyp und hat daher keine Attribute."
+      };
+    }
+    let a=this.attributes[name];
+    if(!a){
+      return {
+        error: "Die Klasse '"+this.name+"' hat kein Attribut namens '"+name+"'."
+      }
+    }
+    if(static){
+      if(a.static){
+        return a;
+      }else{
+        return {
+          error: "Das Attribut '"+name+"' ist nicht statisch."
+        }
+      }
+    }else{
+      if(!a.static){
+        return a;
+      }else{
+        return {
+          error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen."
+        }
+      }
+    }    
+  }
+  define(superClazz,description,members,cannotBeInstantiated){
+    this.cannotBeInstantiated=cannotBeInstantiated===true;
+    this.superClazz=superClazz;
+    this.description=description;
+    if(members.a){
+      this.attributes=members.a;
+      for(var i in this.attributes){
+        this.attributes[i].name=i;
+      }
+    }
+    if(members.c){
+      this.constructors=members.c;
+    }
+    if(members.m){
+      this.methods=members.m;
+    }
   }
 
   toString(){
@@ -26,10 +75,10 @@ export class Clazz{
     return t;
   }
 
-  getMethods(name,isStatic){
+  getMethods(name,static){
     let m=this.methods[name];
     if(m){
-      if(isStatic && m.isStatic() || !isStatic && !m.isStatic()){
+      if(static && m.isStatic() || !static && !m.isStatic()){
         return m;
       }
     }

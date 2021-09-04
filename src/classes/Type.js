@@ -1,4 +1,4 @@
-import { BaseType } from "./BaseType";
+import { PrimitiveType } from "./PrimitiveType";
 
 export class Type{
   constructor(baseType,dimension){
@@ -6,7 +6,7 @@ export class Type{
     this.dimension=dimension;
   }
   toString(){
-    let t=this.baseType.name;
+    let t=this.baseType? this.baseType.name:"Unbekannter Datentyp";
     let d=this.dimension;
     while(d>0){
       t+="[]";
@@ -60,16 +60,21 @@ export class Type{
     let basetype=project.getTypeByName(name);
     if(!basetype){
       errors.push(source.createError("Es gibt keinen Datentyp '"+name+"'.",startNode));
-      basetype=new BaseType(name,null,null,"Unbekannter Datentyp",false);
+      basetype=null;
     }
     return new Type(basetype,dimension);
   }
   isSubtypeOf(type){
-    if(type===this){
-      return true;
-    }
-    if(this.supertype){
-      return this.supertype.isSubtypeOf(type);
+    if(type.dimension===this.dimension){
+      if(type.baseType===this.baseType){
+        return true;
+      }else{
+        if(this.supertype){
+          return this.supertype.isSubtypeOf(type);
+        }
+      }
+    }else{
+      return false;
     }
   }
 }

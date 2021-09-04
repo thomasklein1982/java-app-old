@@ -7,6 +7,5 @@ export function defineSystem(datatypes){
       }
     }
   }
-  datatypes.System.defineMembers(m);
-  datatypes.System.cannotBeInstantiated=true;
+  datatypes.System.define(datatypes.Object,"Die System-Klasse stellt statische Basis-Methoden zur Ein- und Ausgabe zur Verfügung.",m,true);
 }

@@ -1,4 +1,5 @@
 import { Java } from "../language/java";
+import { Attribute } from "./Attribute";
 
 export class Scope{
   constructor(project,method){
@@ -24,6 +25,21 @@ export class Scope{
     return null;
   }
 
+  /**
+   * Liefert das Attribut mit dem gegebenen Namen der aktuellen Klasse zurueck, falls dieses existiert
+   * @param {String} name 
+   * @returns {Attribute} Das Attribut 
+   */
+  getAttribute(name,static){
+    let c=this.method.clazz;
+    let a=c.getAttribute(name,static);
+    if(a.error){
+      return null;
+    }else{
+      return a;
+    }
+  }
+  
   getClazzByName(name){
     let c=this.project.getClazzByName(name);
     if(!c){

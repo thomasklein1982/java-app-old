@@ -10,6 +10,5 @@ export function definePrintStream(datatypes){
       }
     }
   };
-  datatypes.PrintStream.defineMembers(m);
-  datatypes.PrintStream.cannotBeInstantiated=true;
+  datatypes.PrintStream.define(datatypes.Object,"keine Beschreibung vorhanden",m,true);
 }

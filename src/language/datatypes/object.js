@@ -27,5 +27,5 @@ export function defineObject(datatypes){
       }
     }
   }
-  datatypes.Object.defineMembers(m);
+  datatypes.Object.define(null,"'Object' ist die grundlegende Klasse in Java: Jede andere Klasse ist eine Unterklasse von 'Object'.",m);
 }
