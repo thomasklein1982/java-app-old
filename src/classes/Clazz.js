@@ -17,6 +17,22 @@ export class Clazz{
     this.methods={};
   }
 
+  getJavaScriptCode(){
+    let code="class "+this.name;
+    if(this.superClazz){
+      code+=" extends "+this.superClazz.name;
+    }
+    code+="{";
+    code+="\nconstructor(){";
+    for(let i in this.attributes){
+      let a=this.attributes[i];
+      code+="\n"+a.getJavaScriptCode();
+    }
+    code+="\n}";
+    code+="\n}";
+    return code;
+  }
+
   /**
    * 
    * @param {String} name 
@@ -213,15 +229,14 @@ export class Clazz{
 
   /**
    * Kompiliert alle Methoden der Klasse
-   * @param {Project} project 
    */
-   compileMethods(project){
+   compileMethods(){
     let errors=[];
     for(let mi in this.methods){
       let ms=this.methods[mi];
       for(let i=0;i<ms.length;i++){
         let m=ms[i];
-        errors=errors.concat(m.compileBody(this.source));
+        errors=errors.concat(m.compileBody(this.source).errors);
       }
     }
     
