@@ -20,7 +20,7 @@ export function Identifier(node,source,scope,errors,owner){
   if(owner && owner.clazz){
     obj=scope.getAttribute(name,owner.static,owner.clazz);
     if(obj && obj.error){
-      errors.push(source.createError(obj.error,node));
+      return obj;
     }
   }else{
     //Top-Level
@@ -31,13 +31,15 @@ export function Identifier(node,source,scope,errors,owner){
     if(!obj){
       obj=scope.getAttribute(name,false);
       if(obj && obj.error){
-        errors.push(source.createError(obj.error,node));
+        return obj;
       }else{
         code="this."+code;
       }
     }
     if(!obj){
-      errors.push(source.createError("'"+name+"' ist undefiniert",node));
+      return {
+        error: "'"+name+"' ist undefiniert"
+      };
     }
   } 
   return {

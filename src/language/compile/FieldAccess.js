@@ -19,6 +19,9 @@ export function FieldAccess(node,source,scope,errors){
   let owner;
   if(node.name==="FieldAccess"){
     let fa=FieldAccess(node,source,scope,errors);
+    if(fa.error){
+      return fa;
+    }
     node=node.nextSibling;
     code+=fa.code;
     owner={
@@ -27,6 +30,9 @@ export function FieldAccess(node,source,scope,errors){
     };
   }else if(node.name==="Identifier"){
     let ident=Identifier(node,source,scope,errors);
+    if(ident.error){
+      return ident;
+    }
     code+=ident.code;
     node=node.nextSibling;
     if(ident.object instanceof Clazz){
@@ -49,6 +55,9 @@ export function FieldAccess(node,source,scope,errors){
   }
   if(node.name==="Identifier"){
     let object=Identifier(node,source,scope,errors,owner);
+    if(object.error){
+      return object;
+    }
     code+=object.code;
     return {
       code,object: object.object

@@ -38,6 +38,9 @@ export function MethodInvocation(node,source,scope,errors){
       }
     }else if(node.name==="FieldAccess"){
       let fa=FieldAccess(node,source,scope,errors);
+      if(fa.error){
+        return fa;
+      }
       code=fa.code;
       owner={
         clazz: fa.object.type,
@@ -59,8 +62,9 @@ export function MethodInvocation(node,source,scope,errors){
   }
   console.log(node);
   methods=scope.getMethods(mn,owner.static,owner.clazz);
-  if(!methods){
-    errors.push(source.createError("Die Klasse '"+owner.clazz.name+"' hat keine "+(owner.static? "statische ":"")+"Methode namens '"+mn+"'.",node));
+  if(methods.error){
+    errors.push(source.createError(methods.error,node));
+    return errors;
   }
   if(node.name==="ArgumentList"){
     al=ArgumentList(node,source,scope,errors);

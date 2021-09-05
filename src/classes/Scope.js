@@ -65,8 +65,8 @@ export class Scope{
   getMethods(name,isStatic,clazz){
     let c=clazz? clazz : this.method.clazz;
     let m=c.getMethods(name,isStatic);
-    if(!m || m.error){
-      return null;
+    if(m.error){
+      return m;
     }
     if(m.isStatic && m.isStatic() || m.static){
       if(!isStatic){
@@ -75,11 +75,7 @@ export class Scope{
         };  
       }
     }else{
-      if(this.method.isStatic()){
-        return {
-          error: "Innerhalb einer statischen Methode kannst du nicht die dynamische Methode '"+name+"' aufrufen."
-        };
-      }
+      
     }
     return m;
   }

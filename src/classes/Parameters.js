@@ -4,6 +4,7 @@ export class ParameterList{
   constructor(method){
     this.method=method;
     this.parameters=[];
+    this.signatureString=null;
   }
 
   define(data){
@@ -14,6 +15,15 @@ export class ParameterList{
       p.define(d);
       this.parameters.push(p);
     }
+  }
+
+  updateSignatureString(){
+    let types=[];
+    for(let i=0;i<this.parameters.length;i++){
+      let p=this.parameters[i];
+      types.push(p.type.toString());
+    }
+    this.signatureString=types.join(",");
   }
 
   toString(){
@@ -46,6 +56,7 @@ export class ParameterList{
     }else{
       node=node.nextSibling;
     }
+    this.updateSignatureString();
     return errors;
   }
 }
@@ -64,7 +75,7 @@ export class Parameter{
 
   define(data){
     this.type=data.type;
-    toHandlers.name=data.name;
+    this.name=data.name;
   }
 
   compile(node,source){
