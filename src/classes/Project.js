@@ -8,6 +8,14 @@ export class Project{
     c.src="class App{\n\n  public static void main(String[] args){\n    new App();\n  }\n}";
     this.clazzes.push(c);
   }
+  getJavaScriptCode(){
+    let code="";
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      code+="\n"+c.getJavaScriptCode();
+    }
+    return code;
+  }
   async initialize(){
     var c=this.clazzes[0];
     await c.generateTreeAndState(c.src);

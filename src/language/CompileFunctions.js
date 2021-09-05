@@ -10,11 +10,10 @@ import { FieldAccess } from "./compile/FieldAccess";
 function doNothing(){}
 
 export const CompileFunctions={
-  get(node,source,errors){
+  get(node,source){
     let compile=this.functions[node.name];
     if(!compile){
-      errors.push(source.createError("Unbekanntes Sprachkonstrukt. Sorry, ich verstehe das (noch) nicht :(", node));
-      return doNothing;
+      throw source.createError("Unbekanntes Sprachkonstrukt. Sorry, ich verstehe das (noch) nicht :(", node);
     }
     return compile;
   },

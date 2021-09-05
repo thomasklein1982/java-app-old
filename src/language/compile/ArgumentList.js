@@ -6,8 +6,8 @@ export function ArgumentList(node,source,scope,errors){
   let signature="";
   while(node.nextSibling && node.nextSibling.name!==")"){
     node=node.nextSibling;
-    let f=CompileFunctions.get(node,source,errors);
-    let arg=f(node,source,scope,errors);
+    let f=CompileFunctions.get(node,source);
+    let arg=f(node,source,scope);
     list.push(arg);
     signature+=arg.type.toString()+",";
   }

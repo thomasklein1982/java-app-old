@@ -1,4 +1,4 @@
-import { Block } from "./Block";
+import { Block } from "../language/compile/Block";
 import { Modifiers } from "./Modifiers";
 import { ParameterList } from "./Parameters";
 import { Scope } from "./Scope";
@@ -88,12 +88,13 @@ export class Method{
   compileBody(source){
     let errors=[];
     if(!this.bodyNode){
-      return errors;
+      return {
+        errors,
+        code: ''
+      }
     }
-    this.body=new Block(this);
     let scope=new Scope(this.clazz.project,this);
-    errors=errors.concat(this.body.compile(this.bodyNode,source,scope));
-    this.errors=errors;
-    return errors;
+    this.block=Block(this.bodyNode,source,scope);
+    return this.block;
   }
 }

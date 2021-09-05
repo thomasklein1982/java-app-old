@@ -3,6 +3,7 @@
     <EditorMenubar
       @download="downloadProject"
       @upload="uploadProject"
+      @run="run"
     />
     <div :style="{flex: 1, display: 'flex', flexDirection: 'row', overflowY: 'hidden'}">
       <ProjectExplorer 
@@ -63,6 +64,10 @@ export default {
       this.project=p;
       this.useBlockEditor=useBlockEditor;
       this.openClazz(this.project.clazzes[0]);
+    },
+    run(){
+      let code=this.project.getJavaScriptCode();
+      console.log(code);
     },
     openClazz(c){
       if(this.currentClazz===c) return;

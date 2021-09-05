@@ -1,6 +1,7 @@
 import {Type} from "./Type"
 import {Modifiers} from "./Modifiers"
 import {Error} from "./Error"
+import { Clazz } from "./Clazz";
 
 export class Attribute{
   constructor(clazz){
@@ -8,6 +9,18 @@ export class Attribute{
     this.type=null;
     this.name=null;
     this.modifiers=null;
+  }
+
+  getJavaScriptCode(){
+    let code="this."+this.name+"=";
+    let v;
+    if(this.type.baseType instanceof Clazz){
+      v="null";
+    }else{
+      v=JSON.stringify(this.type.baseType.initialValue);
+    }
+    code+=v+";";
+    return code;
   }
 
   define(name,data){

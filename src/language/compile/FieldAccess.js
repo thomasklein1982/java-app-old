@@ -2,7 +2,6 @@ import { Clazz } from "../../classes/Clazz";
 import { Error } from "../../classes/Error";
 import { Scope } from "../../classes/Scope";
 import { Source } from "../../classes/Source";
-import { CompileFunctions } from "../CompileFunctions";
 import { Identifier } from "./Identifier";
 
 /**
@@ -10,18 +9,14 @@ import { Identifier } from "./Identifier";
  * @param {*} node 
  * @param {Source} source 
  * @param {Scope} scope 
- * @param {Error[]} errors 
  * @returns 
  */
-export function FieldAccess(node,source,scope,errors){
+export function FieldAccess(node,source,scope){
   node=node.firstChild;
   let code="";
   let owner;
   if(node.name==="FieldAccess"){
-    let fa=FieldAccess(node,source,scope,errors);
-    if(fa.error){
-      return fa;
-    }
+    let fa=FieldAccess(node,source,scope);
     node=node.nextSibling;
     code+=fa.code;
     owner={
@@ -29,10 +24,7 @@ export function FieldAccess(node,source,scope,errors){
       static: false
     };
   }else if(node.name==="Identifier"){
-    let ident=Identifier(node,source,scope,errors);
-    if(ident.error){
-      return ident;
-    }
+    let ident=Identifier(node,source,scope);
     code+=ident.code;
     node=node.nextSibling;
     if(ident.object instanceof Clazz){
@@ -51,13 +43,10 @@ export function FieldAccess(node,source,scope,errors){
     code+=".";
     node=node.nextSibling;
   }else{
-    errors.push(source.createError(null,node));
+    throw (source.createError(null,node));
   }
   if(node.name==="Identifier"){
-    let object=Identifier(node,source,scope,errors,owner);
-    if(object.error){
-      return object;
-    }
+    let object=Identifier(node,source,scope,owner);
     code+=object.code;
     return {
       code,object: object.object

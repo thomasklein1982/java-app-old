@@ -1,10 +1,11 @@
 import { CompileFunctions } from "../CompileFunctions";
 
-export function ExpressionStatement(node,source,scope,errors){
+export function ExpressionStatement(node,source,scope){
   node=node.firstChild;
+  let f=CompileFunctions.get(node,source);
+  let a=f(node,source,scope);
   if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
-    errors.push(source.createError("';' erwartet.",node));
+    throw (source.createError("';' erwartet.",node));
   }
-  let f=CompileFunctions.get(node,source,errors);
-  return f(node,source,scope,errors);
+  return a;
 }

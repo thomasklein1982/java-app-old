@@ -10,9 +10,8 @@ import { Identifier } from "./Identifier";
  * @param {*} node 
  * @param {Source} source 
  * @param {Scope} scope 
- * @param {Error[]} errors 
  */
-export function MethodInvocation(node,source,scope,errors){
+export function MethodInvocation(node,source,scope){
   node=node.firstChild;
   
   let mn,al,methods;
@@ -23,7 +22,7 @@ export function MethodInvocation(node,source,scope,errors){
   };
   if(node.name!=="MethodName"){
     if(node.name==="Identifier"){
-      let id=Identifier(node,source,scope,errors);
+      let id=Identifier(node,source,scope);
       code=id.code;
       if(id.object instanceof Clazz){
         owner={
@@ -37,10 +36,7 @@ export function MethodInvocation(node,source,scope,errors){
         };
       }
     }else if(node.name==="FieldAccess"){
-      let fa=FieldAccess(node,source,scope,errors);
-      if(fa.error){
-        return fa;
-      }
+      let fa=FieldAccess(node,source,scope);
       code=fa.code;
       owner={
         clazz: fa.object.type,
@@ -51,7 +47,7 @@ export function MethodInvocation(node,source,scope,errors){
     if(node.name==="."){
       code+=".";
     }else{
-      errors.push(source.createError(null,node));
+      throw (source.createError(null,node));
     }
     node=node.nextSibling;
   }
@@ -63,11 +59,10 @@ export function MethodInvocation(node,source,scope,errors){
   console.log(node);
   methods=scope.getMethods(mn,owner.static,owner.clazz);
   if(methods.error){
-    errors.push(source.createError(methods.error,node));
-    return errors;
+    throw (source.createError(methods.error,node));
   }
   if(node.name==="ArgumentList"){
-    al=ArgumentList(node,source,scope,errors);
+    al=ArgumentList(node,source,scope);
     
   }
   

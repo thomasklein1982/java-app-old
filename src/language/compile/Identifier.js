@@ -13,14 +13,14 @@ import { Java } from "../java";
  * @param {Object} owner 
  * @returns 
  */
-export function Identifier(node,source,scope,errors,owner){
+export function Identifier(node,source,scope,owner){
   let name=source.getText(node);
   let obj;
   let code=name;
   if(owner && owner.clazz){
     obj=scope.getAttribute(name,owner.static,owner.clazz);
     if(obj && obj.error){
-      return obj;
+      throw source.createError(obj.error,node);
     }
   }else{
     //Top-Level
@@ -31,15 +31,13 @@ export function Identifier(node,source,scope,errors,owner){
     if(!obj){
       obj=scope.getAttribute(name,false);
       if(obj && obj.error){
-        return obj;
+        throw source.createError(obj.error,node);
       }else{
         code="this."+code;
       }
     }
     if(!obj){
-      return {
-        error: "'"+name+"' ist undefiniert"
-      };
+      throw source.createError("'"+name+"' ist undefiniert",node);
     }
   } 
   return {

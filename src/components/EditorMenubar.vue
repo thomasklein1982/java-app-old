@@ -40,7 +40,7 @@ export default {
           label: 'Ausführen',
           icon: 'pi pi-play',
           command: (ev)=>{
-            console.log("play");
+            this.$emit('run');
           }
         },
         {
