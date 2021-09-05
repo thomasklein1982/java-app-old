@@ -14,30 +14,34 @@ import { Java } from "../java";
  * @returns 
  */
 export function Identifier(node,source,scope,errors,owner){
-  console.log(node);
   let name=source.getText(node);
   let obj;
+  let code=name;
   if(owner && owner.clazz){
-    obj=owner.clazz.getAttribute(owner.static);
-    if(!obj){
-      errors.push(source.createError("Die Klasse "+owner.clazz.name+" hat kein "+(owner.static? "statisches":"")+" Attribut ",node));
+    obj=scope.getAttribute(name,owner.static,owner.clazz);
+    if(obj && obj.error){
+      errors.push(source.createError(obj.error,node));
     }
   }else{
     //Top-Level
     obj=scope.getLocalVariable(name);
     if(!obj){
-      obj=scope.getAttribute(name,false);
+      obj=scope.getClazzByName(name);
     }
     if(!obj){
-      obj=scope.getClazzByName(name);
+      obj=scope.getAttribute(name,false);
+      if(obj && obj.error){
+        errors.push(source.createError(obj.error,node));
+      }else{
+        code="this."+code;
+      }
     }
     if(!obj){
       errors.push(source.createError("'"+name+"' ist undefiniert",node));
     }
-  }
-  
+  } 
   return {
-    code: name,
+    code: code,
     object: obj
   };
 }

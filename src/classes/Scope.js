@@ -1,5 +1,6 @@
 import { Java } from "../language/java";
 import { Attribute } from "./Attribute";
+import { Clazz } from "./Clazz";
 
 export class Scope{
   constructor(project,method){
@@ -26,20 +27,63 @@ export class Scope{
   }
 
   /**
-   * Liefert das Attribut mit dem gegebenen Namen der aktuellen Klasse zurueck, falls dieses existiert
+   * Liefert das Attribut mit dem gegebenen Namen der aktuellen Klasse zurueck, falls dieses existiert 
    * @param {String} name 
-   * @returns {Attribute} Das Attribut 
+   * @param {Boolean} isStatic 
+   * @param {Clazz} clazz optional: die Klasse, zu der das Attribut gehoert
+   * @returns 
    */
-  getAttribute(name,static){
-    let c=this.method.clazz;
-    let a=c.getAttribute(name,static);
+  getAttribute(name,isStatic,clazz){
+    let c=clazz? clazz : this.method.clazz;
+    let a=c.getAttribute(name,isStatic);
     if(a.error){
-      return null;
-    }else{
       return a;
     }
+    if(a.isStatic && a.isStatic()||a.static){
+      if(!isStatic){
+        return {
+          error: "Das Attribut '"+name+"' ist statisch. Schreibe stattdessen '"+c.name+"."+name+"'."
+        };  
+      }
+    }else{
+      if(this.method.isStatic()){
+        return {
+          error: "Innerhalb einer statischen Methode kannst du nicht auf das dynamische Attribut '"+name+"' zugreifen."
+        };
+      }
+    }
+    return a;
   }
   
+  /**
+   * 
+   * @param {String} name 
+   * @param {Boolean} isStatic 
+   * @param {Clazz} clazz 
+   * @returns 
+   */
+  getMethods(name,isStatic,clazz){
+    let c=clazz? clazz : this.method.clazz;
+    let m=c.getMethods(name,isStatic);
+    if(!m || m.error){
+      return null;
+    }
+    if(m.isStatic && m.isStatic() || m.static){
+      if(!isStatic){
+        return {
+          error: "Die Methode '"+name+"' ist statisch. Schreibe stattdessen '"+c.name+"."+name+"(...)'."
+        };  
+      }
+    }else{
+      if(this.method.isStatic()){
+        return {
+          error: "Innerhalb einer statischen Methode kannst du nicht die dynamische Methode '"+name+"' aufrufen."
+        };
+      }
+    }
+    return m;
+  }
+
   getClazzByName(name){
     let c=this.project.getClazzByName(name);
     if(!c){

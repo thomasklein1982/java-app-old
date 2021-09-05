@@ -10,8 +10,21 @@ export class Method{
     this.name=null;
     this.params=null;
     this.type=null;
+    this.modifiers=null;
     this.body=null;
     this.errors=[];
+  }
+  define(name,isStatic,data){
+    this.name=name;
+    this.type=data.type;
+    this.params=new ParameterList(this);
+    this.params.define(data.params);
+    this.modifiers=new Modifiers();
+    this.modifiers.isStatic=isStatic;
+    this.body=null;
+  }
+  isStatic(){
+    return (!this.modifiers || this.modifiers.isStatic);
   }
   getSignatureString(){
     var t=this.name+"(";
@@ -39,12 +52,16 @@ export class Method{
     }else if(node.name==='void'){
       this.type=null;
     }
+    if(this.type && !this.type.baseType){
+      return errors;
+    }
     node=node.nextSibling;
     
     if(node.name==='Definition'){
       this.name=source.getText(node);
     }else{
       errors.push(source.createError("Name erwartet",node));
+      return errors;
     }
     node=node.nextSibling;
 
@@ -60,12 +77,19 @@ export class Method{
       }
     }
     node=node.nextSibling;
-    this.bodyNode=node;
+    if(!node || node.name!=="Block"){
+      errors.push(source.createError("'{' erwartet.",node));
+    }else{
+      this.bodyNode=node;
+    }
     return errors;
   }
 
   compileBody(source){
     let errors=[];
+    if(!this.bodyNode){
+      return errors;
+    }
     this.body=new Block(this);
     let scope=new Scope(this.clazz.project,this);
     errors=errors.concat(this.body.compile(this.bodyNode,source,scope));

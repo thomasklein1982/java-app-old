@@ -6,9 +6,9 @@
     <div class="attributes">
       <UmlMember :member="a" v-for="(a,i) in clazz.attributes" :key="'attr'+i"></UmlMember>
     </div>
-    <template v-for="(ms,i) in clazz.methods" :key="'ms'+i">
+    <template v-for="(m,i) in methods" :key="'ms'+i">
       <div class="methods">
-        <UmlMember :member="a" v-for="(a,i) in ms" :key="'meth'+i"></UmlMember>
+        <UmlMember :member="m"></UmlMember>
       </div>
     </template>
     
@@ -21,6 +21,21 @@ import UmlMember from "./UmlMember.vue";
 export default {
   props: {
     clazz: Object
+  },
+  computed: {
+    methods(){
+      let methods=[];
+      for(let a in this.clazz.methods){
+        let ms=this.clazz.methods[a];
+        for(let i=0;i<ms.length;i++){
+          let m=ms[i];
+          if(m.name){
+            methods.push(m);
+          }
+        }
+      }
+      return methods;
+    }
   },
   components: {
     UmlMember

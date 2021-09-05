@@ -17,36 +17,76 @@ export class Clazz{
     this.methods={};
   }
 
-  getAttribute(name,static){
-    if(this.isPrimitive){
-      return {
-        error: "'"+this.name+"' ist ein primitiver Datentyp und hat daher keine Attribute."
-      };
-    }
+  /**
+   * 
+   * @param {String} name 
+   * @param {Boolean} staticAccess 
+   * @returns 
+   */
+   getAttribute(name,staticAccess){
     let a=this.attributes[name];
-    if(!a){
-      return {
-        error: "Die Klasse '"+this.name+"' hat kein Attribut namens '"+name+"'."
+    if(!a && this.superClazz){
+      a=this.superClazz.getAttribute(name,staticAccess);
+      if(a && a.error){
+        a=null;
       }
     }
-    if(static){
-      if(a.static){
+    if(!a){
+      return {
+        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
+      };
+    }
+    if(staticAccess){
+      if(a.isStatic && a.isStatic() || a.static){
         return a;
       }else{
         return {
           error: "Das Attribut '"+name+"' ist nicht statisch."
-        }
+        };
       }
     }else{
-      if(!a.static){
-        return a;
-      }else{
+      if(a.isStatic && a.isStatic() || a.static){
         return {
           error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen."
-        }
+        };
+      }else{
+        return a;
       }
-    }    
+    }
   }
+
+  getMethods(name,staticAccess){
+    let m=this.methods[name];
+    if(!m && this.superClazz){
+      m=this.superClazz.getMethods(name,staticAccess);
+      if(m && m.error){
+        m=null;
+      }
+    }
+    if(!m){
+      return {
+        error: "Die Klasse '"+this.name+"' hat keine "+(staticAccess? "statische ":"")+"Methode namens '"+name+"'."
+      };
+    }
+    if(staticAccess){
+      if(m.isStatic && m.isStatic() || m.static){
+        return m;
+      }else{
+        return {
+          error: "Die Methode '"+name+"' ist nicht statisch."
+        };
+      }
+    }else{
+      if(m.isStatic && m.isStatic() || m.static){
+        return {
+          error: "Die Methode '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"(...)' um darauf zuzugreifen."
+        };
+      }else{
+        return m;
+      }
+    }
+  }
+
   define(superClazz,description,members,cannotBeInstantiated){
     this.cannotBeInstantiated=cannotBeInstantiated===true;
     this.superClazz=superClazz;
@@ -73,18 +113,6 @@ export class Clazz{
       t+="\n\  "+at;
     }
     return t;
-  }
-
-  getMethods(name,static){
-    let m=this.methods[name];
-    if(m){
-      if(static && m.isStatic() || !static && !m.isStatic()){
-        return m;
-      }
-    }
-    if(this.superClazz){
-      return this.superClazz.getMethods(name);
-    }
   }
 
   async generateTreeAndState(src){

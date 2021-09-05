@@ -33,9 +33,9 @@ export function defineString(datatypes){
         }
       }
     ],
-    m: [
+    m: {
       
-    ]
+    }
   }
   datatypes.String.define(datatypes.Object,"Ein String ist eine Zeichenkette.",m);
 }

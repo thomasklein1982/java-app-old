@@ -3,6 +3,7 @@ import { defineString } from "./datatypes/string.js";
 import { definePrintStream } from "./datatypes/printStream.js";
 import { defineSystem } from "./datatypes/system.js";
 import {PrimitiveType} from "../classes/PrimitiveType";
+import { Clazz } from "../classes/Clazz";
 
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
 let double=new PrimitiveType("double",null,0.0,"Ein 'double' ist eine Kommazahl.");

@@ -6,6 +6,16 @@ export class ParameterList{
     this.parameters=[];
   }
 
+  define(data){
+    this.parameters=[];
+    for(let i=0;i<data.length;i++){
+      let d=data[i];
+      let p=new Parameter(this);
+      p.define(d);
+      this.parameters.push(p);
+    }
+  }
+
   toString(){
     var t="";
     for(var i=0;i<this.parameters.length;i++){
@@ -51,6 +61,11 @@ export class Parameter{
     if(!this.type) return "???";
     return this.type.toString()+" "+this.name;
   };
+
+  define(data){
+    this.type=data.type;
+    toHandlers.name=data.name;
+  }
 
   compile(node,source){
     let errors=[];

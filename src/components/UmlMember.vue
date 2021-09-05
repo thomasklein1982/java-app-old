@@ -1,6 +1,6 @@
 <template>
   <div class="umlmember">
-    <span class="umlmember-modifiers"><span v-if="member.modifiers.visibility==='private'">&minus;</span><span v-else>+</span><sup class="static" v-if="member.modifiers.isStatic">S</sup></span>&nbsp;<span class="umlmember-signature">{{member.getSignatureString()}}</span>
+    <span class="umlmember-modifiers"><span v-if="member.modifiers.visibility==='private'">&minus;</span><span v-else>+</span><sup class="static" v-if="member.isStatic()">S</sup></span>&nbsp;<span class="umlmember-signature">{{member.getSignatureString()}}</span>
   </div>
 </template>
 
