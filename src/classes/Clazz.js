@@ -2,6 +2,7 @@ import { parseJava } from "../functions/parseJava";
 import {Attribute} from "./Attribute"
 import { Method } from "./Method";
 import { Source } from "./Source";
+import { Type } from "./Type";
 
 export class Clazz{
   constructor(name,project){
@@ -29,6 +30,10 @@ export class Clazz{
       code+="\n"+a.getJavaScriptCode();
     }
     code+="\n}";
+    for(let i in this.methods){
+      let m=this.methods[i];
+      code+="\n"+m.getJavaScriptCode();
+    }
     code+="\n}";
     return code;
   }
@@ -71,10 +76,10 @@ export class Clazz{
     }
   }
 
-  getMethods(name,staticAccess){
+  getMethod(name,staticAccess){
     let m=this.methods[name];
     if(!m && this.superClazz){
-      m=this.superClazz.getMethods(name,staticAccess);
+      m=this.superClazz.getMethod(name,staticAccess);
       if(m && m.error){
         m=null;
       }
@@ -120,20 +125,29 @@ export class Clazz{
       this.methods={};
       for(var i in members.m){
         let m=members.m[i];
-        let versions=[];
-        if(m.versions){
-          versions=m.versions;
-        }else{
-          versions=[m];
-        }
-        this.methods[m.name]=[];
-        for(let j=0;j<versions.length;j++){
-          let method=new Method(this);
-          method.define(m.name,m.info,m.static,versions[j]);
-          this.methods[m.name].push(method);
-        }
+        let method=new Method(this);
+        method.define(i,m);
+        this.methods[i]=method;
       }
     }
+  }
+
+  isSubtypeOf(type){
+    if(!type) return true;
+    if(type instanceof Type){
+      if(type.dimension===0){
+        type=type.baseType;
+      }else{
+        return false;
+      }
+    }
+    if(type instanceof Clazz){
+      if(this===type){
+        return true;
+      }
+      return (this.superClazz && this.superClazz.isSubtypeOf(type));
+    }
+    return false;
   }
 
   toString(){
@@ -218,10 +232,11 @@ export class Clazz{
       }else if(node.name==='MethodDeclaration'){
         let m=new Method(this);
         errors=errors.concat(m.compileDeclaration(node,this.source));
-        if(!this.methods[m.name]){
-          this.methods[m.name]=[];
+        if(this.methods[m.name]){
+          errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",node));
+        }else{
+          this.methods[m.name]=m;
         }
-        this.methods[m.name].push(m);
       }else{
         errors.push(this.source.createError("Attributs- oder Methodendeklaration erwartet.",node));
       }
@@ -248,11 +263,8 @@ export class Clazz{
    compileMethods(){
     let errors=[];
     for(let mi in this.methods){
-      let ms=this.methods[mi];
-      for(let i=0;i<ms.length;i++){
-        let m=ms[i];
-        errors=errors.concat(m.compileBody(this.source).errors);
-      }
+      let m=this.methods[mi];
+      errors=errors.concat(m.compileBody(this.source).errors);
     }
     
     this.errors=this.errors.concat(errors);

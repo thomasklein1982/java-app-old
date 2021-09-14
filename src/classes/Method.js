@@ -11,25 +11,37 @@ export class Method{
     this.params=null;
     this.type=null;
     this.modifiers=null;
-    this.body=null;
+    this.bodyNode=null;
+    this.block=null;
     this.errors=[];
     this.comment=null;
   }
-  define(name,comment,isStatic,data){
+  getJavaScriptCode(){
+    let code=this.modifiers.getJavaScriptCode()+" "+this.name+this.params.getJavaScriptCode()+"{";
+    if(this.block){
+      code+="\n"+this.block.code;
+    }
+    code+="\n}";
+    return code;
+  }
+  define(name,data){
     this.name=name;
-    this.comment=comment;
+    this.comment=data.info;
+    this.type=new Type(data.type);
     this.type=data.type;
     this.params=new ParameterList(this);
     this.params.define(data.params);
     this.modifiers=new Modifiers();
-    this.modifiers.isStatic=isStatic;
-    this.body=null;
+    this.modifiers.isStatic=data.static===true;
+    this.bodyNode=null;
   }
 
   isStatic(){
     return (!this.modifiers || this.modifiers.isStatic);
   }
-  
+  matchesArgumentList(argumentList){
+    return this.params.matchesArgumentList(argumentList);
+  }
   getSignatureString(){
     var t=this.name+"(";
     if(this.params){

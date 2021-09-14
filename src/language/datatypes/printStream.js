@@ -5,20 +5,10 @@ export function definePrintStream(datatypes){
     m: {
       println: {
         info: "Gibt den angegebenen Text aus und macht anschließend einen Zeilenumbruch.",
-        versions: [
-          {
-            params: [{name: "s", type: new Type(datatypes.String,0)}],
-            exec: function(t){
-              console.log(t+" (String)");
-            }
-          },
-          {
-            params: [{name: "i", type: new Type(datatypes.Integer,0)}],
-            exec: function(t){
-              console.log(t+" (Integer)");
-            }
-          }
-        ]
+        params: [{name: "s", type: null}],
+        exec: function(t){
+          console.log(t);
+        }
       }
     }
   };

@@ -8,4 +8,21 @@ export class PrimitiveType{
   toString(){
     return this.name;
   }
+  isSubtypeOf(type){
+    if(!type) return true;
+    if(type instanceof Type){
+      if(type.dimension===0){
+        type=type.baseType;
+      }else{
+        return false;
+      }
+    }
+    if(type instanceof PrimitiveType){
+      if(this===type){
+        return true;
+      }
+      return (this.supertype && this.supertype.isSubtypeOf(type));
+    }
+    return false;
+  }
 }

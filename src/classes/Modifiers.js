@@ -6,6 +6,9 @@ export class Modifiers{
   toString(){
     return this.visibility+" "+this.isStatic;
   }
+  getJavaScriptCode(){
+    return this.isStatic? "static":"";
+  }
   compile(node,source){
     var errors=[];
     node=node.firstChild;

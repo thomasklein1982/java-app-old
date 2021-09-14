@@ -58,14 +58,14 @@ export class Scope{
   /**
    * 
    * @param {String} name 
-   * @param {String} parameterSignature
+   * @param {ArgumentList} parameterSignature
    * @param {Boolean} isStatic 
    * @param {Clazz} clazz 
    * @returns 
    */
-  getMethod(name,parameterSignature,isStatic,clazz){
+  getMethod(name,argumentList,isStatic,clazz){
     let c=clazz? clazz : this.method.clazz;
-    let m=c.getMethods(name,isStatic);
+    let m=c.getMethod(name,isStatic);
     if(m.error){
       return m;
     }
@@ -76,8 +76,12 @@ export class Scope{
         };  
       }
     }
-
-    return m;
+    if(m.matchesArgumentList(argumentList)){
+      return m;
+    }
+    return {
+      error: "Die Argumente stimmen nicht"
+    };
   }
 
   getClazzByName(name){

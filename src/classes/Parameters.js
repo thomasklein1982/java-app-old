@@ -4,7 +4,6 @@ export class ParameterList{
   constructor(method){
     this.method=method;
     this.parameters=[];
-    this.signatureString=null;
   }
 
   define(data){
@@ -16,14 +15,28 @@ export class ParameterList{
       this.parameters.push(p);
     }
   }
-
-  updateSignatureString(){
-    let types=[];
+  getJavaScriptCode(){
+    let code="(";
+    for(let i=0;i<this.parameters.length;i++){
+      if(i>0) code+=",";
+      let p=this.parameters[i];
+      code+=p.getJavaScriptCode()
+    }
+    code+=")";
+    return code;
+  }
+  matchesArgumentList(argumentList){
+    if(this.parameters.length!==argumentList.length){
+      return false;
+    }
     for(let i=0;i<this.parameters.length;i++){
       let p=this.parameters[i];
-      types.push(p.type.toString());
+      let a=argumentList[i];
+      if(!a.type.isSubtypeOf(p.type)){
+        return false;
+      }
     }
-    this.signatureString=types.join(",");
+    return true;
   }
 
   toString(){
@@ -56,7 +69,6 @@ export class ParameterList{
     }else{
       node=node.nextSibling;
     }
-    this.updateSignatureString();
     return errors;
   }
 }
@@ -66,6 +78,10 @@ export class Parameter{
     this.list=list;
     this.type=null;
     this.name=null;
+  }
+
+  getJavaScriptCode(){
+    return this.name;
   }
 
   toString(){

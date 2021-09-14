@@ -27,7 +27,8 @@ export function Block(node,source,scope){
     }else{
       try{
         let f=CompileFunctions.get(node,source);
-        code+="\n"+f(node,source,scope);
+        let res=f(node,source,scope);
+        code+="\n"+res.code;
       }catch(e){
         errors.push(e);
       }

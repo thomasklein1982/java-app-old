@@ -3,18 +3,16 @@
 export function defineObject(datatypes){
   let m={
     a: {},
-    c: [
-      {
-        params: [],
-        exec: function(){
-          return new Blox.Object();
-        }
+    c: {
+      params: [],
+      exec: function(){
+        return new Blox.Object();
       }
-    ],
+    },
     m: {
       equals: {
         info: "Prueft, ob dieses und das angegebene Objekt identisch sind.",
-        params: [datatypes.object],
+        params: [{type: datatypes.Object, name: "object"}],
         type: datatypes.boolean,
         exec: function(a){
           return this===a;

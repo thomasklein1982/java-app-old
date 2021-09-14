@@ -2,6 +2,10 @@ import { PrimitiveType } from "./PrimitiveType";
 
 export class Type{
   constructor(baseType,dimension){
+    if(baseType && !dimension && baseType.dim){
+      dimension=baseType.dim;
+      baseType=baseType.type;
+    }
     this.baseType=baseType;
     this.dimension=dimension;
   }
@@ -65,16 +69,25 @@ export class Type{
     return new Type(basetype,dimension);
   }
   isSubtypeOf(type){
-    if(type.dimension===this.dimension){
-      if(type.baseType===this.baseType){
-        return true;
-      }else{
-        if(this.supertype){
-          return this.supertype.isSubtypeOf(type);
-        }
-      }
-    }else{
-      return false;
+    if(!type){
+      return this.dimension===0;
     }
+    if(type instanceof PrimitiveType || type instanceof Clazz){
+      type={
+        baseType: type,
+        dimension: 0
+      };
+    }
+    if(type instanceof Type){
+      if(type.dimension===this.dimension){
+        if(!this.baseType){
+          return true;
+        }
+        return this.baseType.isSubtypeOf(type.baseType);
+      }else{
+        return false;
+      }
+    }
+    
   }
 }

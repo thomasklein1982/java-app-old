@@ -57,14 +57,15 @@ export function MethodInvocation(node,source,scope){
     node=node.nextSibling;
   }
   console.log(node);
-  methods=scope.getMethods(mn,owner.static,owner.clazz);
-  if(methods.error){
-    throw (source.createError(methods.error,node));
+  if(node.name!=="ArgumentList"){
   }
-  if(node.name==="ArgumentList"){
-    al=ArgumentList(node,source,scope);
-    let method=scope.getMethod()
+  al=ArgumentList(node,source,scope);
+  code+=al.code;
+  let method=scope.getMethod(mn,al.list,owner.static,owner.clazz);
+  if(method.error){
+    throw (source.createError(method.error,node));
   }
-  
-  console.log(mn,al);
+  return {
+    method,arguments: al, code
+  }
 }
