@@ -63,7 +63,7 @@ export function MethodInvocation(node,source,scope){
   }
   if(node.name==="ArgumentList"){
     al=ArgumentList(node,source,scope);
-    
+    let method=scope.getMethod()
   }
   
   console.log(mn,al);
