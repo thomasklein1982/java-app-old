@@ -15,7 +15,7 @@ export function defineObject(datatypes){
       equals: {
         info: "Prueft, ob dieses und das angegebene Objekt identisch sind.",
         params: [datatypes.object],
-        returns: datatypes.boolean,
+        type: datatypes.boolean,
         exec: function(a){
           return this===a;
         }
@@ -23,7 +23,7 @@ export function defineObject(datatypes){
       toString: {
         info: "Wandelt das Objekt in einen String um.",
         params: [],
-        returns: datatypes.String,
+        type: datatypes.String,
       }
     }
   }

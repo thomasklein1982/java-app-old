@@ -58,11 +58,12 @@ export class Scope{
   /**
    * 
    * @param {String} name 
+   * @param {String} parameterSignature
    * @param {Boolean} isStatic 
    * @param {Clazz} clazz 
    * @returns 
    */
-  getMethods(name,isStatic,clazz){
+  getMethod(name,parameterSignature,isStatic,clazz){
     let c=clazz? clazz : this.method.clazz;
     let m=c.getMethods(name,isStatic);
     if(m.error){
@@ -74,9 +75,8 @@ export class Scope{
           error: "Die Methode '"+name+"' ist statisch. Schreibe stattdessen '"+c.name+"."+name+"(...)'."
         };  
       }
-    }else{
-      
     }
+
     return m;
   }
 

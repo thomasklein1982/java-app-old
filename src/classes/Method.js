@@ -13,9 +13,11 @@ export class Method{
     this.modifiers=null;
     this.body=null;
     this.errors=[];
+    this.comment=null;
   }
-  define(name,isStatic,data){
+  define(name,comment,isStatic,data){
     this.name=name;
+    this.comment=comment;
     this.type=data.type;
     this.params=new ParameterList(this);
     this.params.define(data.params);
@@ -23,9 +25,11 @@ export class Method{
     this.modifiers.isStatic=isStatic;
     this.body=null;
   }
+
   isStatic(){
     return (!this.modifiers || this.modifiers.isStatic);
   }
+  
   getSignatureString(){
     var t=this.name+"(";
     if(this.params){

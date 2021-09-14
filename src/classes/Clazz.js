@@ -117,7 +117,22 @@ export class Clazz{
       this.constructors=members.c;
     }
     if(members.m){
-      this.methods=members.m;
+      this.methods={};
+      for(var i in members.m){
+        let m=members.m[i];
+        let versions=[];
+        if(m.versions){
+          versions=m.versions;
+        }else{
+          versions=[m];
+        }
+        this.methods[m.name]=[];
+        for(let j=0;j<versions.length;j++){
+          let method=new Method(this);
+          method.define(m.name,m.info,m.static,versions[j]);
+          this.methods[m.name].push(method);
+        }
+      }
     }
   }
 
