@@ -1,6 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 import StartScreen from "../components/StartScreen.vue";
-import EditorScreen from "../components/EditorScreen.vue";
+import Editor from "../components/Editor.vue";
 
 const routes = [
   {
@@ -11,7 +11,7 @@ const routes = [
   {
     path: "/editor/",
     name: "Editor",
-    component: EditorScreen,
+    component: Editor,
   }
 ];
 

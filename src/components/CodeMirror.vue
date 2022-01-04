@@ -1,10 +1,12 @@
 <template>
   <div id="root">
-    <div id="editor" ref="editor"></div>
+    <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
     <div v-if="clazz && clazz.errors" id="errors">
       <table>
         <tr v-for="(e,i) in clazz.errors" :key="'error'+i">
-          <td>{{e.line.number}}:{{e.col}}:</td><td>{{e.message}} </td>
+          <template v-if="e">
+            <td>{{e.line? e.line.number:'??'}}:{{e.col}}:</td><td v-if="e">{{e.message}} </td>
+          </template>
         </tr>
       </table>
     </div>
@@ -16,23 +18,28 @@
   import { EditorView, basicSetup, EditorState } from "@codemirror/basic-setup";
   import { java } from "@codemirror/lang-java";
   import {keymap} from "@codemirror/view"
-import {indentWithTab} from "@codemirror/commands"
+  import {indentWithTab} from "@codemirror/commands"
+let editor;
+
 export default {
   props: {
-    project: Object
+    clazz: Object,
+    fontsize: {
+      type: Number,
+      default: 4
+    }
   },
   data(){
     return {
-      clazz: null,
-      editor: null
+      
     };
   },
   mounted(){
     let changed=false;
     let timer;
-    let editor=new EditorView({
+    editor=new EditorView({
       state: EditorState.create({
-        doc: "Hello World",
+        doc: this.clazz.src,
         extensions: [
           basicSetup,
           java(),
@@ -53,7 +60,6 @@ export default {
       }),
       parent: this.$refs.editor
     });
-    this.editor=editor;
   },
   methods: {
     async update(viewUpdate){
@@ -66,7 +72,7 @@ export default {
     setClazz(clazz){
       this.clazz=clazz;
       var old=this.editor.state.doc.toString();
-      this.editor.dispatch({
+      editor.dispatch({
         changes: {from: 0, to: old.length, insert: clazz.src}
       });
     }
@@ -76,7 +82,7 @@ export default {
 
 <style scoped>
   #root{
-    flex: 1;
+    flex: 10;
     overflow-y: hidden;
     display: flex;
     flex-direction: column;
@@ -99,4 +105,5 @@ export default {
   #errors{
     font-family: monospace;
   }
+  
 </style>

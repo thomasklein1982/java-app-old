@@ -18,6 +18,30 @@ body,html{
   opacity: 0;
 }
 
+.editor-tabs{
+  overflow: hidden;
+}
+
+.p-tabview.editor-tabs{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-tabview.editor-tabs .p-tabview-panels{
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  padding: 0;
+  flex-direction: column;
+}
+.p-tabview.editor-tabs .p-tabview-panel{
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+
 .panel-full{
   height: 100%;
   display: flex;

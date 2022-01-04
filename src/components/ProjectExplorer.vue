@@ -26,7 +26,10 @@
           <template #clazz="data">
             <div :style="{display: 'flex', minHeight: '2.4rem', alignItems: 'center'}">
               <div :style="{flex: 1}">
-                {{data.node.label.length>16? data.node.label.substring(0,13)+"...":data.node.label}} <Badge v-if="data.node.data.errors && data.node.data.errors.length>0" severity="danger" :value="data.node.data.errors.length"/>
+                {{data.node.label.length>16? data.node.label.substring(0,13)+"...":data.node.label}} 
+                <template v-if="data.node.data.errors">
+                  <Badge v-if="data.node.data.errors.length>0" severity="danger" :value="data.node.data.errors.length"/>
+                </template>
               </div>
               <Button v-if="data.node.data===currentClazz && currentClazz!==project.clazzes[0]" @click="clickRemoveClazz($event,data.node.data)" icon="pi pi-trash"/>
             </div>

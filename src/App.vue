@@ -4,8 +4,9 @@
       v-if="screen==='start'"
       @open-project="openProject"
     />
-    <EditorScreen
+    <Editor
       v-else-if="screen==='editor'"
+      :project="project"
       ref="editor"
     />
     
@@ -14,35 +15,36 @@
 
 <script>
 import StartScreen from "./components/StartScreen.vue";
-import EditorScreen from "./components/EditorScreen.vue";
+import Editor from "./components/Editor.vue";
 import { nextTick } from '@vue/runtime-core';
 
 export default{
   data(){
     return {
-      screen: 'start'
+      screen: 'start',
+      version: 1,
+      project: null
     }
   },
   methods: {
     showScreen: function(name){
       this.screen=name;
     },
-    openProject: function(project,useBlockEditor){
-      
+    openProject: function(project){
+      this.project=project;      
       this.showScreen("editor");
-      nextTick(()=>{
-        this.$refs.editor.openProject(project,useBlockEditor);
-      });
+    },
+    getJavaScriptCode(){
+      return this.project.getJavaScriptCode();
     }
   },
   components: {
-    StartScreen: StartScreen,
-    EditorScreen: EditorScreen
+    StartScreen,
+    Editor
   }
 }
 
-// This starter template is using Vue 3 experimental <script setup> SFCs
-// Check out https://github.com/vuejs/rfcs/blob/master/active-rfcs/0040-script-setup.md
+
 </script>
 
 <style>

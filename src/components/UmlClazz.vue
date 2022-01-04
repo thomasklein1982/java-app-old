@@ -26,13 +26,8 @@ export default {
     methods(){
       let methods=[];
       for(let a in this.clazz.methods){
-        let ms=this.clazz.methods[a];
-        for(let i=0;i<ms.length;i++){
-          let m=ms[i];
-          if(m.name){
-            methods.push(m);
-          }
-        }
+        let m=this.clazz.methods[a];
+        methods.push(m);
       }
       return methods;
     }

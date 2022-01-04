@@ -76,6 +76,16 @@ export class Clazz{
     }
   }
 
+  hasStaticMainMethod(){
+    let m=this.methods['main'];
+    if(!m) return false;
+    if(m.isStatic && m.isStatic()){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
   getMethod(name,staticAccess){
     let m=this.methods[name];
     if(!m && this.superClazz){
@@ -151,13 +161,7 @@ export class Clazz{
   }
 
   toString(){
-    var t="Klasse '"+this.name+"'\n";
-    t+="Attribute:";
-    for(var a in this.attributes){
-      var at=this.attributes[a];
-      t+="\n\  "+at;
-    }
-    return t;
+    return this.name;
   }
 
   async generateTreeAndState(src){

@@ -4,7 +4,7 @@ import { Source } from "../../classes/Source";
 import { ArgumentList } from "./ArgumentList";
 import { FieldAccess } from "./FieldAccess";
 import { Identifier } from "./Identifier";
-
+import { Clazz } from "../../classes/Clazz";
 /**
  * 
  * @param {*} node 
@@ -66,6 +66,6 @@ export function MethodInvocation(node,source,scope){
     throw (source.createError(method.error,node));
   }
   return {
-    method,arguments: al, code
+    method,arguments: al, code, type: method.type
   }
 }

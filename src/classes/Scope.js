@@ -1,6 +1,7 @@
-import { Java } from "../language/java";
 import { Attribute } from "./Attribute";
 import { Clazz } from "./Clazz";
+import { Java } from "../language/java";
+import { PrimitiveType } from "./PrimitiveType";
 
 export class Scope{
   constructor(project,method){
@@ -8,6 +9,26 @@ export class Scope{
     this.method=method;
     this.stack=[];
     this.indent="    ";
+  }
+
+  pushLayer(){
+    this.stack.push({});
+  }
+
+  popLayer(){
+    this.stack.pop();
+  }
+
+  pushLocalVariable(name,type){
+    let s=this.stack[this.stack.length-1];
+    if(s[name]){
+      throw "Es gibt bereits eine lokale Variable namens '"+name+"'.";
+    }
+    let obj={
+      name: name,
+      type: type
+    };
+    s[name]=obj;
   }
 
   /**Liefert die lokale Variable zu diesem Namen zurueck, falls vorhanden */
@@ -76,20 +97,26 @@ export class Scope{
         };  
       }
     }
-    if(m.matchesArgumentList(argumentList)){
+    let res=m.matchesArgumentList(argumentList)
+    if(res===true){
       return m;
     }
     return {
-      error: "Die Argumente stimmen nicht"
+      error: res
     };
   }
 
   getClazzByName(name){
     let c=this.project.getClazzByName(name);
     if(!c){
-      c=Java.datatypes[name];
+      return this.getPrimitiveTypeByName(name);
     }
     return c;
   }
 
+  getPrimitiveTypeByName(name){
+    let c=Java.datatypes[name];
+    if(!c) return null;
+    return c;
+  }
 }

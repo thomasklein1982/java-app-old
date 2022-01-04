@@ -29,12 +29,12 @@ export function FieldAccess(node,source,scope){
     node=node.nextSibling;
     if(ident.object instanceof Clazz){
       owner={
-        clazz: ident.object,
+        clazz: ident.type,
         static: true
       };
     }else{
       owner={
-        clazz: ident.object.type,
+        clazz: ident.type,
         static: false
       };
     }

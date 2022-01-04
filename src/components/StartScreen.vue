@@ -8,10 +8,6 @@
         <Button style="margin: 0.5rem; display: block" icon="pi pi-file" @click="createNewApp()" label="Neue App erstellen"/>
         <Button style="margin: 0.5rem; display: block" icon="pi pi-upload" @click="clickUploadApp()" label="App hochladen"/>
       </div>
-      <div>
-        <Checkbox binary id="use-blocks" v-model="useBlockEditor"></Checkbox>
-        <label for="use-blocks">Block-Editor verwenden</label>
-      </div>
     </div>
 </template>
 
@@ -24,7 +20,6 @@ import { uploadProject } from "../functions/uploadProject.js";
 export default {
   data(){
     return {
-      useBlockEditor: false,
       lastProject: null
     }
   },
@@ -38,17 +33,17 @@ export default {
     async restoreApp(){
       var p=new Project();
       await p.fromSaveString(this.lastProject);
-      this.$emit('open-project',p,this.useBlockEditor);
+      this.$emit('open-project',p);
     },
     async createNewApp(){
       var p=new Project();
       await p.initialize();
-      this.$emit('open-project',p,this.useBlockEditor);
+      this.$emit('open-project',p);
     },
     async clickUploadApp(){
       let p=await uploadProject();
       if(!p) return;
-      this.$emit('open-project',p,this.useBlockEditor);
+      this.$emit('open-project',p);
     }
   }
 }

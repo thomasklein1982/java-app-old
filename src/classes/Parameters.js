@@ -27,13 +27,19 @@ export class ParameterList{
   }
   matchesArgumentList(argumentList){
     if(this.parameters.length!==argumentList.length){
-      return false;
+      let text=this.parameters.length+" Parameter: "+this.toString();
+      if(argumentList.length<this.parameters.length){
+        text="Zu wenig Argumente. Diese Methode benötigt "+text;
+      }else{
+        text="Zu viele Argumente. Diese Methode hat nur "+text;
+      }
+      return text;
     }
     for(let i=0;i<this.parameters.length;i++){
       let p=this.parameters[i];
       let a=argumentList[i];
       if(!a.type.isSubtypeOf(p.type)){
-        return false;
+        return "Das "+(i+1)+"-te Argument '"+a.code+"' ist kein "+p.type.toString()+".";
       }
     }
     return true;

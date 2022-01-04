@@ -15,6 +15,9 @@ import { Java } from "../java";
  */
 export function Identifier(node,source,scope,owner){
   let name=source.getText(node);
+  if(!/^[a-zA-z0-9_]+$/.test(name)){
+    throw source.createError("Der Bezeichner '"+name+"' ist ungültig. Ein Bezeichner darf nur aus Buchstaben, Ziffern und/oder Unterstrichen bestehen.",node);
+  }
   let obj;
   let code=name;
   if(owner && owner.clazz){
@@ -42,6 +45,8 @@ export function Identifier(node,source,scope,owner){
   } 
   return {
     code: code,
-    object: obj
+    object: obj,
+    name: obj.name,
+    type: obj.type
   };
 }

@@ -19,6 +19,7 @@ export function Block(node,source,scope){
       code,errors
     }
   }
+  scope.pushLayer();
   let open=true;
   while(node.nextSibling){
     node=node.nextSibling;
@@ -37,6 +38,7 @@ export function Block(node,source,scope){
   if(open){
     errors.push(source.createError("'}' erwartet.",node));
   }
+  scope.popLayer();
   return {
     code,errors
   }

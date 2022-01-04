@@ -4,16 +4,21 @@ import { Clazz } from "./Clazz";
 export class Project{
   constructor(){
     this.clazzes=[];
-    var c=new Clazz("App",this);
-    c.src="class App{\n\n  public static void main(String[] args){\n    new App();\n  }\n}";
+    var c=new Clazz("NameDerApp",this);
+    c.src="class NameDerApp{\n\n  public static void main(String[] args){\n    new NameDerApp();\n  }\n}";
     this.clazzes.push(c);
   }
   getJavaScriptCode(){
     let code="";
+    let mainClazz=null;
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
+      if(!mainClazz && c.hasStaticMainMethod()){
+        mainClazz=c;
+      }
       code+="\n"+c.getJavaScriptCode();
     }
+    code+="\nfunction onStart(){"+mainClazz.name+".main([])}";
     return code;
   }
   async initialize(){
