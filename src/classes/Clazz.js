@@ -28,6 +28,9 @@ export class Clazz{
     }
     code+="{";
     code+="\nconstructor(){";
+    if(this.hasStaticMainMethod()){
+      code+="if(!window.$main){window.$main=this;}";
+    }
     for(let i in this.attributes){
       let a=this.attributes[i];
       code+="\n"+a.getJavaScriptCode();
@@ -37,7 +40,7 @@ export class Clazz{
       let c=this.constructor;
       code+="\n"+c.getJavaScriptCode();
     }else{
-      code+="\n$constructor(){}";
+      code+="\n$constructor(){return this;}";
     }
     for(let i in this.methods){
       let m=this.methods[i];

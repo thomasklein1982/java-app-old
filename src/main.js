@@ -93,8 +93,9 @@ for(let i=0;i<appjsdata.functions.length;i++){
   }
 }
 
-for(let i=0;i<appjsdata.objects.length;i++){
-  let o=appjsdata.objects[i];
+console.log("main",appjsdata.objects);
+for(let name in appjsdata.objects){
+  let o=appjsdata.objects[name];
   text+="\nApp."+o.name+"="+o.name+";";
 }
 

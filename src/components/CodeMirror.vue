@@ -38,7 +38,7 @@ const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
 
 function createAutocompletion(additional){
   return (context)=>{
-    let nodeBefore = editor.state.tree.resolveInner(context.pos, -1);
+    let nodeBefore = context.state.tree.resolveInner(context.pos, -1);
     
     //innerhalb einer Methode?
     let method=null;
@@ -131,31 +131,21 @@ function completeProperties(from, clazz, isStatic, includeClasses) {
   for (let name in clazz.attributes) {
     let a=clazz.attributes[name];
     if(a.isStatic()===isStatic){
-      if(clazz.isNative()){
-
-      }else{
-        options.push({
-          label: name,
-          type: "variable",
-          info: a.comment
-        });
-      }
+      options.push({
+        label: name,
+        type: "variable",
+        info: a.comment
+      });
     }
   }
   for (let name in clazz.methods) {
     let m=clazz.methods[name];
     if(m.isStatic()===isStatic){
-      if(clazz.isNative()){
-        let snips=snippets[clazz.name];
-        let s=snips[name];
-        options.push(s);
-      }else{
-        options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
-          label: name+"(...)",
-          type: "function",
-          info: m.comment
-        }));
-      }
+      options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
+        label: name+"(...)",
+        type: "function",
+        info: m.comment
+      }));
     }
   }
   if(includeClasses){
@@ -257,9 +247,14 @@ const additionalCompletions=[];
 export default {
   props: {
     clazz: Object,
-    fontsize: {
+    fontSize: {
       type: Number,
       default: 4
+    }
+  },
+  watch: {
+    clazz(nv){
+      this.setCode(nv.src);
     }
   },
   data(){
@@ -307,11 +302,10 @@ export default {
       this.clazz.setSrcTreeAndState(src,state);
       await this.clazz.compile(this.project);
     },
-    setClazz(clazz){
-      this.clazz=clazz;
-      var old=this.editor.state.doc.toString();
+    setCode(code){
+      var old=editor.state.doc.toString();
       editor.dispatch({
-        changes: {from: 0, to: old.length, insert: clazz.src}
+        changes: {from: 0, to: old.length, insert: code}
       });
     },
     openSearchPanel(){
@@ -385,6 +379,7 @@ export default {
     overflow-y: hidden;
     display: flex;
     flex-direction: column;
+    position: relative;
   }
   #editor{
     flex: 1;

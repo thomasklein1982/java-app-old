@@ -79,7 +79,8 @@
         //let code='\<script src="https://thomaskl.uber.space/Webapps/AppJS/app.js?a=2"\>\</script\>\n\<script\>'+src+'\n\</script\>';
         let code="\<script\>"+window.appJScode;
         code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
-        
+        console.log("komplett:")
+        console.log(code);
         let doc=frame.contentWindow.document;
         doc.open();
         doc.write(code);

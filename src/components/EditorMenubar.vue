@@ -17,7 +17,10 @@ export default {
               label: 'Neu',
               icon: 'pi pi-file',
               command: (ev)=>{
-                
+                let a=confirm('Willst du wirklich ein neues Projekt beginnen?\nDer bisherige Code geht verloren!');
+                if(a){
+                  this.$emit('new');
+                }
               }
             },
             {

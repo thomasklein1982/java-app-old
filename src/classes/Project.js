@@ -4,8 +4,8 @@ import { Clazz } from "./Clazz";
 export class Project{
   constructor(){
     this.clazzes=[];
-    var c=new Clazz("NameDerApp",this);
-    c.src="class NameDerApp{\n\n  public static void main(String[] args){\n    new NameDerApp();\n  }\n}";
+    var c=new Clazz("MyApp",this);
+    c.src="class MyApp{\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
     this.clazzes.push(c);
   }
   getJavaScriptCode(){
@@ -83,11 +83,15 @@ export class Project{
   deleteClazzes(){
     while(this.clazzes.length>0) this.clazzes.pop();
   }
-  deleteClazz(c){
+  removeClazz(c){
     let index=this.clazzes.indexOf(c);
     if(index<=0) return false;
     this.clazzes.splice(index,1);
     return true;
+  }
+  async addClazz(c){
+    await c.compile(true);
+    this.clazzes.push(c);
   }
   getName(){
     return this.clazzes[0].name;

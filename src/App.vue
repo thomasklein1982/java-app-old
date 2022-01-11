@@ -1,12 +1,11 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden">
+  <div style="position: fixed; width: 100%; height: 100%; overflow: hidden">
     <StartScreen 
       v-if="screen==='start'"
       @open-project="openProject"
     />
     <Editor
-      v-else-if="screen==='editor'"
-      :project="project"
+      v-show="screen==='editor'"
       ref="editor"
     />
     
@@ -22,8 +21,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 2,
-      project: null
+      version: 2
     }
   },
   methods: {
@@ -31,11 +29,11 @@ export default{
       this.screen=name;
     },
     openProject: function(project){
-      this.project=project;      
+      this.$refs.editor.openProject(project);      
       this.showScreen("editor");
     },
     getJavaScriptCode(){
-      return this.project.getJavaScriptCode();
+      return this.$refs.editor.getProject().getJavaScriptCode();
     }
   },
   components: {

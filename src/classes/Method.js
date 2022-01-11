@@ -33,7 +33,7 @@ export class Method{
     if(this.block){
       code+="\n"+this.block.code;
     }
-    code+="\n}";
+    code+="\nreturn this;\n}";
     return code;
   }
   isStatic(){

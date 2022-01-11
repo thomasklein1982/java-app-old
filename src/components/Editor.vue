@@ -1,26 +1,30 @@
 <template>
   <div v-if="project" style="width: 100%; height: 100%; overflow: hidden" :style="{display: 'flex', flexDirection: 'column'}">
+  
     <EditorMenubar
       @download="downloadProject"
       @upload="uploadProject"
-      
+      @new="newProject"
     />
     <Splitter :style="{flex: 1}" style="overflow: hidden;width: 100%;">
-      <SplitterPanel style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">
-        <TabView @tab-change="" v-model="activeTab" scrollable class="editor-tabs" >
-          <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+i">
+      <SplitterPanel style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
+        <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
+          <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+c.name">
             <template #header>
               {{c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
             </template>
             <CodeMirror
               :clazz="c"
+              :font-size="fontSize"
+              
               ref="editor"
             />
           </TabPanel>
           <TabPanel>
             <template #header>
-              <span class="pi pi-fw pi-plus"/>
+              &thinsp;<span class="pi pi-fw pi-plus"/>&thinsp;
             </template>
+            <NewClazzWizard :project="project" @confirm="addNewClazz"/>
           </TabPanel>
         </TabView>
         
@@ -41,10 +45,13 @@
         </Splitter>
       </SplitterPanel>
     </Splitter>
-    <span style="position: fixed; bottom: 0.5rem; right: 0.5rem" class="p-buttonset">
-      <Button :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
-      <Button v-if="paused" @click="step()" icon="pi pi-arrow-right" />
-      <Button v-if="running" @click="stop()" icon="pi pi-times" />
+    <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
+      <Button v-if="currentClazz && activeTab>0" icon="pi pi-trash" @click="trashCurrentClazz()" style="margin-right: 0.5rem"/>
+      <span class="p-buttonset">
+        <Button :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
+        <Button v-if="paused" @click="step()" icon="pi pi-arrow-right" />
+        <Button v-if="running" @click="stop()" icon="pi pi-times" />
+      </span>
     </span>
   </div>
 </template>
@@ -57,6 +64,7 @@ import CodeMirror from "./CodeMirror.vue";
 import BlockEditor from "./BlockEditor.vue";
 import ProjectExplorer from './ProjectExplorer.vue';
 import AppPreview from './AppPreview.vue';
+import NewClazzWizard from './NewClazzWizard.vue';
 import Outline from './Outline.vue';
 import { download, saveLocally, upload } from '../functions/helper.js';
 import { createAppCode, extractProjectCodeFromAppCode } from "../functions/appcode.js";
@@ -65,23 +73,45 @@ import { uploadProject } from "../functions/uploadProject.js";
 
 export default {
   props: {
-    project: null
+    
   },
   data(){
     return {
       useBlockEditor: false,
-      currentClazz: null,
       activeTab: 0,
       paused: false,
-      running: false
+      running: false,
+      project: null,
+      fontSize: 20,
+      breakpoints: [],
     };
+  },
+  computed: {
+    currentClazz(){
+      if(this.project.clazzes.length===0 || this.activeTab>=this.project.clazzes.length){
+        return null;
+      }
+      return this.project.clazzes[this.activeTab];
+    }
   },
   mounted(){
     let timer=setInterval(()=>{
+      if(!this.project) return;
       saveLocally(STORAGE_PROJECT,this.project.toSaveString());
     },1000);
   },
   methods: {
+    openProject(p){
+      this.project=p;
+    },
+    getProject(){
+      return this.project;
+    },
+    async newProject(){
+      let p=new Project();
+      await p.initialize();
+      this.openProject(p);
+    },
     downloadProject(){
       download(createAppCode(this.project),this.project.getName(),"text/html");
     },
@@ -111,16 +141,18 @@ export default {
       this.running=false;
       //this.$root.currentPos=-1;
     },
-    addClazz(name){
-      var c=new Clazz(name,this.project);
-      this.project.clazzes.push(c);
-      this.openClazz(c);
+    addNewClazz(clazzData){
+      var c=new Clazz(clazzData.name,this.project);
+      this.project.addClazz(c);
     },
-    deleteClazz(clazz){
-      if(this.project.deleteClazz(clazz)){
-        this.openClazz(this.project.clazzes[0]);
-        this.project.compile();
+    trashCurrentClazz(){
+      let a=confirm("Willst du die Klasse '"+this.currentClazz.name+"' wirklich löschen?");
+      if(a){
+        this.project.removeClazz(this.currentClazz);
       }
+    },
+    outlineClick(){
+
     }
   },
   components: {
@@ -129,7 +161,8 @@ export default {
     BlockEditor,
     ProjectExplorer,
     Outline,
-    AppPreview
+    AppPreview,
+    NewClazzWizard
   }
 }
 </script>

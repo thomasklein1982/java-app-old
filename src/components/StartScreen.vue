@@ -1,6 +1,6 @@
 <template>
   <div style="position: absolute; left: 0; top: 0; background-color: white; z-index: 2; width: 100%; height: 100%">
-      <h1>Willkommen bei JavaBlox</h1>
+      <h1>Willkommen bei JavaApp</h1>
       <p>Wähle eine der folgenden Möglichkeiten:</p>
       <div>
         
