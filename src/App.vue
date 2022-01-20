@@ -6,6 +6,8 @@
     />
     <Editor
       v-show="screen==='editor'"
+      :paused="paused"
+      :current="current"
       ref="editor"
     />
     
@@ -21,10 +23,15 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 2
+      version: 3,
+      paused: false,
+      current: {line: -1, name: null}
     }
   },
   methods: {
+    resetCurrent(){
+      this.current={line: -1, name: this.current.name};
+    },
     showScreen: function(name){
       this.screen=name;
     },
@@ -32,8 +39,26 @@ export default{
       this.$refs.editor.openProject(project);      
       this.showScreen("editor");
     },
+    getProject(){
+      return this.$refs.editor.getProject();
+    },
     getJavaScriptCode(){
       return this.$refs.editor.getProject().getJavaScriptCode();
+    },
+    updateBreakpoints(breakpointSet,document,clazz){
+      var n=breakpointSet.size;
+      var iter=breakpointSet.iter(0);
+      let bp=[];
+      for(let i=0;i<n;i++){
+        let pos=iter.from;
+        let line=document.lineAt(pos);
+        bp.push({
+          n: line.number,
+          f: clazz.name
+        });
+        iter.next();
+      }
+      this.$refs.editor.setBreakpoints(bp);
     }
   },
   components: {

@@ -1,3 +1,5 @@
+import { Type } from "../../classes/Type";
+
 export function PrimitiveType(node,source,scope){
   let code;
   let name=source.src.substring(node.from,node.to);
@@ -7,6 +9,6 @@ export function PrimitiveType(node,source,scope){
   }
   return {
     code: name,
-    type
+    type: new Type(type,0)
   }
 }

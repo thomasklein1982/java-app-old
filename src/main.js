@@ -93,10 +93,21 @@ for(let i=0;i<appjsdata.functions.length;i++){
   }
 }
 
-console.log("main",appjsdata.objects);
 for(let name in appjsdata.objects){
   let o=appjsdata.objects[name];
   text+="\nApp."+o.name+"="+o.name+";";
 }
 
 window.appJScode=text;
+
+window.onmessage=function(message){
+  let data=message.data;
+  let app=window.app;
+  if(data.type==="error"){
+    data=data.data;
+    app.$refs.editor.$refs.editor.setRuntimeError(data.completeMessage);
+  }else if(data.type==="debug-pause"){
+    app.paused=true;
+    app.current={line: data.line, name: data.name};
+  }
+}

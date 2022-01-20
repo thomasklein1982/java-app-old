@@ -1,6 +1,4 @@
 import { CompileFunctions } from "../CompileFunctions";
-import { Identifier } from "./Identifier";
-import { StringLiteral } from "./StringLiteral";
 import { VariableDeclarator } from "./VariableDeclarator";
 
 export function LocalVariableDeclaration(node,source,scope){

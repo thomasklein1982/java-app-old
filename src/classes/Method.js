@@ -113,7 +113,6 @@ export class Method{
     let scope=new Scope(this.clazz.project,this);
     this.block=Block(this.bodyNode,source,scope);
     this.typeAnnotations=scope.typeAnnotations;
-    console.log("method",this.name,"compiled");
     return this.block;
   }
 }

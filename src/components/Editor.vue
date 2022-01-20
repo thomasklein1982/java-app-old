@@ -16,7 +16,7 @@
             <CodeMirror
               :clazz="c"
               :font-size="fontSize"
-              
+              :current="paused ? current : null"
               ref="editor"
             />
           </TabPanel>
@@ -73,18 +73,33 @@ import { uploadProject } from "../functions/uploadProject.js";
 
 export default {
   props: {
-    
+    current: Object,
+    paused: Boolean
   },
   data(){
     return {
       useBlockEditor: false,
       activeTab: 0,
-      paused: false,
       running: false,
       project: null,
       fontSize: 20,
       breakpoints: [],
     };
+  },
+  watch: {
+    current(nv,ov){
+      if(nv!==null){
+        let name=nv.name;
+        for(let i=0;i<this.project.clazzes.length;i++){
+          let c=this.project.clazzes[i];
+          if(c.name===name){
+            this.activeTab=i;
+            return;
+          }
+        }
+      }
+    }
+
   },
   computed: {
     currentClazz(){
@@ -101,6 +116,9 @@ export default {
     },1000);
   },
   methods: {
+    setBreakpoints(breakpoints){
+      this.$refs.preview.setBreakpoints(breakpoints);
+    },
     openProject(p){
       this.project=p;
     },
@@ -121,25 +139,26 @@ export default {
       this.openProject(p,this.useBlockEditor);
     },
     resume(){
-      this.$root.currentPos=-1;
+      this.$root.resetCurrent();
+      
       if(this.paused){
-        this.paused=false;
+        this.$root.paused=false;
+        this.$refs.preview.resume();
         //this.$refs.controlArea.resume();
       }else if(!this.running){
         this.running=true;
         this.$refs.preview.reload(this.project.getJavaScriptCode());
       }
-      this.$refs.preview.focus();
     },
     step(){
-      this.$root.currentPos=-1;
-      this.$refs.controlArea.step();
+      this.$root.currentLine=-1;
+      this.$refs.preview.step();
     },
     stop(){
       this.$refs.preview.stop();
-      this.paused=false;
+      this.$root.paused=false;
       this.running=false;
-      //this.$root.currentPos=-1;
+      this.$root.currentLine=-1;
     },
     addNewClazz(clazzData){
       var c=new Clazz(clazzData.name,this.project);

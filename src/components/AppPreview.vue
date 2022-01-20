@@ -7,29 +7,15 @@
 <script>
   export default {
     props: {
-      breakpoints: Object,
       paused: {
         type: Boolean,
         default: false
       }
     },
-    watch: {
-      breakpoints: {
-        deep: true,
-        handler(){
-          let bp=this.convertBreakpointsToArray(this.breakpoints)
-          if(this.frame){
-            this.frame.contentWindow.postMessage({
-              type: "breakpoints",
-              breakpoints: bp
-            });
-          }
-        }
-      }
-    },
     data: function(){
       return {
-        frame: null
+        frame: null,
+        breakpoints: null
       }
     },
     methods: {
@@ -38,14 +24,15 @@
           this.frame.focus();
         }
       },
-      convertBreakpointsToArray(breakpointsObject){
-        let bp=[];
-        if(this.breakpoints){
-          for(let a in this.breakpoints){
-            bp.push(a*1);
-          }
+      setBreakpoints(bp){
+        //console.log("set bp", bp);
+        this.breakpoints=bp;
+        if(this.frame){
+          this.frame.contentWindow.postMessage({
+            type: "breakpoints",
+            breakpoints: bp
+          });
         }
-        return bp;
       },
       resume(){
         if(this.frame){
@@ -53,11 +40,13 @@
             type: "debug-resume"
           });
         }
+        this.focus();
       },
       step(){
         this.frame.contentWindow.postMessage({
           type: "debug-step"
         });
+        this.focus();
       },
       stop(){
         if(this.$refs.wrapper.firstChild){
@@ -72,8 +61,7 @@
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
         }
         this.$refs.wrapper.appendChild(frame);
-        let bp=this.convertBreakpointsToArray(this.breakpoints);
-        let src="$App.debug.setBreakpoints("+JSON.stringify(bp)+");";
+        let src="$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
         src+=javascriptcode;
         console.log(javascriptcode);
         //let code='\<script src="https://thomaskl.uber.space/Webapps/AppJS/app.js?a=2"\>\</script\>\n\<script\>'+src+'\n\</script\>';
@@ -86,6 +74,7 @@
         doc.write(code);
         doc.close();
         this.frame=frame;
+        this.focus();
       }
     }
   }

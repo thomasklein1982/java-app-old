@@ -14,6 +14,10 @@ import { AssignmentExpression } from "./compile/AssignmentExpression";
 import { VariableDeclarator } from "./compile/VariableDeclarator";
 import { BinaryExpression } from "./compile/BinaryExpression";
 import { ParenthesizedExpression } from "./compile/ParenthesizedExpression";
+import { ArrayCreationExpression } from "./compile/ArrayCreationExpression";
+import { Dimension } from "./compile/Dimension";
+import { ArrayAccess } from "./compile/ArrayAccess";
+import {IfStatement  } from "./compile/IfStatement";
 
 function doNothing(){}
 
@@ -26,6 +30,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement
   }
 }

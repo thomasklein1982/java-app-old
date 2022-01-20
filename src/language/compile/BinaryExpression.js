@@ -1,3 +1,4 @@
+import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { Java } from "../java";
 
@@ -43,11 +44,24 @@ export function BinaryExpression(node,source,scope){
       throw source.createError("Der Operator '"+op+"' funktioniert nur mit Zahlen.",node);
     }
   }else if(op==="&"||op==="&&"||op==="|"||op==="||"){
-    if(left.type===Java.datatypes.boolean && right.type===Java.datatypes.boolean){
+    if(left.type.isSubtypeOf(Java.datatypes.boolean) && right.type.isSubtypeOf(Java.datatypes.boolean)){
       code=left.code+op+right.code;
-      type=left.type;
+      type=new Type(Java.datatypes.boolean,0);
     }else{
       throw source.createError("Der Operator '"+op+"' funktioniert nur mit Wahrheitswerten (boolean).",node);
+    }
+  }else if(op==="=="){
+    if(!left.type.isSubtypeOf(right.type) && !right.type.isSubtypeOf(left.type)){
+      throw source.createError("Die Datentypen '"+left.type+"' und '"+right.type+"' sind nicht kompatibel.",node);
+    }
+    code=left.code+"==="+right.code;
+    type=new Type(Java.datatypes.boolean,0);
+  }else if(op==="<" || op==="<=" ||op===">" ||op===">="){
+    if(left.type.isNumericOrString() && right.type.isNumericOrString()){
+      code=left.code+op+right.code;
+      type=new Type(Java.datatypes.boolean,0);
+    }else{
+      throw source.createError("Der Operator '"+op+"' funktioniert nur mit Zahlen oder Strings.",node);
     }
   }
   return {

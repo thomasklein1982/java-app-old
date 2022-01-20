@@ -23,18 +23,38 @@ import { indentUnit } from "@codemirror/language";
 import  * as autocomplete  from "@codemirror/autocomplete";
 import {CompletionContext} from "@codemirror/autocomplete";
 import {autocompletion} from "@codemirror/autocomplete";
-import {StateField, StateEffect} from "@codemirror/state"
+import {StateField, StateEffect, EditorSelection} from "@codemirror/state"
 import {RangeSet} from "@codemirror/rangeset"
 import {gutter, GutterMarker} from "@codemirror/gutter"
 import {Decoration,ViewPlugin} from "@codemirror/view"
 import {Java} from '../language/java';
 import {createParamsString,snippets} from '../functions/snippets'
-
-let editor;
+import {Type} from '../classes/Type'
 
 const completePropertyAfter = ["PropertyName", ".", "?."]
 const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
                         "VariableDefinition", "PropertyDefinition"]
+
+function getClazzFromState(state){
+  let clazz=null;
+  try{
+    let node=state.tree.topNode.firstChild;
+    while(node && node.name!=="ClassDeclaration"){
+      node=node.nextSibling;
+    }
+    if(node){
+      node=node.firstChild;
+      while(node && node.name!=="Definition"){
+        node=node.nextSibling;
+      }
+      let clazzname=state.doc.sliceString(node.from,node.to);
+      clazz=app.getProject().getClazzByName(clazzname);
+    }
+  }catch(e){
+    console.error(e);
+  }
+  return clazz;
+}
 
 function createAutocompletion(additional){
   return (context)=>{
@@ -42,11 +62,11 @@ function createAutocompletion(additional){
     
     //innerhalb einer Methode?
     let method=null;
-    let clazz=null;
+    let clazz=getClazzFromState(context.state);
+    if(!clazz) return;
     let n=nodeBefore;
     while(n){
       if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
-        clazz=editor.component.clazz;
         if(n.name==="ConstructorDeclaration"){
           method=clazz.constructor;
         }else{
@@ -54,32 +74,18 @@ function createAutocompletion(additional){
           while(n && n.name!=="Definition"){
             n=n.nextSibling;
           }
-          let mname=editor.state.doc.slice(n.from,n.to).text[0];
+          let mname=context.state.doc.sliceString(n.from,n.to);
           method=clazz.methods[mname];
         }
         break;
       }
       n=n.parent;
     }
-    /*
-    let options=snippets.everywhere;
-    if(inFunction){
-      options=options.concat(snippets.inFunction);
-    }else{
-      options=options.concat(snippets.topLevel);
-    }
-    options=options.concat(additional);
-    
-    return {
-      from,
-      options,
-      span: /^[\w$]*$/
-    }
-    */
+    if(!method) return;
     let from,annotation;
     if(nodeBefore.name==="Block"){
       from=context.pos;
-      annotation={type: clazz, isStatic: method.isStatic(), topLevel: true};
+      annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
     }else{
       from=nodeBefore.from;
       if(nodeBefore.name==="."){
@@ -92,7 +98,7 @@ function createAutocompletion(additional){
             nodeBefore=nodeBefore.prevSibling;
           }
         }else{
-          annotation={type: clazz, isStatic: method.isStatic(), topLevel: true};
+          annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
         }
       }
       if(!annotation) annotation=method.typeAnnotations[nodeBefore.to];
@@ -126,36 +132,45 @@ function createAutocompletion(additional){
   };
 }
 
-function completeProperties(from, clazz, isStatic, includeClasses) {
+function completeProperties(from, type, isStatic, includeClasses) {
   let options = []
-  for (let name in clazz.attributes) {
-    let a=clazz.attributes[name];
-    if(a.isStatic()===isStatic){
-      options.push({
-        label: name,
-        type: "variable",
-        info: a.comment
-      });
+  if(type.dimension>0){
+    options.push({
+      label: "length",
+      type: "variable",
+      info: "Die Länge des Arrays."
+    });
+  }else{
+    let clazz=type.baseType;
+    for (let name in clazz.attributes) {
+      let a=clazz.attributes[name];
+      if(a.isStatic()===isStatic){
+        options.push({
+          label: name,
+          type: "variable",
+          info: a.comment
+        });
+      }
     }
-  }
-  for (let name in clazz.methods) {
-    let m=clazz.methods[name];
-    if(m.isStatic()===isStatic){
-      options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
-        label: name+"(...)",
-        type: "function",
-        info: m.comment
-      }));
+    for (let name in clazz.methods) {
+      let m=clazz.methods[name];
+      if(m.isStatic()===isStatic){
+        options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
+          label: name+"(...)",
+          type: "function",
+          info: m.comment
+        }));
+      }
     }
-  }
-  if(includeClasses){
-    for(let name in Java.clazzes){
-      let c=Java.clazzes[name];
-      options.push({
-        label: name,
-        type: "class",
-        info: c.comment
-      });
+    if(includeClasses){
+      for(let name in Java.clazzes){
+        let c=Java.clazzes[name];
+        options.push({
+          label: name,
+          type: "class",
+          info: c.comment
+        });
+      }
     }
   }
   return {
@@ -176,27 +191,29 @@ const breakpointState = StateField.define({
     for (let e of transaction.effects) {
       if (e.is(breakpointEffect)) {
         /*Fuehrenden Whitespace herausrechnen:*/
-        let pos=e.value.pos;
-        let state=transaction.startState;
-        let line=state.doc.lineAt(pos);
-        let text=line.text;
-        let wscount=0;
-        if(text.trim().length>0){
-          for(let i=0;i<text.length;i++){
-            if(!(/\s/.test(text.charAt(i)))){
-              wscount=i;
-              break;
-            }
-          }  
-        }
+        // let pos=e.value.pos;
+        // let state=transaction.startState;
+        // let line=state.doc.lineAt(pos);
+        // let text=line.text;
+        // let wscount=0;
+        // if(text.trim().length>0){
+        //   for(let i=0;i<text.length;i++){
+        //     if(!(/\s/.test(text.charAt(i)))){
+        //       wscount=i;
+        //       break;
+        //     }
+        //   }  
+        // }
         //app.toggleBreakpoint(pos+wscount,!hasBreakpoint);
-        app.setBreakpoint(pos+wscount,e.value.on);
+        //app.setBreakpoint(pos+wscount,e.value.on);
         if (e.value.on){
           set = set.update({add: [breakpointMarker.range(e.value.pos)]})
 
         }else{
           set = set.update({filter: from => from != e.value.pos})
         }
+        let clazz=getClazzFromState(transaction.startState);
+        app.updateBreakpoints(set,transaction.startState.doc,clazz);
       }
     }
     return set
@@ -250,12 +267,27 @@ export default {
     fontSize: {
       type: Number,
       default: 4
-    }
+    },
+    current: Object
   },
   watch: {
     clazz(nv){
       this.setCode(nv.src);
+    },
+    current(nv,ov){
+      if(nv===null && ov!==null){
+        this.setCursorToLine(ov.line);
+      }else{
+        let line=this.getLineByNumber(nv.line);
+        try{
+          this.setSelection(line.from,line.to+1);
+        }catch(e){
+          this.setSelection(line.from,line.to);
+        }
+      // currentLineHighlighter.update()
+      }
     }
+
   },
   data(){
     return {
@@ -265,7 +297,7 @@ export default {
   mounted(){
     let changed=false;
     let timer;
-    editor=new EditorView({
+    this.editor=new EditorView({
       state: EditorState.create({
         doc: this.clazz.src,
         extensions: [
@@ -293,7 +325,7 @@ export default {
       }),
       parent: this.$refs.editor
     });
-    editor.component=this;
+    this.editor.component=this;
   },
   methods: {
     async update(viewUpdate){
@@ -303,17 +335,17 @@ export default {
       await this.clazz.compile(this.project);
     },
     setCode(code){
-      var old=editor.state.doc.toString();
-      editor.dispatch({
+      var old=this.editor.state.doc.toString();
+      this.editor.dispatch({
         changes: {from: 0, to: old.length, insert: code}
       });
     },
     openSearchPanel(){
-      openSearchPanel(editor);
+      openSearchPanel(this.editor);
       this.isSearchPanelOpen=true;
     },
     closeSearchPanel(){
-      closeSearchPanel(editor);
+      closeSearchPanel(this.editor);
       this.isSearchPanelOpen=false;
     },
     toggleSearchPanel(){
@@ -332,42 +364,49 @@ export default {
     reset: function(sourceCode){
       this.runtimeError=null;
       this.$root.sourceCode=sourceCode;
-      editor.dispatch({
+      this.editor.dispatch({
         changes: {from: 0, to: this.size, insert: this.$root.sourceCode}
       });
       this.check();
     },
     undo(){
-      undo({state: editor.viewState.state, dispatch: editor.dispatch});
+      undo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
     },
     redo(){
-      redo({state: editor.viewState.state, dispatch: editor.dispatch});
+      redo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
     },
     setRuntimeError: function(error){
       this.runtimeError=error;
     },
     insert(text){
-      let pos=editor.state.selection.ranges[0].from;
-      editor.dispatch({
+      let pos=this.editor.state.selection.ranges[0].from;
+      this.editor.dispatch({
         changes: {from: pos, to: pos, insert: text}
       });
-      editor.focus();
+      this.focus();
     },
     setCursor: function(position){
       //editor.focus();
-      editor.dispatch({
+      this.editor.dispatch({
         selection: new EditorSelection([EditorSelection.cursor(position)], 0),
         scrollIntoView: true
       });
     },
+    setCursorToLine: function(linenumber){
+      let line=this.getLineByNumber(linenumber);
+      this.setCursor(line.from);
+    },
+    getLineByNumber: function(linenumber){
+      return this.editor.state.doc.line(linenumber);
+    },
     setSelection(anchor,head){
-      editor.dispatch({
+      this.editor.dispatch({
         selection: {anchor, head},
         scrollIntoView: true
       })
     },
     focus(){
-      editor.focus();
+      this.editor.focus();
     }
   }
 }

@@ -1,3 +1,4 @@
+import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { ArgumentList } from "./ArgumentList";
 import { Identifier } from "./Identifier";
@@ -43,7 +44,7 @@ export function ObjectCreationExpression(node,source,scope){
   return {
     code,
     clazz: typename.type,
-    type: typename.type
+    type: new Type(typename.type,0)
   };
   // let method=scope.getMethod(mn,al.list,owner.static,owner.clazz);
   // if(method.error){

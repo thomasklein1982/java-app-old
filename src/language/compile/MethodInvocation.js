@@ -31,7 +31,7 @@ export function MethodInvocation(node,source,scope){
         };
       }else{
         owner={
-          clazz: id.object.type,
+          clazz: id.object.type.baseType,
           static: false
         };
       }

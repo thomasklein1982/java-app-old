@@ -2,6 +2,7 @@ import { Error } from "../../classes/Error";
 import { Scope } from "../../classes/Scope";
 import { Source } from "../../classes/Source";
 import { Java } from "../java";
+import { Type } from "../../classes/Type";
 
 /**wenn owner=null: top level identifier, ansonsten ist owner ein Objekt mit folgenden Eigenschaften: 
  * clazz: Clazz Die Klasse des Objektes in der Hierarchie darueber 
@@ -28,19 +29,28 @@ export function Identifier(node,source,scope,owner){
   let code=name;
   let type=null;
   if(owner && owner.clazz){
-    obj=scope.getAttribute(name,owner.static,owner.clazz);
-    if(obj && obj.error){
-      throw source.createError(obj.error,node);
+    if(owner.clazz.dimension>0){
+      //Array!
+      if(name!=="length"){
+        throw source.createError("Ein Array hat keine Attribute außer der Länge 'length'.",node);
+      }
+      //scope.addTypeAnnotation(node.to,new Type(Java.datatypes.int,0),false);
+      type=new Type(Java.datatypes.int,0);
+    }else{
+      obj=scope.getAttribute(name,owner.static,owner.clazz);
+      if(obj && obj.error){
+        throw source.createError(obj.error,node);
+      }
+      type=obj.type;
+      scope.addTypeAnnotation(node.to,type,false);
     }
-    type=obj.type;
-    scope.addTypeAnnotation(node.to,type,false);
   }else{
     //Top-Level
     obj=scope.getLocalVariable(name);
     if(!obj){
       obj=scope.getClazzByName(name);
       type=null;
-      scope.addTypeAnnotation(node.to,obj,true);
+      scope.addTypeAnnotation(node.to,new Type(obj,0),true);
     }else{
       type=obj.type;
       scope.addTypeAnnotation(node.to,type,false);
@@ -66,7 +76,6 @@ export function Identifier(node,source,scope,owner){
   return {
     code: code,
     object: obj,
-    name: obj.name,
     type: type
   };
 }

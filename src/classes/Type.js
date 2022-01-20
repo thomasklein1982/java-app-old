@@ -1,5 +1,6 @@
 import { PrimitiveType } from "./PrimitiveType";
 import {Clazz} from "./Clazz";
+import { Java } from "../language/java";
 
 export class Type{
   constructor(baseType,dimension){
@@ -69,6 +70,17 @@ export class Type{
     }
     return new Type(basetype,dimension);
   }
+  isNumeric(){
+    if(this.dimension>0) return false;
+    return this.baseType.isNumeric===true;
+  }
+  isString(){
+    if(this.dimension>0) return false;
+    return this.baseType===Java.datatypes.String;
+  }
+  isNumericOrString(){
+    return this.isNumeric() || this.isString();
+  }
   isSubtypeOf(type){
     if(!type){
       return this.dimension===0;
@@ -79,9 +91,9 @@ export class Type{
         dimension: 0
       };
     }
-    if(type instanceof Type){
+    if("baseType" in type){
       if(type.dimension===this.dimension){
-        if(!this.baseType){
+        if(!type.baseType){
           return true;
         }
         return this.baseType.isSubtypeOf(type.baseType);

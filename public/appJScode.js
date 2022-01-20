@@ -14,15 +14,16 @@ window.appJScode=function(){
       breakpointCount: 0,
       paused: false,
       resolve: null,
-      line: async function(pos){
+      line: async function(line,name){
         if(window===window.top) return;
-        if(this.paused || this.breakpoints[pos]){
+        if(this.paused || this.breakpoints[line]===name){
           this.paused=true;
           $App.body.overlay.style.display='';
           var p=new Promise((resolve,reject)=>{
             window.parent.postMessage({
               type: "debug-pause",
-              pos: pos
+              line: line,
+              name: name
             });
             this.resolve=resolve;
           });
@@ -31,10 +32,22 @@ window.appJScode=function(){
         }
       },
       setBreakpoints: function(bp){
-        this.breakpointCount=bp.length;
         this.breakpoints={};
-        for(let i=0;i<bp.length;i++){
-          this.breakpoints[bp[i]]=true;
+        if(!bp){
+          this.breakpointCount=0;
+          return;
+        }
+        this.breakpointCount=bp.length;
+        for(var i=0;i<bp.length;i++){
+          var n,f;
+          if(bp[i].n){
+            n=bp[i].n;
+            f=bp[i].f;
+          }else{
+            n=bp[i];
+            f=true;
+          }
+          this.breakpoints[n]=f;
         }
         
       },
@@ -1800,8 +1813,55 @@ window.appJScode=function(){
   }
   $App.gamepad=new $App.Gamepad()
   
-  
-  
+  /*****Array */
+  $App.Array=function(type, dim){
+    this.type=type;
+    this.dim=dim;
+    this.values=$App.Array.createArrayValues(type,null,dim,0);
+  };
+
+  $App.Array.prototype={
+    get length(){
+      return this.dim[0];
+    },
+    checkBounds: function(index){
+      if(index>=this.length || index<0){
+        var m="Index "+index+" liegt außerhalb der Array-Grenzen von 0 bis "+(this.length-1);
+        console.error(m);
+        throw m;
+      }
+    },
+    get: function(index){
+      this.checkBounds(index);
+      return this.values[index];//this.privateGet(index,this.values,0);
+    },
+    set: function(index,value){
+      this.checkBounds(index);
+      this.values[index]=value;
+    }
+  };
+
+  $App.Array.createArrayValues=function(type,value,dim){
+    if(dim.length===1){
+      var array=[];
+      for(var i=0;i<dim[0];i++){
+        array.push(value);
+      }
+      return array;
+    }else{
+      var array=[];
+      var newDim=[];
+      for(let i=1;i<dim.length;i++){
+        newDim.push(dim[i]);
+      }
+      for(var i=0;i<dim[0];i++){
+        var subArray=new $App.Array(type, newDim);
+        array.push(subArray);
+      }
+      return array;
+    }
+  }
+
   /**Toast */
   $App.Toast=function(container){
     this.container=container;

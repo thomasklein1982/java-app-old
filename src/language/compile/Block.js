@@ -29,7 +29,8 @@ export function Block(node,source,scope){
       try{
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
-        code+="\n"+res.code;
+        let line=source.state.doc.lineAt(node.from).number;
+        code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+");"+res.code;
       }catch(e){
         errors.push(e);
       }
