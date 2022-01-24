@@ -105,7 +105,7 @@ window.onmessage=function(message){
   let app=window.app;
   if(data.type==="error"){
     data=data.data;
-    app.$refs.editor.$refs.editor.setRuntimeError(data.completeMessage);
+    app.$refs.editor.setRuntimeError(data.completeMessage);
   }else if(data.type==="debug-pause"){
     app.paused=true;
     app.current={line: data.line, name: data.name};

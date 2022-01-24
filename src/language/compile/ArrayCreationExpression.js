@@ -15,7 +15,7 @@ export function ArrayCreationExpression(node,source,scope,errors){
 
   }
   let type=TypeName(node,source,scope);
-  code+=type.code+",[";
+  code+=JSON.stringify(type.code)+",[";
   node=node.nextSibling;
   let dimensions=[];
   while(node && node.name==="Dimension"){

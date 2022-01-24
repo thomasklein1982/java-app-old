@@ -116,6 +116,9 @@ export default {
     },1000);
   },
   methods: {
+    setRuntimeError(error){
+      console.error(error);
+    },
     setBreakpoints(breakpoints){
       this.$refs.preview.setBreakpoints(breakpoints);
     },

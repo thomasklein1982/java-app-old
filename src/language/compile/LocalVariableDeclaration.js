@@ -27,7 +27,11 @@ export function LocalVariableDeclaration(node,source,scope){
     }
   }
   code+=vdekl.code;
-  
+  node=node.nextSibling;
+  if(node.type.isError || node.name!==";"){
+    throw (source.createError("';' erwartet.",node));
+  }
+  code+=";";
   return {
     code,
     type

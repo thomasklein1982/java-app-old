@@ -18,6 +18,8 @@ import { ArrayCreationExpression } from "./compile/ArrayCreationExpression";
 import { Dimension } from "./compile/Dimension";
 import { ArrayAccess } from "./compile/ArrayAccess";
 import {IfStatement  } from "./compile/IfStatement";
+import {ArrayType} from "./compile/ArrayType";
+import { ForStatement } from "./compile/ForStatement";
 
 function doNothing(){}
 
@@ -30,6 +32,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement
   }
 }

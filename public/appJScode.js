@@ -6,7 +6,7 @@ window.appJScode=function(){
   };
   
   window.$App={
-    version: 14,
+    version: 15,
     language: 'js',
     setupData: null,
     debug: {
@@ -16,6 +16,9 @@ window.appJScode=function(){
       resolve: null,
       line: async function(line,name){
         if(window===window.top) return;
+        if(!name){
+          name=true;
+        }
         if(this.paused || this.breakpoints[line]===name){
           this.paused=true;
           $App.body.overlay.style.display='';

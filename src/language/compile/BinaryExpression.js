@@ -17,14 +17,14 @@ export function BinaryExpression(node,source,scope){
   right=CompileFunctions.get(right)(right,source,scope);
   
   if(op==="+"){
-    if(left.type.isNumeric && right.type.isNumeric){
+    if(left.type.isNumeric() && right.type.isNumeric()){
       if(left.type.isSubtypeOf(right.type)){
         type=right.type;
       }else{
         type=left.type;
       }
     }else{
-      type=Java.datatypes.String;
+      type=new Type(Java.datatypes.String,0);
     }
     code=left.code+op+right.code;
   }else if(op==="*"||op==="-"||op==="/"||op==="%"){
