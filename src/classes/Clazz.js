@@ -258,6 +258,10 @@ export class Clazz{
     return errors;
   }
 
+  getConstructorParameters(){
+    return this.constructor? this.constructor.params: null;
+  }
+
   /**
    * Kompiliert alle Methoden (inklusive Konstruktoren) der Klasse
    */

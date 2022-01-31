@@ -9,8 +9,8 @@ export default defineConfig({
     VitePWA({
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],  
       manifest: {
-        name: 'JavaBlox-2',
-        short_name: 'JBlox',
+        name: 'JavaApp',
+        short_name: 'JApp',
         description: 'Erstelle deine eigenen Apps mit Java',
         theme_color: '#ffffff',
         icons: [

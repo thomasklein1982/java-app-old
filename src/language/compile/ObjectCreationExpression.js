@@ -34,17 +34,18 @@ export function ObjectCreationExpression(node,source,scope){
   if(node.name!=='ArgumentList'){
     
   }
-  let al=ArgumentList(node,source,scope);
+  let clazz=typename.type.baseType;
+  let al=ArgumentList(node,source,scope,clazz.getConstructorParameters());
   code="new "+typename.code;
-  if(!typename.type.isNative()){
+  if(!clazz.isNative()){
     code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";
   }else{
     code+=al.code;
   }
   return {
     code,
-    clazz: typename.type,
-    type: new Type(typename.type,0)
+    clazz: clazz,
+    type: new Type(clazz,0)
   };
   // let method=scope.getMethod(mn,al.list,owner.static,owner.clazz);
   // if(method.error){

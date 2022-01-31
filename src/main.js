@@ -25,6 +25,7 @@ import SelectButton from 'primevue/selectbutton';
 import ToggleButton from 'primevue/togglebutton';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import Message from "primevue/message";
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -76,6 +77,7 @@ app.component('Dropdown',Dropdown);
 app.component('ToggleButton',ToggleButton);
 app.component('TabPanel',TabPanel);
 app.component('TabView',TabView);
+app.component('Message',Message);
 window.app=app.mount('#app');
 
 let text=(appJScode+"");
@@ -100,12 +102,18 @@ for(let name in appjsdata.objects){
 
 window.appJScode=text;
 
+text=(additionalJSCode+"");
+pos=text.indexOf("{");
+pos2=text.lastIndexOf("}");
+text=text.substring(pos+1,pos2);
+additionalJSCode=text;
+
 window.onmessage=function(message){
   let data=message.data;
   let app=window.app;
   if(data.type==="error"){
     data=data.data;
-    app.$refs.editor.setRuntimeError(data.completeMessage);
+    app.$refs.editor.setRuntimeError(data);
   }else if(data.type==="debug-pause"){
     app.paused=true;
     app.current={line: data.line, name: data.name};

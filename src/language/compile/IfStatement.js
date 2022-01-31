@@ -25,11 +25,13 @@ export function IfStatement(node,source,scope){
   if(thenBlock.errors && thenBlock.errors.length>0){
     throw thenBlock.errors[0];
   }
-  code+=thenBlock.code;
+  code+="{"+thenBlock.code+"}";
   node=node.nextSibling;
   if(node && node.name==="else"){
+    code+="else";
+    node=node.nextSibling;
     let elseBlock=Block(node,source,scope);
-    code+=elseBlock.code;
+    code+="{"+elseBlock.code+"}";
   }
   return {
     code: code,

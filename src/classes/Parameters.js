@@ -5,7 +5,9 @@ export class ParameterList{
     this.method=method;
     this.parameters=[];
   }
-
+  get count(){
+    return this.parameters.length;
+  }
   define(data){
     this.parameters=[];
     for(let i=0;i<data.length;i++){
@@ -25,26 +27,7 @@ export class ParameterList{
     code+=")";
     return code;
   }
-  matchesArgumentList(argumentList){
-    if(this.parameters.length!==argumentList.length){
-      let text=this.parameters.length+" Parameter: "+this.toString();
-      if(argumentList.length<this.parameters.length){
-        text="Zu wenig Argumente. Diese Methode benötigt "+text;
-      }else{
-        text="Zu viele Argumente. Diese Methode hat nur "+text;
-      }
-      return text;
-    }
-    for(let i=0;i<this.parameters.length;i++){
-      let p=this.parameters[i];
-      let a=argumentList[i];
-      if(!a.type.isSubtypeOf(p.type)){
-        return "Das "+(i+1)+"-te Argument '"+a.code+"' ist kein "+p.type.toString()+".";
-      }
-    }
-    return true;
-  }
-
+  
   toString(){
     var t="";
     for(var i=0;i<this.parameters.length;i++){

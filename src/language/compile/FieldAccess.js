@@ -47,7 +47,7 @@ export function FieldAccess(node,source,scope){
       };
     }else{
       owner={
-        clazz: ident.type,
+        clazz: ident.type.baseType,
         static: false
       };
     }

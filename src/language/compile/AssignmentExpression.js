@@ -17,6 +17,7 @@ export function AssignmentExpression(node,source,scope){
   if(!val.type){
     throw source.createError("Es existiert kein Wert, der zugewiesen werden könnte (ich verstehe es selbst nicht ganz...).",node);
   }
+  v.type.autoCastValue(val);
   if(!val.type.isSubtypeOf(v.type)){
     throw source.createError("Einer Variablen vom Typ '"+v.type+"' kann kein Wert vom Typ '"+val.type+"' zugewiesen werden.",node);
   }

@@ -1,11 +1,16 @@
 import { Method } from "../../classes/Method";
 import { Modifiers } from "../../classes/Modifiers";
 import { Parameter, ParameterList } from "../../classes/Parameters";
+import { Type } from "../../classes/Type";
 
-export function createMethod(data,clazz,isStatic,Java){
-  let m=new Method(clazz);
+export function createMethod(data,clazz,isStatic,isConstructor,Java){
+  let m=new Method(clazz,isConstructor);
   m.name=data.name;
-  clazz.methods[m.name]=m;
+  if(isConstructor){
+    clazz.constructor=m;
+  }else{
+    clazz.methods[m.name]=m;
+  }
   m.comment=data.info;
   m.params=new ParameterList(m);
   if(data.args){
@@ -13,19 +18,28 @@ export function createMethod(data,clazz,isStatic,Java){
       let a=data.args[j];
       let p=new Parameter(m.params);
       if(a.type.baseType){
-        p.type={
-          baseType: Java.datatypes[a.type.baseType],
-          dim: a.type.dim
-        };
+        p.type=new Type(Java.datatypes[a.type.baseType],a.type.dim);
       }else{
-        p.type=Java.datatypes[a.type];
+        p.type=new Type(Java.datatypes[a.type],0);
       }
       p.name=a.name;
       m.params.parameters.push(p);
     }
   }
-  if(m.returnType){
-    m.type=Java.datatypes[m.returnType];
+  if(data.jsName){
+    m.jsName=data.jsName;
+  }
+  if(data.returnType){
+    let baseType=data.returnType;
+    if(baseType.baseType){
+      baseType=baseType.baseType;
+    }
+    baseType=Java.datatypes[baseType];
+    if(data.returnType.dimension>0){
+      m.type=new Type(baseType,data.returnType.dimension);
+    }else{
+      m.type=new Type(baseType,0);
+    }
   }else{
     m.type=null;
   }
@@ -36,4 +50,5 @@ export function createMethod(data,clazz,isStatic,Java){
   }else{
     m.modifiers.isStatic=false;
   }
+  return m;
 }

@@ -8,7 +8,7 @@ export function defineApp(App,Java){
   let functions=appjsdata.functions;
   for(let i=0;i<functions.length;i++){
     let f=functions[i];
-    createMethod(f,App,true,Java);
+    createMethod(f,App,true,false,Java);
   }
   let objects=appjsdata.objects;
   for(let name in objects){

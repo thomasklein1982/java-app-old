@@ -14,11 +14,15 @@ window.appJScode=function(){
       breakpointCount: 0,
       paused: false,
       resolve: null,
+      lastLine: -1,
+      lastName: null,
       line: async function(line,name){
         if(window===window.top) return;
         if(!name){
           name=true;
         }
+        this.lastName=name;
+        this.lastLine=line;
         if(this.paused || this.breakpoints[line]===name){
           this.paused=true;
           $App.body.overlay.style.display='';
@@ -159,6 +163,10 @@ window.appJScode=function(){
   
   $App.handleError=function(errorData){
     if(window.parent!==window){
+      if($App.debug.lastLine>0){
+        errorData.line=$App.debug.lastLine;
+        errorData.file=$App.debug.lastName;
+      }
       window.parent.postMessage({type: "error", data: errorData});
     }else{
       console.log(errorData.completeMessage);
@@ -1980,7 +1988,7 @@ window.appJScode=function(){
           }else if(typ==="file"){
             v="File";
           }else{
-            v=JSON.stringify(obj);
+            v="[[object]]";//JSON.stringify(obj);
           }
           item.element.textContent=""+a+": "+v;
         }

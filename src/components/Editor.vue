@@ -5,6 +5,7 @@
       @download="downloadProject"
       @upload="uploadProject"
       @new="newProject"
+      @prettify="prettifyCode"
     />
     <Splitter :style="{flex: 1}" style="overflow: hidden;width: 100%;">
       <SplitterPanel style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
@@ -117,7 +118,21 @@ export default {
   },
   methods: {
     setRuntimeError(error){
-      console.error(error);
+      let i=this.project.getClazzIndexByName(error.file);
+      if(i>=0){
+        this.$refs.editor[i].setRuntimeError(error);
+        this.activeTab=i;
+      }else{
+        
+      }
+    },
+    getEditorByName(name){
+      let i=this.project.getClazzIndexByName(name);
+      if(i>=0){
+        return this.$refs.editor[i];
+      }else{
+        return null;
+      }
     },
     setBreakpoints(breakpoints){
       this.$refs.preview.setBreakpoints(breakpoints);
@@ -141,6 +156,9 @@ export default {
       if(!p) return;
       this.openProject(p,this.useBlockEditor);
     },
+    prettifyCode(){
+      this.$refs.editor[this.activeTab].prettifyCode();
+    },
     resume(){
       this.$root.resetCurrent();
       
@@ -154,14 +172,14 @@ export default {
       }
     },
     step(){
-      this.$root.currentLine=-1;
+      this.$root.resetCurrent();
       this.$refs.preview.step();
     },
     stop(){
       this.$refs.preview.stop();
       this.$root.paused=false;
       this.running=false;
-      this.$root.currentLine=-1;
+      this.$root.resetCurrent();
     },
     addNewClazz(clazzData){
       var c=new Clazz(clazzData.name,this.project);

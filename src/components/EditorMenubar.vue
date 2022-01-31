@@ -40,10 +40,10 @@ export default {
           ]
         },
         {
-          label: 'Ausführen',
-          icon: 'pi pi-play',
+          label: 'Formatieren',
+          icon: 'pi pi-fw pi-align-left',
           command: (ev)=>{
-            this.$emit('run');
+            this.$emit("prettify");
           }
         },
         {

@@ -4,8 +4,10 @@ import { Java } from "../language/java";
 
 export class Type{
   constructor(baseType,dimension){
-    if(baseType && !dimension && baseType.dim){
-      dimension=baseType.dim;
+    if(baseType && baseType.type){
+      if(baseType.dim){
+        dimension=baseType.dim;
+      }
       baseType=baseType.type;
     }
     this.baseType=baseType;
@@ -70,13 +72,38 @@ export class Type{
     }
     return new Type(basetype,dimension);
   }
+  
   isNumeric(){
     if(this.dimension>0) return false;
     return this.baseType.isNumeric===true;
   }
   isString(){
     if(this.dimension>0) return false;
-    return this.baseType===Java.datatypes.String;
+    return this.baseType.name==="String";
+  }
+  isBoolean(){
+    if(this.dimension>0) return false;
+    return this.baseType===Java.datatypes.boolean;
+  }
+  isPrimitive(){
+    return this.dimension===0 && (this.baseType instanceof PrimitiveType);
+  }
+  autoCastValue(value){
+    if(!value.type) return false;
+    if(value.type.isString() && this.isPrimitive()){
+      value.type=this;
+      if(this.isNumeric()){
+        value.code="$v("+value.code+")";
+      }else if(this.isBoolean()){
+        value.code="("+value.code+"===true)";
+      }
+      return true;
+    }else if(value.type.isPrimitive() && this.isString()){
+      value.type=this;
+      value.code="("+value.code+"+'')";
+      return true;
+    }
+    return false;
   }
   isNumericOrString(){
     return this.isNumeric() || this.isString();

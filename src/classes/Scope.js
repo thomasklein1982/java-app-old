@@ -99,7 +99,7 @@ export class Scope{
    * @param {Clazz} clazz 
    * @returns 
    */
-  getMethod(name,argumentList,isStatic,clazz){
+  getMethod(name,isStatic,clazz){
     let c=clazz? clazz : this.method.clazz;
     let m=c.getMethod(name,isStatic);
     if(m.error){
@@ -112,6 +112,7 @@ export class Scope{
         };  
       }
     }
+    return m;
     let res=m.matchesArgumentList(argumentList)
     if(res===true){
       return m;

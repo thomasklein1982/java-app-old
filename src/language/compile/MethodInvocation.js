@@ -51,19 +51,24 @@ export function MethodInvocation(node,source,scope){
     }
     node=node.nextSibling;
   }
-  if(node.name==="MethodName"){
-    mn=source.getText(node);
+  if(node.name!=="MethodName"){
+  }
+  mn=source.getText(node);
+  let method=scope.getMethod(mn,owner.static,owner.clazz);
+  if(method.jsName){
+    code+=method.jsName;
+  }else{
     code+=mn;
-    node=node.nextSibling;
   }
-  if(node.name!=="ArgumentList"){
-  }
-  al=ArgumentList(node,source,scope);
-  code+=al.code;
-  let method=scope.getMethod(mn,al.list,owner.static,owner.clazz);
+  node=node.nextSibling;
   if(method.error){
     throw (source.createError(method.error,node));
   }
+  if(node.name!=="ArgumentList"){
+  }
+  al=ArgumentList(node,source,scope,method.params);
+  code+=al.code;
+  
   return {
     method,arguments: al, code, type: method.type
   }

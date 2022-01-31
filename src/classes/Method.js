@@ -18,6 +18,7 @@ export class Method{
     this.errors=[];
     this.comment=null;
     this.typeAnnotations={};
+    this.jsName=null;
   }
   createParamsString(){
     
@@ -76,6 +77,9 @@ export class Method{
     }
     if(node.name==='Definition'){
       this.name=source.getText(node);
+      if(this.isConstructor && this.name!==this.clazz.name){
+        errors.push(source.createError("Der Konstruktor muss genauso heißen wie die Klasse.",node));  
+      }
     }else{
       errors.push(source.createError("Name erwartet",node));
       return errors;

@@ -10,7 +10,7 @@ export function defineGenericClazz(clazz,data,Java){
     let mem=data.members[i];
     if(mem.language==="js") continue;
     if(mem.returnType!==undefined){
-      createMethod(mem,clazz,false,Java);
+      createMethod(mem,clazz,false,false,Java);
     }else{
       /**Attribut */
       createAttribute(mem,clazz,false,Java);

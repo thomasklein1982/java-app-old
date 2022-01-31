@@ -9,13 +9,13 @@ export function LocalVariableDeclaration(node,source,scope){
 
   }
   let type=CompileFunctions.get(node,source)(node,source,scope);
-  code="let ";
   type=type.type;
+  code="let ";
   node=node.nextSibling;
   if(!node.name==="VariableDeclarator"){
 
   }
-  let vdekl=VariableDeclarator(node,source,scope);
+  let vdekl=VariableDeclarator(node,source,scope,type);
   try{
     scope.pushLocalVariable(vdekl.name,type);
   }catch(e){
@@ -23,7 +23,7 @@ export function LocalVariableDeclaration(node,source,scope){
   }
   if(vdekl.type){
     if(!vdekl.type.isSubtypeOf(type)){
-      throw source.createError("Einer Variablen vom Typ '"+type.name+"' kann kein Wert vom Typ '"+vdekl.type.name+"' zugewiesen werden.",node);
+      throw source.createError("Einer Variablen vom Typ '"+type+"' kann kein Wert vom Typ '"+vdekl.type+"' zugewiesen werden.",node);
     }
   }
   code+=vdekl.code;

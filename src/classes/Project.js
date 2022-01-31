@@ -28,13 +28,21 @@ export class Project{
     c.compileMemberDeclarations();
   }
   getClazzByName(name){
+    let i=this.getClazzIndexByName(name);
+    if(i>=0){
+      return this.clazzes[i];
+    }else{
+      return null;
+    }
+  }
+  getClazzIndexByName(name){
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       if(c.name===name){
-        return c;
+        return i;
       }
     }
-    return null;
+    return -1;
   }
   getTypeByName(name){
     let t=Java.datatypes[name];
@@ -49,6 +57,7 @@ export class Project{
      * 3. Alle Methoden parsen
      */
     /**Klassen-Deklarationen: */
+    let start=new Date();
     let toCompile=[];
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
@@ -79,6 +88,8 @@ export class Project{
       let c=this.clazzes[i];
       c.compileMethods(this);
     }
+    let end=new Date();
+    console.log("parsing done in "+(end-start)+"ms");
   }
   deleteClazzes(){
     while(this.clazzes.length>0) this.clazzes.pop();
