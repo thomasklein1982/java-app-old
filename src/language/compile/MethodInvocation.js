@@ -5,6 +5,8 @@ import { ArgumentList } from "./ArgumentList";
 import { FieldAccess } from "./FieldAccess";
 import { Identifier } from "./Identifier";
 import { Clazz } from "../../classes/Clazz";
+import { Java } from "../java";
+import { Type } from "../../classes/Type";
 /**
  * 
  * @param {*} node 
@@ -70,6 +72,6 @@ export function MethodInvocation(node,source,scope){
   code+=al.code;
   
   return {
-    method,arguments: al, code, type: method.type
+    method,arguments: al, code, type: method.type? new Type(Java.datatypes[method.type.baseType.name],method.type.dimension):null
   }
 }

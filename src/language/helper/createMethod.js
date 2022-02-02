@@ -6,6 +6,9 @@ import { Type } from "../../classes/Type";
 export function createMethod(data,clazz,isStatic,isConstructor,Java){
   let m=new Method(clazz,isConstructor);
   m.name=data.name;
+  if(m.name==="getValue"){
+    window.dString=Java.datatypes.String;
+  }
   if(isConstructor){
     clazz.constructor=m;
   }else{

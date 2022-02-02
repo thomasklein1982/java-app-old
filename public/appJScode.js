@@ -7,7 +7,7 @@ window.appJScode=function(){
   
   window.$App={
     version: 15,
-    language: 'js',
+    language: window.language? window.language:'js',
     setupData: null,
     debug: {
       breakpoints: {},
@@ -1963,6 +1963,11 @@ window.appJScode=function(){
       this.element.appendChild(this.outputDiv);
     },
     update: function(){
+      if($App.language==="js"){
+        this.updateJS();
+      }
+    },
+    updateJS: function(){
       let newItems={};
       for(let a in window){
         if(!(a in $App.systemVariables) && !window[a].$hideFromConsole){
@@ -3146,11 +3151,13 @@ window.appJScode=function(){
   
   $App.setup();
   
-  /**Vordefinierte Variablennamen speichern:*/
-  $App.systemVariables={};
-  (function(){
-    for(var a in window){
-      $App.systemVariables[a]=true;
-    }
-  })();
+  if($App.language==="js"){
+    /**Vordefinierte Variablennamen speichern:*/
+    $App.systemVariables={};
+    (function(){
+      for(var a in window){
+        $App.systemVariables[a]=true;
+      }
+    })();
+  }
 }

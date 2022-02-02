@@ -1,5 +1,7 @@
 function additionalJSCode(){
-  function $v(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{return v*1}}
+  function $u(v){if(v===undefined){throw {message: "Undefinierter Wert."}} return v;}
+  function $v(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{return v*1;}}
+  function $i(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{v*=1; return v>=0? Math.floor(v):Math.ceil(v);}}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
   function onAction(element){
@@ -17,11 +19,23 @@ function additionalJSCode(){
       this.$el=null;
       this.standardDisplayValue=null;
     }
+    setVisible(v){
+      this.visible=v;
+    }
+    isVisible(){
+      return this.visible;
+    }
     get visible(){
       return this.$el.visible;
     }
     set visible(v){
       this.$el.visible=v;
+    }
+    setValue(v){
+      this.value=v;
+    }
+    getValue(){
+      return this.value;
     }
     get value(){
       return this.$el.value;

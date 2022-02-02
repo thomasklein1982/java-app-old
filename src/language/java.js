@@ -11,7 +11,7 @@ let double=new PrimitiveType("double",null,0.0,"Ein 'double' ist eine Kommazahl.
 let int=new PrimitiveType("int",double,0,"Ein 'Integer' ist eine ganze Zahl.");
 let char=new PrimitiveType("char",int,32,"Ein 'Character' (dt: 'Zeichen') ist ein einzelnes Zeichen (z. B. Buchstabe, Ziffer, Leerzeichen usw.).");
 let Object=new Clazz("Object");
-let String=new Clazz("String");
+const String=new Clazz("String");
 let Gamepad=new Clazz("Gamepad");
 let UI=new Clazz("UI");
 let Path=new Clazz("Path");
@@ -33,11 +33,11 @@ let App=new Clazz("App");
 //let System=new Clazz("System");
 //let PrintStream=new Clazz("PrintStream");
 /*typ für int-literale:*/
-let rawint=new PrimitiveType("rawint");
+//let rawint=new PrimitiveType("rawint");
 
 
 let datatypes={
-  boolean, double, int, char, Object, String, rawint, App, Gamepad, UI, Mouse, Console, JButton, JLabel, JTextArea, JTextField, JCombobox, JComponent,Path
+  boolean, double, int, char, Object, String, App, Gamepad, UI, Mouse, Console, JButton, JLabel, JTextArea, JTextField, JCombobox, JComponent,Path
 };
 
 let clazzes={

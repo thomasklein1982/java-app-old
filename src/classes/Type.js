@@ -79,7 +79,16 @@ export class Type{
   }
   isString(){
     if(this.dimension>0) return false;
-    return this.baseType.name==="String";
+    //console.log(this.baseType.name,this.baseType===Java.datatypes.String,this.baseType===window.dString,window.dString===Java.datatypes.String,Java.datatypes.String===Java.clazzes.String);
+    return this.baseType===Java.datatypes.String;
+  }
+  isInt(){
+    if(this.dimension>0) return false;
+    return this.baseType===Java.datatypes.int;
+  }
+  isDouble(){
+    if(this.dimension>0) return false;
+    return this.baseType===Java.datatypes.double;
   }
   isBoolean(){
     if(this.dimension>0) return false;
@@ -90,15 +99,26 @@ export class Type{
   }
   autoCastValue(value){
     if(!value.type) return false;
+    value.code="$u("+value.code+")";
+    let castFromStringToPrimitive=false;
     if(value.type.isString() && this.isPrimitive()){
+      castFromStringToPrimitive=true;
       value.type=this;
+    }
+    if(this.isInt() && value.type.isDouble()){
+      value.type=this;
+      value.code="$i("+value.code+")";
+    }else if(value.type.isInt()){
+      value.code="$i("+value.code+")";
+    }
+    if(castFromStringToPrimitive){
       if(this.isNumeric()){
         value.code="$v("+value.code+")";
       }else if(this.isBoolean()){
-        value.code="("+value.code+"===true)";
+        value.code="("+value.code+"==='true')";
       }
       return true;
-    }else if(value.type.isPrimitive() && this.isString()){
+    }else if(this.isString()){
       value.type=this;
       value.code="("+value.code+"+'')";
       return true;

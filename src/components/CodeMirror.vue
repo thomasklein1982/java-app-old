@@ -32,6 +32,7 @@ import {Java} from '../language/java';
 import {createParamsString,snippets} from '../functions/snippets'
 import {Type} from '../classes/Type'
 import { nextTick } from '@vue/runtime-core';
+import {markerrors, errorPlugin } from '../functions/markerror';
 
 const completePropertyAfter = ["PropertyName", ".", "?."]
 const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
@@ -279,6 +280,51 @@ const breakpointGutter = [
   })
 ]
 
+const errorEffect = StateEffect.define({
+  map: (val, mapping) => ({pos: mapping.mapPos(val.pos), on: val.on})
+})
+
+const errorState = StateField.define({
+  create() { return RangeSet.empty },
+  update(set, transaction) {
+    set = set.map(transaction.changes)
+    for (let e of transaction.effects) {
+      if (e.is(errorEffect)) {
+        if (e.value.on){
+          set = set.update({add: [errorMarker.range(e.value.pos)]})
+
+        }else{
+          set = set.update({filter: from => from != e.value.pos})
+        }
+        // let clazz=getClazzFromState(transaction.startState);
+        // app.updateBreakpoints(set,transaction.startState.doc,clazz);
+      }
+    }
+    return set
+  }
+})
+
+const errorMarker = new class extends GutterMarker {
+  toDOM() { return document.createTextNode("!") }
+}
+
+const errorGutter = [
+  errorState,
+  gutter({
+    class: "cm-breakpoint-gutter",
+    markers: v => v.state.field(errorState),
+    initialSpacer: () => errorMarker
+  }),
+  EditorView.baseTheme({
+    ".cm-error-gutter .cm-gutterElement": {
+      color: "red",
+      paddingLeft: "5px",
+      cursor: "default"
+    },
+    ".cm-currentLine": {backgroundColor: "#121212", color: "white"}
+  })
+]
+
 const additionalCompletions=[];
 
 export default {
@@ -320,7 +366,7 @@ export default {
     };
   },
   mounted(){
-    let changed=false;
+    let changed=true;
     let timer;
     this.size=this.clazz.src.length;
     this.editor=new EditorView({
@@ -328,6 +374,7 @@ export default {
         doc: this.clazz.src,
         extensions: [
           basicSetup,
+          errorPlugin,
           //highlightActiveLine(),
           breakpointGutter,
           EditorView.lineWrapping,
@@ -336,6 +383,7 @@ export default {
           autocompletion({override: [createAutocompletion(additionalCompletions)]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
+            console.log("codemirror update")
             if(!changed){
               changed=v.docChanged;
             }
@@ -355,13 +403,26 @@ export default {
       parent: this.$refs.editor
     });
     this.editor.component=this;
+    this.emptyTransaction();
   },
   methods: {
     async update(viewUpdate){
       var state=viewUpdate.state;
       var src=state.doc.toString();
       this.clazz.setSrcTreeAndState(src,state);
+      let t1=new Date();
       await this.clazz.compile(this.project);
+      let t2=new Date();
+      console.log("update parsing done in "+(t2-t1)+"ms");
+      this.updateErrors(viewUpdate.view);
+    },
+    emptyTransaction(){
+      this.editor.dispatch({
+      });
+    },
+    updateErrors: function(view){
+      markerrors(this.clazz.errors,view);
+      this.emptyTransaction();
     },
     setCode(code){
       this.size=code.length;

@@ -113,13 +113,6 @@ export class Scope{
       }
     }
     return m;
-    let res=m.matchesArgumentList(argumentList)
-    if(res===true){
-      return m;
-    }
-    return {
-      error: res
-    };
   }
 
   getClazzByName(name){

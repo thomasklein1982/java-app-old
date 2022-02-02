@@ -12,14 +12,35 @@ export function defineUIClazzes(Java){
 }
 
 function defineJComponent(Clazz,Java){
-  createAttribute({
-    name: "value",
-    type: Java.datatypes.String,
-  },Clazz,false,Java);
-  createAttribute({
-    name: "visible",
-    type: Java.datatypes.boolean,
-  },Clazz,false,Java);
+  window.JComp=Clazz;
+  createMethod({
+    name: 'setValue',
+    args: [
+      {name: 'v', type: 'String'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setVisible',
+    args: [
+      {name: 'v', type: 'boolean'}
+    ]
+  },Clazz,false,false,Java);
+  window.getValue=createMethod({
+    name: 'getValue',
+    returnType: 'String'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'isVisible',
+    returnType: 'boolean'
+  },Clazz,false,false,Java);
+  // createAttribute({
+  //   name: "value",
+  //   type: Java.datatypes.String,
+  // },Clazz,false,Java);
+  // createAttribute({
+  //   name: "visible",
+  //   type: Java.datatypes.boolean,
+  // },Clazz,false,Java);
 }
 
 function defineJButton(Clazz,Java){
