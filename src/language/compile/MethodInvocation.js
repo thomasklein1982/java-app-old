@@ -22,7 +22,9 @@ export function MethodInvocation(node,source,scope){
     clazz: null,
     static: false
   };
-  if(node.name!=="MethodName"){
+  if(node.name==="MethodName"){
+    code="this.";
+  }else{
     if(node.name==="Identifier"){
       let id=Identifier(node,source,scope);
       code=id.code;

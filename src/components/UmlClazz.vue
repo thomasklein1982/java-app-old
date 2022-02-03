@@ -6,12 +6,12 @@
     <div class="attributes">
       <UmlMember :member="a" v-for="(a,i) in clazz.attributes" :key="'attr'+i"></UmlMember>
     </div>
-    <template v-for="(m,i) in methods" :key="'ms'+i">
-      <div class="methods">
+    <div class="methods">
+      <UmlMember v-if="clazz.constructor" :member="clazz.constructor"/>
+      <template v-for="(m,i) in methods" :key="'ms'+i">
         <UmlMember :member="m"></UmlMember>
-      </div>
-    </template>
-    
+      </template>
+    </div>
   </div>
 </template>
 

@@ -20,7 +20,7 @@ class ErrorWidget extends WidgetType {
   toDOM() {
     let wrap = document.createElement("span")
     wrap.setAttribute("aria-hidden", "true")
-    wrap.style="position: relative; right: 1ex;";
+    wrap.style="position: relative;";
     let m=document.createElement("span");
     m.className="error-marker"
     m.textContent=" ";
@@ -39,7 +39,6 @@ class ErrorWidget extends WidgetType {
 
 
 function errors(view) {
-  console.log("errors",errorArray);
   let widgets = []
   for(let i=0;i<errorArray.length;i++){
     let e=errorArray[i];

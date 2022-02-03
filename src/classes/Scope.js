@@ -35,14 +35,14 @@ export class Scope{
   }
 
   pushLocalVariable(name,type){
-    let s=this.stack[this.stack.length-1];
-    if(s[name]){
+    if(this.getLocalVariable(name)){
       throw "Es gibt bereits eine lokale Variable namens '"+name+"'.";
     }
     let obj={
       name: name,
       type: type
     };
+    let s=this.stack[this.stack.length-1];
     s[name]=obj;
   }
 

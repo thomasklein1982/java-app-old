@@ -21,201 +21,25 @@ import { java } from "@codemirror/lang-java";
 import {keymap} from "@codemirror/view";
 import {indentWithTab} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
-import  * as autocomplete  from "@codemirror/autocomplete";
-import {CompletionContext} from "@codemirror/autocomplete";
+import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
+import {undo, redo} from '@codemirror/history';
 import {autocompletion} from "@codemirror/autocomplete";
 import {StateField, StateEffect, EditorSelection} from "@codemirror/state"
 import {RangeSet} from "@codemirror/rangeset"
 import {gutter, GutterMarker} from "@codemirror/gutter"
 import {Decoration,ViewPlugin} from "@codemirror/view"
-import {Java} from '../language/java';
-import {createParamsString,snippets} from '../functions/snippets'
+import {getClazzFromState} from '../functions/cm/getClazzFromState';
+
 import {Type} from '../classes/Type'
 import { nextTick } from '@vue/runtime-core';
-import {markerrors, errorPlugin } from '../functions/markerror';
+import {markerrors, errorPlugin } from '../functions/cm/markerror';
+import {createAutocompletion } from '../functions/cm/autocompletion';
 
 const completePropertyAfter = ["PropertyName", ".", "?."]
 const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
                         "VariableDefinition", "PropertyDefinition"]
 
-function getClazzFromState(state){
-  let clazz=null;
-  try{
-    let node=state.tree.topNode.firstChild;
-    while(node && node.name!=="ClassDeclaration"){
-      node=node.nextSibling;
-    }
-    if(node){
-      node=node.firstChild;
-      while(node && node.name!=="Definition"){
-        node=node.nextSibling;
-      }
-      let clazzname=state.doc.sliceString(node.from,node.to);
-      clazz=app.getProject().getClazzByName(clazzname);
-    }
-  }catch(e){
-    console.error(e);
-  }
-  return clazz;
-}
 
-function createAutocompletion(additional){
-  return (context)=>{
-    let nodeBefore = context.state.tree.resolveInner(context.pos, -1);
-    
-    //innerhalb einer Methode?
-    let method=null;
-    let clazz=getClazzFromState(context.state);
-    if(!clazz) return;
-    let n=nodeBefore;
-    while(n){
-      if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
-        if(n.name==="ConstructorDeclaration"){
-          method=clazz.constructor;
-        }else{
-          n=n.firstChild;
-          while(n && n.name!=="Definition"){
-            n=n.nextSibling;
-          }
-          let mname=context.state.doc.sliceString(n.from,n.to);
-          method=clazz.methods[mname];
-        }
-        break;
-      }
-      n=n.parent;
-    }
-    if(!method) return;
-    let from,annotation;
-    if(nodeBefore.name==="ObjectCreationExpression"){
-      from=context.pos;
-      let options=[];
-      let clazzes=app.$refs.editor.project.clazzes;
-      for(let i=0;i<clazzes.length;i++){
-        let c=clazzes[i];
-        let m=c.constructor;
-        options.push(autocomplete.snippetCompletion(c.name+createParamsString(m,true),{
-          label: c.name+"(...)",
-          type: "function",
-          info: c.comment
-        }));
-      }
-      for(let name in Java.clazzes){
-        let c=Java.clazzes[name];
-        let m=c.constructor;
-        options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
-          label: name+"(...)",
-          type: "function",
-          info: c.comment
-        }));
-      }
-      return {
-        from,
-        options,
-        span: /^[\w$]*$/
-      }
-    }else if(nodeBefore.name==="Block"){
-      from=context.pos;
-      annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
-    }else{
-      from=nodeBefore.from;
-      if(nodeBefore.name==="."){
-        nodeBefore=nodeBefore.prevSibling;
-        from++;
-      }else{
-        if(nodeBefore.prevSibling){
-          nodeBefore=nodeBefore.prevSibling;
-          if(nodeBefore && nodeBefore.name==="."){
-            nodeBefore=nodeBefore.prevSibling;
-          }
-        }else{
-          annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
-        }
-      }
-      if(!annotation) annotation=method.typeAnnotations[nodeBefore.to];
-    }
-    console.log("autocomplete");
-    console.log(method.typeAnnotations);
-    console.log(nodeBefore.to,context.pos);
-    if(annotation){
-      return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel);
-    }
-    /*
-    if (completePropertyAfter.includes(nodeBefore.name) &&
-        nodeBefore.parent?.name == "MemberExpression") {
-      let object = nodeBefore.parent.getChild("Expression");
-      if (object?.name == "VariableName") {
-        let from = /\./.test(nodeBefore.name) ? nodeBefore.to : nodeBefore.from;
-        let variableName = context.state.sliceDoc(object.from, object.to);
-        if (typeof window[variableName] == "object"){
-          return completeProperties(from, window[variableName]);
-        }
-      }
-    } else if (nodeBefore.name == "Identifier") {
-      console.log('variable name')
-      return completeProperties(nodeBefore.from, window)
-    } else if (context.explicit && !dontCompleteIn.includes(nodeBefore.name)) {
-      console.log("nichts")
-      return completeProperties(context.pos, window)
-    }
-    */
-    return null
-  };
-}
-
-function completeProperties(from, type, isStatic, includeClasses) {
-  let options = [];
-  if(type.dimension>0){
-    options.push({
-      label: "length",
-      type: "variable",
-      info: "Die Länge des Arrays."
-    });
-  }else{
-    let clazz=type.baseType;
-    while(clazz){
-      for (let name in clazz.attributes) {
-        let a=clazz.attributes[name];
-        if(a.isStatic()===isStatic){
-          options.push({
-            label: name,
-            type: "variable",
-            info: a.comment
-          });
-        }
-      }
-      clazz=clazz.superClazz;
-    }
-    clazz=type.baseType;
-    while(clazz){
-      for (let name in clazz.methods) {
-        let m=clazz.methods[name];
-        if(m.isStatic()===isStatic){
-          options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
-            label: name+"(...)",
-            type: "function",
-            info: m.comment
-          }));
-        }
-      }
-      clazz=clazz.superClazz;
-    }
-    if(includeClasses){
-      for(let name in Java.clazzes){
-        let c=Java.clazzes[name];
-        options.push({
-          label: name,
-          type: "class",
-          info: c.comment
-        });
-      }
-    }
-  }
-  return {
-    from,
-    options,
-    span: /^[\w$]*$/
-  }
-}
 
 const breakpointEffect = StateEffect.define({
   map: (val, mapping) => ({pos: mapping.mapPos(val.pos), on: val.on})
@@ -338,7 +162,6 @@ export default {
   },
   watch: {
     clazz(nv){
-      console.log("neuer Code"),
       this.setCode(nv.src);
     },
     current(nv,ov){
@@ -380,10 +203,9 @@ export default {
           EditorView.lineWrapping,
           indentUnit.of("  "),
           java(),
-          autocompletion({override: [createAutocompletion(additionalCompletions)]}),
+          autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
-            console.log("codemirror update")
             if(!changed){
               changed=v.docChanged;
             }

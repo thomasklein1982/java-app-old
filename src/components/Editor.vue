@@ -6,6 +6,9 @@
       @upload="uploadProject"
       @new="newProject"
       @prettify="prettifyCode"
+      @undo="$refs.editor[activeTab].undo()"
+      @redo="$refs.editor[activeTab].redo()"
+      @search="$refs.editor[activeTab].openSearchPanel()"
     />
     <Splitter :style="{flex: 1}" style="overflow: hidden;width: 100%;">
       <SplitterPanel style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
