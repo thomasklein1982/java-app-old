@@ -2305,6 +2305,39 @@ window.appJScode=function(){
     update: function(){
       if($App.language==="js"){
         this.updateJS();
+      }else if($App.language==="java"){
+        this.updateJava();
+      }
+    },
+    updateJava: function(){
+      for(let a in $main){
+        let v=$main[a];
+        if(typeof v==="function") continue;
+        let item;
+        if(a in this.items){
+          item=this.items[a];
+        }else{
+          item={
+            expanded: false,
+            element: document.createElement("div")
+          };
+          this.items[a]=item;
+          this.variablesDiv.appendChild(item.element);
+        }
+        let typ=v && v.constructor? (v.constructor.name).toLowerCase():"";
+        if(typ.startsWith("html")){
+          v=v.constructor.name;
+        }else if(typ==="file"){
+          v="File";
+        }else{
+          if(v){
+            if(typ==="string"){
+              v=JSON.stringify(v);
+            }
+          }
+        }
+        
+        item.element.textContent=""+a+": "+v;
       }
     },
     updateJS: function(){
@@ -2551,6 +2584,9 @@ window.appJScode=function(){
   };
   
   $App.help=new $App.Help();
+  if($App.language==="java"){
+    $App.help.setButtonVisible(false);
+  }
   
   $App.addFunction=function addFunction(func,returnType,info,args,details,level){
     let name,isNative;

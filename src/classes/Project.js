@@ -1,12 +1,43 @@
 import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
 
+let start="<!--Project Code Start";
+let stop="Project Code Stop-->";
+
 export class Project{
   constructor(){
     this.clazzes=[];
     var c=new Clazz("MyApp",this);
-    c.src="class MyApp{\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
+    c.src="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
     this.clazzes.push(c);
+  }
+  // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
+  //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
+  getFullAppCode(additionalCode, includeSave){
+    let js=this.getJavaScriptCode();
+    let body="";
+    if(includeSave){
+      let save=this.toSaveString();
+      body=`<textarea style="display: none">${save}</textarea>`;
+    }
+    let code=`<!doctype html>
+<html>
+    <head>
+      <script>
+        window.language="java";
+        ${window.appJScode}
+        ${window.additionalJSCode}
+      </script>
+      <script>
+        ${additionalCode}
+        ${js}
+      </script>
+    </head>
+    <body>
+      ${body}
+    </body>
+</html>`;
+    return code;
   }
   getJavaScriptCode(){
     let code="";
@@ -113,12 +144,25 @@ export class Project{
       var c=this.clazzes[i];
       t.push(c.src);
     }
-    return JSON.stringify({
+    return start+JSON.stringify({
       clazzesSourceCode: t
-    });
+    })+stop;
   }
-  async fromSaveString(saveString){
-    var o=JSON.parse(saveString);
+  async fromSaveString(appcode){
+    var pos=appcode.indexOf(start);
+    let saveString;
+    if(pos<0){
+      saveString=appcode;
+    }else{
+      var pos2=appcode.indexOf(stop,pos);
+      if(pos2<0) return null;
+      saveString=appcode.substring(pos+start.length,pos2);
+    }
+    try{
+      var o=JSON.parse(saveString);
+    }catch(e){
+      return;
+    }
     this.deleteClazzes();
     for(var i=0;i<o.clazzesSourceCode.length;i++){
       var src=o.clazzesSourceCode[i];

@@ -36,7 +36,7 @@
       <SplitterPanel style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
         <Splitter layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel style="overflow: hidden;">
-            <AppPreview :paused="paused" :breakpoints="breakpoints" ref="preview"/>
+            <AppPreview :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
           </SplitterPanel>
           <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
             <Outline 
@@ -71,7 +71,6 @@ import AppPreview from './AppPreview.vue';
 import NewClazzWizard from './NewClazzWizard.vue';
 import Outline from './Outline.vue';
 import { download, saveLocally, upload } from '../functions/helper.js';
-import { createAppCode, extractProjectCodeFromAppCode } from "../functions/appcode.js";
 import { STORAGE_PROJECT } from '../consts/strings.js';
 import { uploadProject } from "../functions/uploadProject.js";
 
@@ -152,7 +151,7 @@ export default {
       this.openProject(p);
     },
     downloadProject(){
-      download(createAppCode(this.project),this.project.getName(),"text/html");
+      download(this.project.getFullAppCode("",true),this.project.getName(),"text/html");
     },
     async uploadProject(){
       let p=await uploadProject();
@@ -171,7 +170,7 @@ export default {
         //this.$refs.controlArea.resume();
       }else if(!this.running){
         this.running=true;
-        this.$refs.preview.reload(this.project.getJavaScriptCode());
+        this.$refs.preview.reload();
       }
     },
     step(){

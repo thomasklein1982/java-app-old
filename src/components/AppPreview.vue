@@ -7,6 +7,7 @@
 <script>
   export default {
     props: {
+      project: Object,
       paused: {
         type: Boolean,
         default: false
@@ -54,19 +55,14 @@
         }
         this.frame=null;
       },
-      reload(javascriptcode){
+      reload(){
         let frame=document.createElement('iframe');
         frame.style="width: 100%; height: 100%;";
         if(this.$refs.wrapper.firstChild){
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
         }
         this.$refs.wrapper.appendChild(frame);
-        let src="$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
-        src+=javascriptcode;
-        console.log(javascriptcode);
-        //let code='\<script src="https://thomaskl.uber.space/Webapps/AppJS/app.js?a=2"\>\</script\>\n\<script\>'+src+'\n\</script\>';
-        let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
-        code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
+        let code=this.project.getFullAppCode("$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");");
         console.log("komplett:")
         console.log(code);
         let doc=frame.contentWindow.document;
