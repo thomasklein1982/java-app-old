@@ -1,12 +1,14 @@
 <template>
-  <div style="position: absolute; left: 0; top: 0; background-color: white; z-index: 2; width: 100%; height: 100%">
-      <h1>Willkommen bei JavaApp</h1>
+  <div style="text-align: center; position: absolute; left: 0; top: 0; background-color: white; z-index: 2; width: 100%; height: 100%">
+      <h1 style="margin-bottom: 0">Willkommen bei</h1>
+      <img src="../assets/logo.png" style="width: 3cm">
+      <p>Version {{$root.version}}</p>
+      <p>Mit JavaApp kannst du Web-Apps mit Java programmieren, die auf allen Geräten laufen.</p>
       <p>Wähle eine der folgenden Möglichkeiten:</p>
-      <div>
-        
-        <Button :disabled="lastProject===null" style="margin: 0.5rem; display: block" icon="pi pi-replay" @click="restoreApp()" label="Letzte App wiederherstellen"/>
-        <Button style="margin: 0.5rem; display: block" icon="pi pi-file" @click="createNewApp()" label="Neue App erstellen"/>
-        <Button style="margin: 0.5rem; display: block" icon="pi pi-upload" @click="clickUploadApp()" label="App hochladen"/>
+      <div style="text-align: center">
+        <Button :disabled="lastProject===null" style="margin: 0.5rem;" icon="pi pi-replay" @click="restoreApp()" label="Letzte App wiederherstellen"/>
+        <Button style="margin: 0.5rem;" icon="pi pi-file" @click="createNewApp()" label="Neue App erstellen"/>
+        <Button style="margin: 0.5rem;" icon="pi pi-upload" @click="clickUploadApp()" label="App hochladen"/>
       </div>
     </div>
 </template>

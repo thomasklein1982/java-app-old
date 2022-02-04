@@ -10,6 +10,7 @@ function additionalJSCode(){
     }
   }
 
+  
   class JComponent{
     constructor(x,y,width,height){
       this.x=x;

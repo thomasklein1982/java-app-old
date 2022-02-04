@@ -18,7 +18,7 @@ export class Project{
       }
       code+="\n"+c.getJavaScriptCode();
     }
-    code+="\nasync function onStart(){await "+mainClazz.name+".main([])}";
+    code+="\nasync function onStart(){await "+mainClazz.name+".main([]); if($main.onStart){$main.onStart();}}";
     return code;
   }
   async initialize(){
