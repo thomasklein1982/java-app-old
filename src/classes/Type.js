@@ -80,7 +80,7 @@ export class Type{
   isString(){
     if(this.dimension>0) return false;
     //console.log(this.baseType.name,this.baseType===Java.datatypes.String,this.baseType===window.dString,window.dString===Java.datatypes.String,Java.datatypes.String===Java.clazzes.String);
-    return this.baseType===Java.datatypes.String;
+    return this.baseType.name==="String";
   }
   isInt(){
     if(this.dimension>0) return false;

@@ -26,6 +26,7 @@ export class Project{
       <script>
         window.language="java";
         ${window.appJScode}
+        ${includeSave? 'console.hide()':''}
         ${window.additionalJSCode}
       </script>
       <script>
