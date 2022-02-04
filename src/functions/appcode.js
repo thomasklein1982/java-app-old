@@ -1,16 +1,21 @@
 let start="<!--Project Code Start";
 let stop="Project Code Stop-->";
 
+
+
 export function createAppCode(project){
-  var src=project.toSaveString();
+  let save=project.toSaveString();
+  let src=;
   var c=`<!doctype html>
   <html>
     <head>
-
+      <meta charset="utf-8">
     </head>
     <body>
-      Hello World!
-      `+start+"\n"+src+"\n"+stop+`
+      `+src+`
+      <!--
+      `+start+"\n"+save+"\n"+stop+`
+      -->
     </body>
   </html>`;
   return c;
