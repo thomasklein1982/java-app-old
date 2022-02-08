@@ -42,6 +42,7 @@ function errors(view) {
   let widgets = []
   for(let i=0;i<errorArray.length;i++){
     let e=errorArray[i];
+    if(!e || !e.message || !e.line) continue;
     let deco = Decoration.widget({
       widget: new ErrorWidget(e.message),
       side: 1

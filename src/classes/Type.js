@@ -84,15 +84,15 @@ export class Type{
   }
   isInt(){
     if(this.dimension>0) return false;
-    return this.baseType===Java.datatypes.int;
+    return this.baseType.name==="int";
   }
   isDouble(){
     if(this.dimension>0) return false;
-    return this.baseType===Java.datatypes.double;
+    return this.baseType.name==="double";
   }
   isBoolean(){
     if(this.dimension>0) return false;
-    return this.baseType===Java.datatypes.boolean;
+    return this.baseType.name==="boolean";
   }
   isPrimitive(){
     return this.dimension===0 && (this.baseType instanceof PrimitiveType);

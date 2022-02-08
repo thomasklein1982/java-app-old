@@ -5,6 +5,7 @@ import { Source } from "../../classes/Source";
 import { CompileFunctions } from "../CompileFunctions";
 import { ArrayAccess } from "./ArrayAccess";
 import { Identifier } from "./Identifier";
+import { ThisExpression } from "./ThisExpression";
 
 /**
  * 
@@ -34,6 +35,14 @@ export function FieldAccess(node,source,scope){
     }
     owner={
       clazz: fa.type.baseType,
+      static: false
+    };
+  }else if(node.name==="this"){
+    let This=ThisExpression(node,source,scope);
+    code+=This.code;
+    node=node.nextSibling;
+    owner={
+      clazz: This.type.baseType,
       static: false
     };
   }else if(node.name==="Identifier"){

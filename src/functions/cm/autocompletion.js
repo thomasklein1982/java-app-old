@@ -7,7 +7,7 @@ import {getClazzFromState} from './getClazzFromState';
 
 
 function getRealNodeBefore(node,pos){
-  if(node && node.firstChild){
+  if(node && node.firstChild && !node.firstChild.type.isError && node.firstChild.to<pos){
     let n=node.firstChild;
     while(n && n.nextSibling && !n.nextSibling.type.isError && n.nextSibling.to<pos){
       n=n.nextSibling;
@@ -38,16 +38,46 @@ export function createAutocompletion(){
           while(n && n.name!=="Definition"){
             n=n.nextSibling;
           }
-          let mname=context.state.doc.sliceString(n.from,n.to);
-          method=clazz.methods[mname];
+          if(n){
+            let mname=context.state.doc.sliceString(n.from,n.to);
+            method=clazz.methods[mname];
+          }
         }
         break;
       }
       n=n.parent;
     }
-    if(!method) return;
-    let from,annotation;
+    
+    if(nodeBefore.name==="}"){
+      if(nodeBefore.parent.name==="Block"){
+        let n=nodeBefore.parent.parent;
+        if(n.name==="ConstructorDeclaration" || n.name==="MethodDeclaration" || n.name==="FieldDeclaration"){
+          method=null;
+        }
+      }
+    }
+    let from;
+    if(!method){
+      if(clazz.hasStaticMainMethod()){
+        if(nodeBefore.name==="TypeName"){
+          from=nodeBefore.from;
+        }else{
+          from=pos;
+        }
+        return {
+          from,
+          options: snippets.eventListeners,
+          span: /^[\w$]*$/
+        }
+      }
+      return;
+    }
+    let annotation;
+
     if(nodeBefore.name==="new"){
+      if(context.pos===nodeBefore.to){
+        return;
+      }
       from=context.pos;
       let options=[];
       let clazzes=app.$refs.editor.project.clazzes;
@@ -101,25 +131,6 @@ export function createAutocompletion(){
     if(annotation){
       return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel);
     }
-    /*
-    if (completePropertyAfter.includes(nodeBefore.name) &&
-        nodeBefore.parent?.name == "MemberExpression") {
-      let object = nodeBefore.parent.getChild("Expression");
-      if (object?.name == "VariableName") {
-        let from = /\./.test(nodeBefore.name) ? nodeBefore.to : nodeBefore.from;
-        let variableName = context.state.sliceDoc(object.from, object.to);
-        if (typeof window[variableName] == "object"){
-          return completeProperties(from, window[variableName]);
-        }
-      }
-    } else if (nodeBefore.name == "Identifier") {
-      console.log('variable name')
-      return completeProperties(nodeBefore.from, window)
-    } else if (context.explicit && !dontCompleteIn.includes(nodeBefore.name)) {
-      console.log("nichts")
-      return completeProperties(context.pos, window)
-    }
-    */
     return null
   };
 }

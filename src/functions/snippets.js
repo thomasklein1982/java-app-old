@@ -27,6 +27,8 @@ export function createParamsString(params,useArgs){
       }
       if(useArgs){
         text="${"+text+"}";
+      }else{
+        text=p.type+" "+text;
       }
       t.push(text);
     }

@@ -39,10 +39,46 @@ function additionalJSCode(){
       return this.value;
     }
     get value(){
-      return this.$el.value;
+      return this.$el.value+"";
     }
     set value(label){
       this.$el.value=label;
+    }
+    setX(v){
+      this.$el.cx=v;
+    }
+    getX(){
+      return this.$el.cx;
+    }
+    setY(v){
+      this.$el.cy=v;
+    }
+    getY(){
+      return this.$el.cy;
+    }
+    setWidth(v){
+      this.$el.width=v;
+    }
+    getWidth(){
+      return this.$el.width;
+    }
+    setHeight(v){
+      this.$el.height=v;
+    }
+    getX(){
+      return this.$el.height;
+    }
+    getStyle(name){
+      return this.$el.style[name];
+    }
+    setStyle(name, value){
+      this.$el.style[name]=value;
+    }
+    setAlign(a){
+      this.$el.align=a;
+    }
+    setAlignContent(a){
+      this.$el.alignContent=a;
     }
   }
 
@@ -66,6 +102,14 @@ function additionalJSCode(){
     constructor(type,placeholder,x,y,width,height){
       super(x,y,width,height);
       this.$el=ui.input(type,placeholder,x,y,width,height);
+      this.$el.component=this;
+    }
+  }
+
+  class JCheckBox extends JComponent{
+    constructor(label,x,y,width,height){
+      super(x,y,width,height);
+      this.$el=ui.input("checkbox",label,x,y,width,height);
       this.$el.component=this;
     }
   }

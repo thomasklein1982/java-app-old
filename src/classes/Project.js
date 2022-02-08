@@ -23,6 +23,7 @@ export class Project{
     let code=`<!doctype html>
 <html>
     <head>
+      <meta charset="utf-8">
       <script>
         window.language="java";
         ${window.appJScode}

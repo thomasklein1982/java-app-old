@@ -30,6 +30,7 @@ let JButton=new Clazz("JButton");
 let JTextField=new Clazz("JTextField");
 let JLabel=new Clazz("JLabel");
 let JTextArea=new Clazz("JTextArea");
+let JCheckBox=new Clazz("JCheckBox");
 let JCombobox=new Clazz("JCombobox");
 let App=new Clazz("App");
 
@@ -45,11 +46,11 @@ let App=new Clazz("App");
 
 
 let datatypes={
-  boolean, double, int, char, Object, String, App, Gamepad, UI, Mouse, Console, JButton, JLabel, JTextArea, JTextField, JCombobox, JComponent,Path
+  boolean, double, int, char, Object, String, App, Gamepad, UI, Mouse, Console, JButton, JLabel, JTextArea, JTextField, JCombobox, JComponent,Path, JCheckBox
 };
 
 let clazzes={
-  Object, String, App, Gamepad, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox
+  Object, String, App, Gamepad, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox
 }
 
 export const Java={

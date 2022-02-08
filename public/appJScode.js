@@ -206,21 +206,62 @@ window.appJScode=function(){
   
   $App.createElement=function(tagname){
     let el=document.createElement(tagname);
+    el.style.boxSizing="border-box";
+    el.style.display="flex";
     this.implementStyleGetterAndSetter(el);
     el.appJSData={
       oldDisplayValue: undefined,
       cx: null,
       cy: null,
       width: null,
-      height: null
+      height: null,
+      align: $App.Canvas.$getAlignment("center"),
+      alignContent: $App.Canvas.$getAlignment("center")
     };
-    el.updatePosition=function(cx,cy,width,height){
-      $App.canvas.updateElementPosition(this,cx,cy,width,height);
+    el.updatePosition=function(cx,cy,width,height,align){
+      $App.canvas.updateElementPosition(this,cx,cy,width,height,align);
     };
+    el.updateAlignContent=function(v){
+      var a=$App.Canvas.$getAlignment(v);
+      this.appJSData.alignContent=a;
+      console.log(a);
+      if(a.h==="center"){
+        this.style.justifyContent="center";
+      }else if(a.h==="left"){
+        this.style.justifyContent="flex-end";
+      }else{
+        this.style.justifyContent="flex-start";
+      }
+      if(a.v==="middle"){
+        this.style.alignItems="center";
+      }else if(a.v==="top"){
+        this.style.alignItems="flex-end";
+      }else{
+        this.style.alignItems="flex-start";
+      }
+    };
+    el.updateAlignContent();
+    Object.defineProperty(el,'align', {
+      set: function(v){
+        this.appJSData.align=$App.Canvas.$getAlignment(v);
+        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
+      },
+      get: function(){
+        return this.appJSData.align.h+" "+this.appJSData.align.v;
+      }
+    });
+    Object.defineProperty(el,'alignContent', {
+      set: function(v){
+        this.updateAlignContent(v);
+      },
+      get: function(){
+        return this.appJSData.align.h+" "+this.appJSData.align.v;
+      }
+    });
     Object.defineProperty(el,'cx', {
       set: function(v){
         this.appJSData.cx=v;
-        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
       },
       get: function(){
         return this.appJSData.cx;
@@ -229,7 +270,7 @@ window.appJScode=function(){
     Object.defineProperty(el,'cy', {
       set: function(v){
         this.appJSData.cy=v;
-        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
       },
       get: function(){
         return this.appJSData.cy;
@@ -238,7 +279,7 @@ window.appJScode=function(){
     Object.defineProperty(el,'width', {
       set: function(v){
         this.appJSData.width=v;
-        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
       },
       get: function(){
         return this.appJSData.width;
@@ -247,7 +288,7 @@ window.appJScode=function(){
     Object.defineProperty(el,'height', {
       set: function(v){
         this.appJSData.height=v;
-        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+        this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
       },
       get: function(){
         return this.appJSData.height;
@@ -792,6 +833,33 @@ window.appJScode=function(){
     this.reset();
   };
   
+  $App.Canvas.$getAlignment=function(align){
+    var ha,va;
+    if(align && align.toLowerCase){
+      align=align.toLowerCase(); 
+      if(align.indexOf("left")>=0){
+        ha="right";
+      }else if(align.indexOf("right")>=0){
+        ha="left";
+      }else{
+        ha="center";
+      }
+      if(align.indexOf("bottom")>=0){
+        va="top";
+      }else if(align.indexOf("top")>=0){
+        va="bottom";
+      }else{
+        va="middle";
+      }
+    }else{
+      ha="center";
+      va="middle";
+    }
+    return {
+      h: ha, v: va
+    };
+  };
+
   $App.Canvas.prototype={
     save: function(dontAdd){
       if(!dontAdd){
@@ -879,11 +947,15 @@ window.appJScode=function(){
       this.height=height;
       this.resize(fullWidth,fullHeight,true);
     },
-    updateElementPosition: function(el,cx,cy,width,height){
+    updateElementPosition: function(el,cx,cy,width,height,align){
       el.appJSData.cx=cx;
       el.appJSData.cy=cy;
       el.appJSData.width=width;
       el.appJSData.height=height;
+      if(!align){
+        align=$App.Canvas.$getAlignment("center");
+      }
+      el.appJSData.align=align;
       if(width===undefined){
         width=el.offsetWidth;
         width=this.getCanvasWidth(width);
@@ -893,8 +965,23 @@ window.appJScode=function(){
         height=this.getCanvasHeight(height);
       }
       el.style.position="absolute";
-      el.style.left=(100*(cx-width/2))/(this.width)+"%";
-      el.style.bottom=(100*(cy-height/2))/(this.height)+"%";
+      var x,y;
+      if(align.h==="center"){
+        x=cx-width/2;
+      }else if(align.h==="left"){
+        x=cx;
+      }else{
+        x=cx-width;
+      }
+      if(align.v==="middle"){
+        y=cy-height/2;
+      }else if(align.v==="top"){
+        y=cy-height;
+      }else{
+        y=cy;
+      }
+      el.style.left=(100*(x))/(this.width)+"%";
+      el.style.bottom=(100*(y))/(this.height)+"%";
       el.style.width=100*width/this.width+"%";
       el.style.height=100*height/this.height+"%";
     },
@@ -1124,7 +1211,7 @@ window.appJScode=function(){
     },
     write: function(text,x,y,align,dontAdd){
       if(!dontAdd){
-        align=this.$getAlignment(align);
+        align=$App.Canvas.$getAlignment(align);
         this.addCommand("write",[text,x,y,align]);
       }
       x=this.getX(x);
@@ -1148,39 +1235,13 @@ window.appJScode=function(){
         y+=lineHeight;
       }
     },
-    $getAlignment: function(align){
-      var ha,va;
-      if(align && align.toLowerCase){
-        align=align.toLowerCase(); 
-        if(align.indexOf("left")>=0){
-          ha="right";
-        }else if(align.indexOf("right")>=0){
-          ha="left";
-        }else{
-          ha="center";
-        }
-        if(align.indexOf("bottom")>=0){
-          va="top";
-        }else if(align.indexOf("top")>=0){
-          va="bottom";
-        }else{
-          va="middle";
-        }
-      }else{
-        ha="center";
-        va="middle";
-      }
-      return {
-        h: ha, v: va
-      };
-    },
     $adjustInputPosition: function(){
       var x=this.getRawX(this.input.x);
       var y=this.getRawY(this.input.y);
       var width=this.getRawWidth(this.input.width);
       var height=this.input.height;
       var align=this.input.align;
-      align=this.$getAlignment(align);
+      align=$App.Canvas.$getAlignment(align);
       this.input.element.style.textAlign="left";
       if(align.h==="center"){
         x-=width/2;
@@ -3300,7 +3361,21 @@ window.appJScode=function(){
       }
       var b=$App.createElement("input");
       b.type=type;
-      if(b.type==="file"){
+      if(b.type==="checkbox"){
+        var id=Math.floor(Math.random()*100000000);
+        b.id="checkbox-"+id;
+        var wrapper=document.createElement("span");
+        wrapper.style="display: inline-block; text-align: center";
+        wrapper.appendChild(b);
+        wrapper.box=b;
+        var label=document.createElement("label");
+        label.htmlFor=b.id;
+        label.innerHTML=placeholdertext;
+        wrapper.appendChild(label);
+        b=wrapper;
+        b.type="checkbox";
+        b.appJSData=b.box.appJSData;
+      }else if(b.type==="file"){
         //b.name="files[]";
         b.fr=new FileReader();
         b.fr.onload=(ev)=>{
@@ -3323,21 +3398,26 @@ window.appJScode=function(){
           }
           
         };
-        Object.defineProperty(b,"value",{
-          get: function(){
-            if(b.type==="file"){
-              return b.files[0];
-            }
-            var valueProp=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value");
-            var v=valueProp.get.call(b);
-            if(b.type==="number"||b.type==="range"){
-              return v*1;
-            }else{
-              return v;
-            }
-          }
-        })  
       }
+      Object.defineProperty(b,"value",{
+        get: function(){
+          if(b.type==="file"){
+            return b.files[0];
+          }
+          if(b.type==="checkbox"){
+            var valueProp=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"checked");
+            var v=valueProp.get.call(b.box);
+            return v;
+          }
+          var valueProp=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value");
+          var v=valueProp.get.call(b);
+          if(b.type==="number"||b.type==="range"){
+            return v*1;
+          }else{
+            return v;
+          }
+        }
+      });
       b.placeholder=placeholdertext;
       $App.canvas.addElement(b,cx,cy,width,height);
       return b;

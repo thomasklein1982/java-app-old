@@ -278,7 +278,8 @@ export default {
       var code=this.getCode();
       code=js_beautify(code,{
         "indent_size": 2,
-        "preserve_newlines": false,
+        "max_preserve_newlines": 2,
+        "indent_empty_lines": true,
         "space_in_paren": true,
         "space_in_empty_paren": true
       });
