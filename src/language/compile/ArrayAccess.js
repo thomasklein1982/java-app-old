@@ -25,7 +25,7 @@ export function ArrayAccess(node,source,scope){
   }
   indices.push(index.code);
   code+=".get("+index.code+")";
-  codeSet+=".set("+index.code+",";
+  codeSet+=".checkBounds("+index.code+").set("+index.code+",";
   let type=new Type(object.type.baseType,object.type.dimension-indices.length)
   scope.addTypeAnnotation(node.to,type,false);
   return {

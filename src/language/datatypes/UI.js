@@ -10,6 +10,7 @@ export function defineUIClazzes(Java){
   defineJTextField(Java.datatypes.JTextField,Java);
   defineJCheckBox(Java.datatypes.JCheckBox,Java);
   defineJCombobox(Java.datatypes.JCombobox,Java);
+  defineDatatable(Java.datatypes.Datatable,Java);
 }
 
 function defineJComponent(Clazz,Java){
@@ -164,6 +165,16 @@ function defineJCheckBox(Clazz,Java){
   createConstructor ({
     args: [
       {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+    ]
+  },Clazz,Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
+  
+}
+
+function defineDatatable(Clazz,Java){
+  createConstructor ({
+    args: [
+      {type: {baseType: 'Object', dimension: 1}, name: 'array'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;

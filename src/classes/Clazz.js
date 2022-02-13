@@ -1,4 +1,5 @@
 import { parseJava } from "../functions/parseJava";
+import { Java } from "../language/java";
 import {Attribute} from "./Attribute"
 import { Method } from "./Method";
 import { Source } from "./Source";
@@ -131,7 +132,8 @@ export class Clazz{
   }
 
   isSubtypeOf(type){
-    if(!type) return true;
+    if(!type || type === Java.datatypes.Object) return true;
+
     if(type instanceof Type){
       if(type.dimension===0){
         type=type.baseType;

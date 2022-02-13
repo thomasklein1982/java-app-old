@@ -176,8 +176,9 @@ window.appJScode=function(){
     // the event object has two special properties:
     //alert(event.promise); // [object Promise] - the promise that generated the error
     //alert(event.reason); // Error: Whoops! - the unhandled error object
+    var message=event.reason.message? event.reason.message: event.reason;
     $App.handleError({
-      message: event.reason.message,
+      message: message,
       line: $App.debug.lastLine,
       name: $App.debug.lastName
     });
@@ -224,6 +225,7 @@ window.appJScode=function(){
     let el=document.createElement(tagname);
     el.style.boxSizing="border-box";
     el.style.display="flex";
+    //el.style.position="absolute";
     this.implementStyleGetterAndSetter(el);
     el.appJSData={
       oldDisplayValue: undefined,
@@ -242,10 +244,15 @@ window.appJScode=function(){
       this.appJSData.alignContent=a;
       console.log(a);
       if(a.h==="center"){
+        //this.style.transform
+        // this.style.marginLeft="auto";
+        // this.style.marginRight="auto";
         this.style.justifyContent="center";
       }else if(a.h==="left"){
+        // this.style.marginRight="auto";
         this.style.justifyContent="flex-end";
       }else{
+        // this.style.marginLeft="auto";
         this.style.justifyContent="flex-start";
       }
       if(a.v==="middle"){
@@ -360,16 +367,7 @@ window.appJScode=function(){
         }
       });
     }else if(tagname==="div"){
-      Object.defineProperty(el,'value', {
-        set: function(v){
-          this.appJSData.value=v;
-          this.innerHTML=v;
-          //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
-        },
-        get: function(){
-          return this.appJSData.value;
-        }
-      });
+      
     }else if(tagname==="input"){
       // Object.defineProperty(el,'value', {
       //   set: function(v){
@@ -430,16 +428,22 @@ window.appJScode=function(){
       meta.setAttribute("name","viewport");
       meta.setAttribute("content","width=device-width, initial-scale=1");
       document.head.appendChild(meta);
+      var style=document.createElement("style");
+      document.head.appendChild(style);
+      style=style.sheet;
+      style.insertRule(".datatable{background-color: white; text-align: center; border-collapse: collapse}",0);
+      style.insertRule(".datatable td,th{border: 1pt solid black}",0);
+      style.insertRule(".datatable tr.selected{background-color: yellow}",0);
+      style.insertRule(".datatable tr:nth-child(even){background-color: lightgray}",0);
+      style.insertRule(".datatable.show-index td:nth-child(1),.datatable.show-index th:nth-child(1){display: table-cell}",0);
+      style.insertRule(".datatable td:nth-child(1),.datatable th:nth-child(1){display: none}",0);
       $App.headLoaded=true;
     }
     if(!dontStart && document.body){
       this.body.element=document.body;
       this.body.element.style="padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden";
       this.body.element.parentElement.style=this.body.style;
-      // var style=document.createElement("style");
-      // document.head.appendChild(style);
-      // style=style.sheet;
-      // style.insertRule(".toast{}",0);
+      
       var root=document.createElement("div");
       this.body.root=root;
       root.style="font-family: sans-serif;position: fixed;width:100%;height:100%";
@@ -2324,6 +2328,7 @@ window.appJScode=function(){
         console.error(m);
         throw m;
       }
+      return this;
     },
     get: function(index){
       this.checkBounds(index);
@@ -3564,6 +3569,109 @@ window.appJScode=function(){
       $App.canvas.addElement(b,cx,cy,width,height);
       return b;
     },
+    datatable: function(array,cx,cy,width,height){
+      var b=$App.createElement("div");
+      var wrapper=document.createElement("div");
+      wrapper.style.overflow="auto";
+      wrapper.style.maxWidth="100%";
+      wrapper.style.maxHeight="100%";
+      b.table=document.createElement("table");
+      b.table.className="datatable";
+      b.table.style.minWidth="100%";
+      b.table.style.minHeight="100%";
+      b._showIndex=false;
+      Object.defineProperty(b, 'showIndex', {
+        set: function(v){
+          this._showIndex=v;
+          this.table.className=v? "datatable datatable-show-index": "datatable";
+        },
+        get: function(){
+          return this._showIndex;
+        }
+      });
+      wrapper.appendChild(b.table);
+      b.appendChild(wrapper);
+      b._array=null;
+      b._rows;
+      Object.defineProperty(b, 'array', {
+        set: function(array) {
+          if(array instanceof $App.Array){
+            array=array.values;
+          } 
+          while(this.table.firstChild){
+            this.table.removeChild(this.firstChild);
+          }
+          b._rows=[];
+          if(array.length===0) return;
+          let obj=array[0];
+          let captions=document.createElement("tr");
+          let th=document.createElement("th");
+          th.textContent="INDEX";
+          captions.appendChild(th);
+          this.table.appendChild(captions);
+          for(let i=0;i<array.length;i++){
+            let obj=array[i];
+            let tr=document.createElement("tr");
+            b._rows.push(tr);
+            tr.index=i;
+            tr.datatable=b;
+            tr.onclick=function(){
+              if(this.datatable.value===this.index){
+                this.datatable.value=-1;
+              }else{
+                this.datatable.value=this.index;
+              }
+            };
+            let td=document.createElement("td");
+            td.textContent=i;
+            tr.appendChild(td);
+            for(let a in obj){
+              let attr=obj[a];
+              if(typeof attr==="function"){
+                continue;
+              }
+              if(i===0){
+                let captionTD=document.createElement("th");
+                captionTD.innerHTML=(a+"").toUpperCase();
+                captions.appendChild(captionTD);
+              }
+              td=document.createElement("td");
+              td.innerHTML=attr+"";
+              tr.appendChild(td);
+            }
+            this.table.appendChild(tr);
+          }
+        },
+        get: function(){
+          return this._options;
+        }
+      });
+      b.selectedIndex=-1;
+      Object.defineProperty(b, 'value', {
+        /*selected index*/ 
+        set: function(index) { 
+          if(this.selectedIndex>=0){
+            var tr=this._rows[this.selectedIndex];
+            if(tr){
+             tr.classList.remove("selected");
+            }
+          }
+          this.selectedIndex=index;
+          if(index>=0){
+            var tr=this._rows[this.selectedIndex];
+            if(tr){
+             tr.classList.add("selected");
+            }
+          }
+        },
+        get: function(){
+          return this.selectedIndex;
+        }
+      });
+      b.array=array;
+      $App.canvas.addElement(b,cx,cy,width,height);
+      return b;
+    },
     textarea: function (placeholdertext,cx,cy,width,height){
       var b=$App.createElement("textarea");
       b.placeholder=placeholdertext;
@@ -3580,8 +3688,18 @@ window.appJScode=function(){
     label: function(text,cx,cy,width,height){
       var b=$App.createElement("div");
       b.style.textAlign="center";
-      b.innerHTML=text;
       $App.canvas.addElement(b,cx,cy,width,height);
+      Object.defineProperty(b,'value', {
+        set: function(v){
+          this.appJSData.value=v;
+          this.innerHTML=v;
+          //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+        },
+        get: function(){
+          return this.appJSData.value;
+        }
+      });
+      b.value=text;
       return b;
     }
   },'Erlaubt das Hinzufügen und Manipulieren der grafischen Benutzeroberfläche (UI).',[
@@ -3634,6 +3752,42 @@ window.appJScode=function(){
         }
       ],
       info: 'Erzeugt ein neues Eingabefeld, in das der User etwas eingeben kann. Mit <code>type</code> legst du fest, was der User eingeben soll (normalerweise <code>"text"</code> oder <code>"number"</code>, es gibt aber <a href="https://www.w3schools.com/html/html_form_input_types.asp" target="_blank">noch viel mehr</a>). Du kannst außerdem den Platzhaltertext <code>placeholdertext</code>, den Mittelpunkt (<code>cx</code>|<code>cy</code>), die Breite <code>width</code> und die Höhe <code>height</code> festlegen. Liefert das Eingabefeld zurück.'
+    },
+    {
+      name: 'datatable',
+      language: 'js', 
+      returnType: 'Datatable',
+      args: [
+        {
+          name: 'array',
+          type: {
+            baseType: 'Object',
+            dimension: 1
+          }, 
+          info: 'Array mit Objekten, die dargestellt werden sollen'
+        },
+        {
+          name: 'cx', 
+          type: 'double', 
+          info: 'x-Koordinate des Mittelpunkts'
+        }, 
+        {
+          name: 'cy', 
+          type: 'double', 
+          info: 'y-Koordinate des Mittelpunkts'
+        }, 
+        {
+          name: 'width', 
+          type: 'double', 
+          info: 'Breite. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'
+        }, 
+        {
+          name: 'height', 
+          type: 'double', 
+          info: 'Höhe. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'
+        }
+      ],
+      info: 'Erzeugt eine neue Datatable, mit der du die Elemente eines Arrays anzeigen kannst.'
     },
     {
       name: 'textfield',
@@ -4091,5 +4245,6 @@ window.appJScode=function(){
   }else{
     $main=null;
   }
+
 
 }

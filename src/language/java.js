@@ -36,6 +36,7 @@ let JLabel=new Clazz("JLabel");
 let JTextArea=new Clazz("JTextArea");
 let JCheckBox=new Clazz("JCheckBox");
 let JCombobox=new Clazz("JCombobox");
+let Datatable=new Clazz("Datatable");
 let App=new Clazz("App");
 App.cannotBeInstantiated=true;
 
@@ -50,11 +51,11 @@ App.cannotBeInstantiated=true;
 
 
 let datatypes={
-  boolean, double, int, char, Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox
+  boolean, double, int, char, Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
 };
 
 let clazzes={
-  Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox
+  Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
 }
 
 export const Java={

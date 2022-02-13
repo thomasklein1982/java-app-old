@@ -121,4 +121,12 @@ function additionalJSCode(){
       this.$el.component=this;
     }
   }
+
+  class Datatable extends JComponent{
+    constructor(array,x,y,width,height){
+      super(x,y,width,height);
+      this.$el=ui.datatable(array,x,y,width,height);
+      this.$el.component=this;
+    }
+  }
 }

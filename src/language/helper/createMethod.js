@@ -21,7 +21,7 @@ export function createMethod(data,clazz,isStatic,isConstructor,Java){
       let a=data.args[j];
       let p=new Parameter(m.params);
       if(a.type.baseType){
-        p.type=new Type(Java.datatypes[a.type.baseType],a.type.dim);
+        p.type=new Type(Java.datatypes[a.type.baseType],a.type.dimension);
       }else{
         p.type=new Type(Java.datatypes[a.type],0);
       }
