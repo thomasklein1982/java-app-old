@@ -130,7 +130,7 @@ export class Type{
   }
   isSubtypeOf(type){
     if(!type){
-      return this.dimension===0;
+      return true;
     }
     if(type instanceof PrimitiveType || type instanceof Clazz){
       type={
@@ -139,6 +139,9 @@ export class Type{
       };
     }
     if("baseType" in type){
+      if(this.baseType===Java.datatypes.nullType){
+        return !type.isPrimitive();
+      }
       if(type.dimension===this.dimension){
         if(!type.baseType){
           return true;

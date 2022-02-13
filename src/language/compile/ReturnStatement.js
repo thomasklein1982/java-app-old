@@ -12,7 +12,8 @@ export function ReturnStatement(node,source,scope){
   let returnType=scope.method.type;
   if(node && !node.type.isError && node.name!==";"){
     if(returnType){
-      let v=CompileFunctions.get(node,source)(node,source,scope);
+      let f=CompileFunctions.get(node,source);
+      let v=f(node,source,scope);
       returnType.autoCastValue(v);
       if(!v.type.isSubtypeOf(returnType)){
         throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern, dies ist aber ein "+v.type.toString()+".",node);

@@ -6,6 +6,7 @@ import { appjsdata } from "../functions/snippets";
 import { defineString } from "./datatypes/string";
 import { defineUIClazzes } from "./datatypes/UI";
 
+let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
 let double=new PrimitiveType("double",null,0.0,"Ein 'double' ist eine Kommazahl.");
 let int=new PrimitiveType("int",double,0,"Ein 'Integer' ist eine ganze Zahl.");
@@ -51,11 +52,11 @@ App.cannotBeInstantiated=true;
 
 
 let datatypes={
-  boolean, double, int, char, Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
+  nullType,boolean, double, int, char, Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
 };
 
 let clazzes={
-  Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
+  nullType,Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
 }
 
 export const Java={
@@ -69,10 +70,5 @@ defineGenericClazz(Console,appjsdata.objects.console,Java);
 defineGenericClazz(Path,appjsdata.objects.path,Java);
 defineGenericClazz(World,appjsdata.objects.world,Java);
 defineGenericClazz(Time,appjsdata.objects.time,Java);
-// defineJComponent(JComponent,Java);
-// defineJButton(JButton,Java);
-// defineJLabel(JLabel,Java);
 defineApp(App,Java);
 defineUIClazzes(Java);
-
-console.log(App);

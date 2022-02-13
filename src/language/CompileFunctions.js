@@ -28,6 +28,7 @@ import { UpdateExpression } from "./compile/UpdateExpression";
 import {Null} from "./compile/Null";
 import { WhileStatement } from "./compile/WhileStatement";
 import { ArrayInitializer } from "./compile/ArrayInitializer";
+import { UnaryExpression } from "./compile/UnaryExpression";
 
 function doNothing(){}
 
@@ -44,6 +45,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression
   }
 }

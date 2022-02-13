@@ -74,6 +74,6 @@ export function MethodInvocation(node,source,scope){
   code+=al.code;
   
   return {
-    method,arguments: al, code, type: method.type? new Type(Java.datatypes[method.type.baseType.name],method.type.dimension):null
+    method,arguments: al, code, type: method.type? method.type: null
   }
 }

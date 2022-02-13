@@ -4,6 +4,6 @@ import { Java } from "../java";
 export function Null(node,source,scope){
   return {
     code: "null",
-    type: new Type(Java.datatypes.Object,0)
+    type: new Type(Java.datatypes.nullType,0)
   };
 }
