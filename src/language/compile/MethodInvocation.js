@@ -17,17 +17,17 @@ export function MethodInvocation(node,source,scope){
   node=node.firstChild;
   
   let mn,al,methods;
-  let code="";
+  let code="await ";
   let owner={
     clazz: null,
     static: false
   };
   if(node.name==="MethodName"){
-    code="this.";
+    code+="this.";
   }else{
     if(node.name==="Identifier"){
       let id=Identifier(node,source,scope);
-      code=id.code;
+      code+=id.code;
       if(id.object instanceof Clazz){
         owner={
           clazz: id.object,
@@ -41,9 +41,9 @@ export function MethodInvocation(node,source,scope){
       }
     }else if(node.name==="FieldAccess"){
       let fa=FieldAccess(node,source,scope);
-      code=fa.code;
+      code+=fa.code;
       owner={
-        clazz: fa.object.type,
+        clazz: fa.type.baseType,
         static: false
       };
     }

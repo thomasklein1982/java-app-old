@@ -11,7 +11,7 @@ import { CompileFunctions } from "../CompileFunctions";
  */
 export function Block(node,source,scope){
   let code="";
-  let errors=[];
+  let errors=scope.method.clazz.errors;
   node=node.firstChild;
   if(node.type.isError || node.name!=='{'){
     errors.push(source.createError("'{' erwartet.",node));
@@ -41,6 +41,6 @@ export function Block(node,source,scope){
   }
   scope.popLayer();
   return {
-    code,errors
+    code
   }
 }

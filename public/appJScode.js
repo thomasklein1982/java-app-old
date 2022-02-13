@@ -1,5 +1,4 @@
 window.appJScode=function(){
-  
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   window.onmessage=function(message){
@@ -13,10 +12,13 @@ window.appJScode=function(){
   })
 
   window.$App={
-    version: 19,
+    version: 20,
     language: window.language? window.language:'js',
     setupData: null,
     debug: {
+      lastLine: -1,
+      lastName: true,
+      enabled: window.appJSdebugMode? window.appJSdebugMode: false,
       breakpoints: {},
       breakpointCount: 0,
       paused: false,
@@ -26,6 +28,8 @@ window.appJScode=function(){
         if(!name){
           name=true;
         }
+        this.lastLine=line;
+        this.lastName=name;
         if(this.paused || this.breakpoints[line]===name){
           this.paused=true;
           if($App.body.overlay){
@@ -61,7 +65,6 @@ window.appJScode=function(){
           }
           this.breakpoints[n]=f;
         }
-        
       },
       onMessage: function(message){
         var data=message.data;
@@ -86,6 +89,8 @@ window.appJScode=function(){
       }
     },
     assets: {},
+    scripts: [],
+    headLoaded: false,
     body: {
       element: null,
       root: null,
@@ -167,6 +172,17 @@ window.appJScode=function(){
     
   };
   
+  window.addEventListener('unhandledrejection', function(event) {
+    // the event object has two special properties:
+    //alert(event.promise); // [object Promise] - the promise that generated the error
+    //alert(event.reason); // Error: Whoops! - the unhandled error object
+    $App.handleError({
+      message: event.reason.message,
+      line: $App.debug.lastLine,
+      name: $App.debug.lastName
+    });
+  });
+
   $App.handleError=function(errorData){
     if(window.parent!==window){
       window.parent.postMessage({type: "error", data: errorData});
@@ -333,6 +349,16 @@ window.appJScode=function(){
           return this.appJSData.value;
         }
       });
+    }else if(tagname==="img"){
+      Object.defineProperty(el,'value', {
+        set: function(v){
+          this.appJSData.value=v;
+          this.src=v;
+        },
+        get: function(){
+          return this.src;
+        }
+      });
     }else if(tagname==="div"){
       Object.defineProperty(el,'value', {
         set: function(v){
@@ -390,14 +416,13 @@ window.appJScode=function(){
     });
   };
   
+  
   $App.$JoyStick=function(t,onDown,onUp,e){var i=void 0===(e=e||{}).title?"joystick":e.title,n=void 0===e.width?0:e.width,o=void 0===e.height?0:e.height,r=void 0===e.internalFillColor?"#00AA00":e.internalFillColor,h=void 0===e.internalLineWidth?2:e.internalLineWidth,a=void 0===e.internalStrokeColor?"#003300":e.internalStrokeColor,d=void 0===e.externalLineWidth?2:e.externalLineWidth,f=void 0===e.externalStrokeColor?"#008000":e.externalStrokeColor,l=void 0===e.autoReturnToCenter||e.autoReturnToCenter,s=t,c=document.createElement("canvas");c.id=i,0===n&&(n=s.clientWidth),0===o&&(o=s.clientHeight),c.width=n,c.height=o,s.appendChild(c);var u=c.getContext("2d"),g=0,v=2*Math.PI,p=(c.width-(c.width/2+10))/2,C=p+5,w=p+30,m=c.width/2,L=c.height/2,E=c.width/10,P=-1*E,S=c.height/10,k=-1*S,W=m,T=L;function G(){u.beginPath(),u.arc(m,L,w,0,v,!1),u.lineWidth=d,u.strokeStyle=f,u.stroke()}function x(){u.beginPath(),W<p&&(W=C),W+p>c.width&&(W=c.width-C),T<p&&(T=C),T+p>c.height&&(T=c.height-C),u.arc(W,T,p,0,v,!1);var t=u.createRadialGradient(m,L,5,m,L,200);t.addColorStop(0,r),t.addColorStop(1,a),u.fillStyle=t,u.fill(),u.lineWidth=h,u.strokeStyle=a,u.stroke()}"ontouchstart"in document.documentElement?(c.addEventListener("touchstart",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("touchmove",function(t){t.preventDefault(),1===g&&t.targetTouches[0].target===c&&(W=t.targetTouches[0].pageX,T=t.targetTouches[0].pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("touchend",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)):(c.onmouseleave=function(){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},c.addEventListener("mousedown",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("mousemove",function(t){1===g&&(W=t.pageX,T=t.pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("mouseup",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)),G(),x(),this.GetWidth=function(){return c.width},this.GetHeight=function(){return c.height},this.GetPosX=function(){return W},this.GetPosY=function(){return T},this.GetX=function(){return((W-m)/C*100).toFixed()},this.GetY=function(){return((T-L)/C*100*-1).toFixed()},this.setDir=function(dir){if(dir==="N"){W=m;T=-1000;}else if(dir==="S"){W=m;T=1000;}else if(dir==="W"){W=-1000;T=L;}else if(dir==="E"){W=1000;T=L;}else if(dir==="NW"){W=-1000;T=-1000;}else if(dir==="NE"){W=1000;T=-1000;}else if(dir==="SW"){W=-1000;T=1000;}else if(dir==="SE"){W=1000;T=1000;}else{W=m;T=L;}u.clearRect(0,0,c.width,c.height),G(),x();},this.GetDir=function(){var t="",e=W-m,i=T-L;return i>=k&&i<=S&&(t="C"),i<k&&(t="N"),i>S&&(t="S"),e<P&&("C"===t?t="W":t+="W"),e>E&&("C"===t?t="E":t+="E"),t}};
   
   $App.setup=async function(dontStart){
+    await this.loadScripts();
     await this.loadAssets();
-    if(!dontStart && document.body){
-      this.body.element=document.body;
-      this.body.element.style="padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden";
-      this.body.element.parentElement.style=this.body.style;
+    if(!$App.headLoaded && document.head){
       var meta=document.createElement("meta");
       meta.setAttribute("charset","utf-8");
       document.head.appendChild(meta);
@@ -405,6 +430,12 @@ window.appJScode=function(){
       meta.setAttribute("name","viewport");
       meta.setAttribute("content","width=device-width, initial-scale=1");
       document.head.appendChild(meta);
+      $App.headLoaded=true;
+    }
+    if(!dontStart && document.body){
+      this.body.element=document.body;
+      this.body.element.style="padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden";
+      this.body.element.parentElement.style=this.body.style;
       // var style=document.createElement("style");
       // document.head.appendChild(style);
       // style=style.sheet;
@@ -668,6 +699,10 @@ window.appJScode=function(){
     }
   };
 
+  $App.registerScript=function(url){
+    this.scripts.push(url);
+  }
+
   $App.getAsset=function(asset){
     if(!asset){
       var m="Dieses Asset konnte nicht geladen werden.";
@@ -703,6 +738,26 @@ window.appJScode=function(){
     throw m;
   }
   
+  $App.loadScripts=async function(){
+    for(var i=0;i<this.scripts.length;i++){
+      var s=document.createElement("script");
+      var url=this.scripts[i];
+      
+      var p=new Promise((resolve,reject)=>{
+        s.onload=()=>{
+          resolve();
+        };
+        s.onerror=()=>{
+          resolve();
+        };
+        document.head.insertBefore(s,document.head.firstChild);
+        s.src=url;
+      });
+      await p;
+      
+    }
+  }
+
   $App.loadAssets=async function(){
     for(let a in this.assets){
       let asset=this.assets[a];
@@ -1714,6 +1769,23 @@ window.appJScode=function(){
         }
       }
     },
+    drawAsync: async function(){
+      for(var i=0;i<this.tiles.length;i++){
+        var row=this.tiles[i];
+        for(var j=0;j<row.length;j++){
+          var t=row[j];
+          var x=j+1;
+          var y=i+1;
+          var tile=this.getTile(x,y);
+          if(window.onTileDraw){
+            await window.onTileDraw(x,y,tile.type,tile.info);
+          }else{
+            this.paintRect(x,y,1,1,false);
+            this.write(tile.type,x,y);
+          }
+        }
+      }
+    },
     draw: function(){
       for(var i=0;i<this.tiles.length;i++){
         var row=this.tiles[i];
@@ -2226,10 +2298,20 @@ window.appJScode=function(){
   $App.gamepad=new $App.Gamepad()
   
   /*****Array */
-  $App.Array=function(type, dim){
+  $App.Array=function(type, dim, values){
     this.type=type;
-    this.dim=dim;
-    this.values=$App.Array.createArrayValues(type,null,dim,0);
+    if(Array.isArray(dim)){
+      this.dim=dim;
+      this.values=$App.Array.createArrayValues(type,null,dim,0);
+    }else{
+      this.values=values;
+      var a=values;
+      this.dim=[];
+      while(a && Array.isArray(a)){
+        this.dim.push(a.length);
+        a=a[0];
+      }
+    }
   };
 
   $App.Array.prototype={
@@ -2334,14 +2416,13 @@ window.appJScode=function(){
     this.element=document.createElement("div");
     this.element.style="width: 100%; height: 100%; background-color: #121212; color: white";
     this.element.className="console";
-    this.element.innerHTML="Console";
     this.items={};
     this.visible=false;
     this.variablesDiv=document.createElement("div");
-    this.variablesDiv.style="height: 50%; overflow: auto";
+    this.variablesDiv.style="height: 70%; overflow: auto";
     this.element.appendChild(this.variablesDiv);
     this.outputDiv=document.createElement("div");
-    this.outputDiv.style="height: 50%; overflow: auto";
+    this.outputDiv.style="height: 30%; overflow: auto";
     this.element.appendChild(this.outputDiv);
   
   };
@@ -2365,49 +2446,110 @@ window.appJScode=function(){
     },
     update: function(){
       if($App.language==="js"){
-        this.updateJS();
+        this.updateFromObject(window);
       }else if($App.language==="java"){
-        this.updateJava();
+        this.updateFromObject($main);
       }
     },
-    updateJava: function(){
-      for(let a in $main){
-        let v=$main[a];
-        if(typeof v==="function") continue;
-        let item;
-        if(a in this.items){
-          item=this.items[a];
-        }else{
-          item={
-            expanded: false,
-            element: document.createElement("div")
-          };
-          this.items[a]=item;
-          this.variablesDiv.appendChild(item.element);
+    createConsoleItem: function(name){
+      let item={
+          expanded: false,
+          element: document.createElement("div"),
+          value: document.createElement("span"),
+          button: document.createElement("span"),
+          line: document.createElement("div"),
+          expandable: false,
+          subItems: [],
+          sublist: document.createElement("div"),
+          object: undefined
+      };
+      item.sublist.style.marginLeft="1em";
+      item.button.style="text-align: center; display: inline-block; width: 1em; border-radius: 3px";
+      item.element.appendChild(item.line);
+      item.line.appendChild(item.button);
+      var el=document.createElement("span");
+      el.textContent=name+": ";
+      item.line.appendChild(el);
+      item.line.appendChild(item.value);
+      item.line.onclick=()=>{
+        if(item.expandable){
+          item.expanded=!item.expanded;
         }
-        let typ=v && v.constructor? (v.constructor.name).toLowerCase():"";
-        if(typ.startsWith("html")){
-          v=v.constructor.name;
-        }else if(typ==="file"){
-          v="File";
+      };
+      item.element.appendChild(item.sublist);
+      item.updateSublist=function(){
+        if(!this.expanded){
+          this.sublist.style.display="none";
         }else{
-          if(v){
-            if(typ==="string"){
-              v=JSON.stringify(v);
+          var newItems={};
+          for(var a in this.object){
+            var item;
+            var obj=this.object[a];
+            if(typeof obj==="function"){
+              continue;
+            }
+            if(a in this.subItems){
+              item=this.subItems[a];
+            }else{
+              item=$App.console.createConsoleItem(a)
+              this.sublist.appendChild(item.element);
+            }
+            item.update(obj);
+            newItems[a]=item;
+          }
+          this.sublist.style.display="";
+          for(var a in this.subItems){
+            if(!(a in newItems)){
+              this.sublist.removeChild(this.subItems[a].element);
             }
           }
+          this.subItems=newItems;
         }
-        
-        item.element.textContent=""+a+": "+v;
+      };
+      item.update=function(obj){
+        var v;
+        this.object=obj;
+        if(obj===undefined){
+          v="undefiniert";
+        }else if(obj===null){
+          v="null";
+        }else if(typeof obj==="object"){
+          this.button.style.backgroundColor="gray";
+          this.button.textContent=this.expanded? "-": "+";
+          this.expandable=true;
+          item.line.style.cursor="pointer";
+          if(obj instanceof $App.Array){
+            v=obj.type+"["+obj.length+"]";
+            this.object=obj.values;
+          }else if(Array.isArray(obj)){
+            v="Array ("+obj.length+")";
+          }else{
+            if(obj.constructor){
+              v=obj.constructor.name;
+            }else{
+              v="Objekt";
+            }
+          }
+        }else{
+          item.line.style.cursor="";
+          this.button.style.backgroundColor="";
+          this.button.textContent="";
+          this.expandable=false;
+          v=JSON.stringify(obj);
+        }
+        this.value.textContent=v;
+        this.updateSublist();
       }
+      return item;
     },
-    updateJS: function(){
+    updateFromObject: function(source){
+      if(!source) return;
       let newItems={};
-      for(let a in window){
-        if((a in $App.systemVariables)){
+      for(let a in source){
+        if(source===window && (a in $App.systemVariables)){
           continue;
         }
-        let obj=window[a];
+        let obj=source[a];
         if(obj && obj.$hideFromConsole){
           continue;
         }
@@ -2421,23 +2563,11 @@ window.appJScode=function(){
         if(a in this.items){
           item=this.items[a];
         }else{
-          item={
-            expanded: false,
-            element: document.createElement("div")
-          };
+          item=this.createConsoleItem(a)
           this.variablesDiv.appendChild(item.element);
         }
+        item.update(obj);
         newItems[a]=item;
-        let v;
-        let typ=obj && obj.constructor? (obj.constructor.name).toLowerCase():"";
-        if(typ.startsWith("html")){
-          v=obj.constructor.name;
-        }else if(typ==="file"){
-          v="File";
-        }else{
-          v=JSON.stringify(obj);
-        }
-        item.element.textContent=""+a+": "+v;
       }
       for(let a in this.items){
         if(!(a in newItems)){
@@ -2829,6 +2959,12 @@ window.appJScode=function(){
     $App.registerAsset.call($App,url, name);
   },null,'Lädt ein sog. "Asset" (ein Bild oder ein Sound) und speichert es unter dem angegebenen Namen im Objekt "assets". Muss vor onStart aufgerufen werden.',
   [{name: 'url', type: 'String', info: 'URL der Datei'}, {name: 'name', type: 'String', info: 'Name, unter dem das Asset gespeichert wird.'}],
+  '',"topLevel");
+
+  $App.addFunction(async function loadScript(url){
+    $App.registerScript.call($App,url);
+  },null,'Lädt ein JavaScript. Muss vor onStart aufgerufen werden.',
+  [{name: 'url', type: 'String', info: 'URL des Scripts'}],
   '',"topLevel");
 
   $App.addFunction(function drawImage(image,cx,cy,width,height,rotation,mirrored){
@@ -3353,6 +3489,12 @@ window.appJScode=function(){
       $App.canvas.addElement(b,cx,cy,width,height);
       return b;
     },
+    image: function (url,cx,cy,width,height){
+      var b=$App.createElement("img");
+      b.src=url;
+      $App.canvas.addElement(b,cx,cy,width,height);
+      return b;
+    },
     input: function (type,placeholdertext,cx,cy,width,height){
       //Legacy: wenn die ersten beiden argumente strings sind, passiert nichts, ansonsten wird type auf "text" gesetzt
       if(type!==undefined && type.split && placeholdertext!==undefined && placeholdertext.split){
@@ -3448,6 +3590,12 @@ window.appJScode=function(){
       returnType: 'JButton',
       args: [{name: 'text', type: 'String', info: 'Aufschrift des Buttons'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}, {name: 'height', type: 'double', info: 'Höhe. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}],
       info: 'Erzeugt einen neuen Button mit der Aufschrift <code>text</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Höhe <code>height</code>. Liefert den Button zurück.'
+    },
+    {
+      name: 'image', 
+      returnType: 'JImage',
+      args: [{name: 'url', type: 'String', info: 'URL zum Bild'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}, {name: 'height', type: 'double', info: 'Höhe. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}],
+      info: 'Erzeugt ein neues Bild von der URL <code>url</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Höhe <code>height</code>. Liefert das Bild zurück.'
     },
     {
       name: 'input',
@@ -3632,8 +3780,12 @@ window.appJScode=function(){
     replaceTypes: function(oldType,newType){
       $App.world.replaceTypes(oldType,newType);
     },
-    draw: function(){
-      $App.world.draw();
+    draw: async function(){
+      if($App.debug.enabled){
+        await $App.world.drawAsync();
+      }else{
+        $App.world.draw();
+      }
     },
     scroll(cx,cy){
       $App.world.setCenter(cx,cy);
@@ -3858,14 +4010,17 @@ window.appJScode=function(){
     },
     {
       name: 'mouseX',
+      type: 'double',
       info: 'Die aktuelle x-Koordinate der Maus innerhalb der Spielwelt.'
     },
     {
       name: 'mouseY',
+      type: 'double',
       info: 'Die aktuelle y-Koordinate der Maus innerhalb der Spielwelt.'
     },
     {
       name: 'mouseDown',
+      type: 'boolean',
       info: 'Ist die Maus aktuell gedrückt oder nicht (entspricht mouse.down).'
     },
     {
@@ -3933,6 +4088,8 @@ window.appJScode=function(){
         $App.systemVariables[a]=true;
       }
     })();
+  }else{
+    $main=null;
   }
 
 }

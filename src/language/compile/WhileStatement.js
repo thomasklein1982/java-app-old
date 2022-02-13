@@ -2,15 +2,15 @@ import { Java } from "../java";
 import { ParenthesizedExpression } from "./ParenthesizedExpression";
 import { Block } from "./Block";
 
-export function IfStatement(node,source,scope){
+export function WhileStatement(node,source,scope){
   node=node.firstChild;
   
   let code;
-  if(node.name!=="if"){
+  if(node.name!=="while"){
     
   }
   node=node.nextSibling;
-  code="if";
+  code="while";
   if(node.name!=="ParenthesizedExpression"){
 
   }
@@ -25,13 +25,6 @@ export function IfStatement(node,source,scope){
     throw thenBlock.errors[0];
   }
   code+="{"+thenBlock.code+"}";
-  node=node.nextSibling;
-  if(node && node.name==="else"){
-    code+="else";
-    node=node.nextSibling;
-    let elseBlock=Block(node,source,scope);
-    code+="{"+elseBlock.code+"}";
-  }
   return {
     code: code,
     type: null

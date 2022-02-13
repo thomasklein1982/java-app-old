@@ -24,6 +24,10 @@ let Mouse=new Clazz("Mouse");
 Mouse.cannotBeInstantiated=true;
 let Console=new Clazz("Console");
 Console.cannotBeInstantiated=true;
+let World=new Clazz("World");
+World.cannotBeInstantiated=true;
+let Time=new Clazz("Time");
+Time.cannotBeInstantiated=true;
 let JComponent=new Clazz("JComponent");
 JComponent.cannotBeInstantiated=true;
 let JButton=new Clazz("JButton");
@@ -33,7 +37,7 @@ let JTextArea=new Clazz("JTextArea");
 let JCheckBox=new Clazz("JCheckBox");
 let JCombobox=new Clazz("JCombobox");
 let App=new Clazz("App");
-
+App.cannotBeInstantiated=true;
 
 //let Record=new Clazz("Record");
 //let Matrix=new Clazz("Matrix");
@@ -46,11 +50,11 @@ let App=new Clazz("App");
 
 
 let datatypes={
-  boolean, double, int, char, Object, String, App, Gamepad, UI, Mouse, Console, JButton, JLabel, JTextArea, JTextField, JCombobox, JComponent,Path, JCheckBox
+  boolean, double, int, char, Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox
 };
 
 let clazzes={
-  Object, String, App, Gamepad, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox
+  Object, String, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox
 }
 
 export const Java={
@@ -60,6 +64,10 @@ export const Java={
 
 defineString(String,Java);
 defineGenericClazz(Gamepad,appjsdata.objects.gamepad,Java);
+defineGenericClazz(Console,appjsdata.objects.console,Java);
+defineGenericClazz(Path,appjsdata.objects.path,Java);
+defineGenericClazz(World,appjsdata.objects.world,Java);
+defineGenericClazz(Time,appjsdata.objects.time,Java);
 // defineJComponent(JComponent,Java);
 // defineJButton(JButton,Java);
 // defineJLabel(JLabel,Java);

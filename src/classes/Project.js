@@ -29,8 +29,6 @@ export class Project{
         ${window.appJScode}
         ${includeSave? 'console.hide()':''}
         ${window.additionalJSCode}
-      </script>
-      <script>
         ${additionalCode}
         ${js}
       </script>

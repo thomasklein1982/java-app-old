@@ -28,8 +28,8 @@ export function Identifier(node,source,scope,owner){
   let obj;
   let code=name;
   let type=null;
-  if(owner && owner.clazz){
-    if(owner.clazz.dimension>0){
+  if(owner && owner.type){
+    if(owner.type.dimension>0){
       //Array!
       if(name!=="length"){
         throw source.createError("Ein Array hat keine Attribute außer der Länge 'length'.",node);
@@ -37,7 +37,13 @@ export function Identifier(node,source,scope,owner){
       //scope.addTypeAnnotation(node.to,new Type(Java.datatypes.int,0),false);
       type=new Type(Java.datatypes.int,0);
     }else{
-      obj=scope.getAttribute(name,owner.static,owner.clazz);
+      let clazz;
+      if(owner.static){
+        clazz=owner.type;
+      }else{
+        clazz=owner.type.baseType;
+      }
+      obj=scope.getAttribute(name,owner.static,clazz);
       if(obj && obj.error){
         throw source.createError(obj.error,node);
       }

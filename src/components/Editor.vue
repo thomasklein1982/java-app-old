@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     setRuntimeError(error){
-      let i=this.project.getClazzIndexByName(error.file);
+      let i=this.project.getClazzIndexByName(error.name);
       if(i>=0){
         this.$refs.editor[i].setRuntimeError(error);
         this.activeTab=i;

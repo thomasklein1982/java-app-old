@@ -6,11 +6,27 @@ export function ForStatement(node,source,scope){
   node=node.firstChild;
   node=node.nextSibling;
   console.log(node);
-  code+="let i=0;i<10;i++";
+  let forSpec=node;
+  node=node.firstChild;
+  if(node.name!=="("){
+
+  }
+  node=node.nextSibling;
+  let p1=CompileFunctions.get(node,source)(node,source,scope);
+  code+=p1.code;
+  node=node.nextSibling;
+  if(node){
+    let p2=CompileFunctions.get(node,source)(node,source,scope);
+    code+=p2.code;
+    node=node.nextSibling;
+    node=node.nextSibling;
+    let p3=CompileFunctions.get(node,source)(node,source,scope);
+    code+=";"+p3.code;
+  }
   code+=")";
-  let block=node.nextSibling;
+  let block=forSpec.nextSibling;
   block=Block(block,source,scope);
-  code+=block.code;
+  code+="{"+block.code+"}";
   return {
     code: code,
     type: null

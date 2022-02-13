@@ -4,7 +4,6 @@ import { VariableDeclarator } from "./VariableDeclarator";
 export function LocalVariableDeclaration(node,source,scope){
   let code;
   node=node.firstChild;
-  console.log(node);
   if(node.name!=="PrimitiveType" || node.name!=="TypeName"){
 
   }

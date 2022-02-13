@@ -23,7 +23,7 @@ export function FieldAccess(node,source,scope){
     node=node.nextSibling;
     code+=fa.code;
     owner={
-      clazz: fa.object.type,
+      type: fa.type,
       static: false
     };
   }else if(node.name==="ArrayAccess"){
@@ -34,7 +34,7 @@ export function FieldAccess(node,source,scope){
       throw source.createError("Ein Array hat keine Attribute.",node.node);
     }
     owner={
-      clazz: fa.type.baseType,
+      type: fa.type,
       static: false
     };
   }else if(node.name==="this"){
@@ -42,7 +42,7 @@ export function FieldAccess(node,source,scope){
     code+=This.code;
     node=node.nextSibling;
     owner={
-      clazz: This.type.baseType,
+      type: This.type,
       static: false
     };
   }else if(node.name==="Identifier"){
@@ -51,12 +51,12 @@ export function FieldAccess(node,source,scope){
     node=node.nextSibling;
     if(ident.object instanceof Clazz){
       owner={
-        clazz: ident.object,
+        type: ident.object,
         static: true
       };
     }else{
       owner={
-        clazz: ident.type.baseType,
+        type: ident.type,
         static: false
       };
     }

@@ -266,16 +266,13 @@ export class Clazz{
    * Kompiliert alle Methoden (inklusive Konstruktoren) der Klasse
    */
   compileMethods(){
-    let errors=[];
     for(let mi in this.methods){
       let m=this.methods[mi];
-      errors=errors.concat(m.compileBody(this.source).errors);
+      m.compileBody(this.source);
     }
     if(this.constructor){
       let c=this.constructor;
-      errors=errors.concat(c.compileBody(this.source).errors);
+      c.compileBody(this.source);
     }
-    this.errors=this.errors.concat(errors);
-    return errors;
   }
 }

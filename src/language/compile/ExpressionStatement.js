@@ -5,7 +5,7 @@ export function ExpressionStatement(node,source,scope){
   let f=CompileFunctions.get(node,source);
   let a=f(node,source,scope);
   if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
-    throw (source.createError("';' erwartet.",node));
+    throw (source.createError("';' erwartet.",node.nextSibling));
   }
   a.code+=";";
   return a;
