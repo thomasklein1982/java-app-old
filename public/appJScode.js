@@ -12,7 +12,7 @@ window.appJScode=function(){
   })
 
   window.$App={
-    version: 20,
+    version: 21,
     language: window.language? window.language:'js',
     setupData: null,
     debug: {
@@ -2875,6 +2875,17 @@ window.appJScode=function(){
   $App.addFunction(function clear(){
     $App.canvas.clear();
   },null,'Löscht den Inhalt der Zeichenfläche.',[],'Verwende diesen Befehl zu Beginn der Funktion <a href="#help-onNextFrame"><code>onNextFrame</code></a>, damit du danach alles neu zeichnen kannst.');
+
+  $App.addFunction(async function sleep(millis){
+    var p=new Promise((resolve,reject)=>{
+      setTimeout(()=>{
+        resolve();
+      },millis);
+    });
+    return await p;
+  },null,'Unterbricht den Programmablauf für eine gewisse Zeit.',[
+    {name: "millis", type: 'int', info: 'Anzahl Millisekunden, die das Programm abwarten soll.'}
+  ],'Dieser Befehl funktioniert nur zusammen mit async/await.');
   
   $App.addFunction("alert",null,'Zeigt eine Messagebox mit einer Nachricht.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
   
@@ -4245,6 +4256,5 @@ window.appJScode=function(){
   }else{
     $main=null;
   }
-
 
 }

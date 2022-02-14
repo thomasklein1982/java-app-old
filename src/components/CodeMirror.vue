@@ -1,7 +1,7 @@
 <template>
   <div id="root">
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
-    <div v-if="clazz && clazz.errors" id="errors">
+    <div v-if="clazz && clazz.errors" id="errors" style="padding-bottom: 1em">
       <table>
         <tr v-for="(e,i) in clazz.errors" :key="'error'+i">
           <template v-if="e">

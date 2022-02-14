@@ -2,6 +2,7 @@
   <div v-if="project" style="width: 100%; height: 100%; overflow: hidden" :style="{display: 'flex', flexDirection: 'column'}">
   
     <EditorMenubar
+      :right-closed="rightClosed"
       @download="downloadProject"
       @upload="uploadProject"
       @new="newProject"
@@ -9,9 +10,10 @@
       @undo="$refs.editor[activeTab].undo()"
       @redo="$refs.editor[activeTab].redo()"
       @search="$refs.editor[activeTab].openSearchPanel()"
+      @toggleright="toggleRight()"
     />
-    <Splitter :style="{flex: 1}" style="overflow: hidden;width: 100%;">
-      <SplitterPanel style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
+    <Splitter ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
+      <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
         <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
           <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+c.name">
             <template #header>
@@ -33,7 +35,7 @@
         </TabView>
         
       </SplitterPanel>
-      <SplitterPanel style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
+      <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
         <Splitter layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel style="overflow: hidden;">
             <AppPreview :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
@@ -87,9 +89,17 @@ export default {
       project: null,
       fontSize: 20,
       breakpoints: [],
+      sizeCode: 60,
+      rightClosed: false,
+      sizeCodeSaved: 60
     };
   },
   watch: {
+    sizeCode(nv,ov){
+      if(nv!==ov){
+        this.setSplitterSizes(nv);
+      }
+    },
     current(nv,ov){
       if(nv!==null){
         let name=nv.name;
@@ -119,6 +129,31 @@ export default {
     },1000);
   },
   methods: {
+    toggleRight(){
+      if(!this.rightClosed){
+        this.sizeCodeSaved=this.sizeCode;
+        this.sizeCode=100;
+      }else{
+        this.sizeCode=Math.max(10,this.sizeCodeSaved);
+      }
+      this.rightClosed=!this.rightClosed;
+    },
+    setSplitterSizes(left){
+      let s=this.$refs.splitter;
+      s.panelSizes=[left,100-left];
+      let children = [...s.$el.children];
+      let j=0;
+      children.forEach((child, i) => {
+        if(child.className.indexOf("p-splitter-panel")>=0){
+          child.style.flexBasis = 'calc(' + s.panelSizes[j] + '% - ' + ((s.panels.length - 1) * s.gutterSize) + 'px)';
+          j++;
+        }
+      });
+      this.sizeCode=left;
+    },
+    handleResize(ev){
+      this.sizeCode=ev.sizes[0];
+    },
     setRuntimeError(error){
       let i=this.project.getClazzIndexByName(error.name);
       if(i>=0){
