@@ -34,6 +34,7 @@ export class Scope{
     }
   }
 
+  
   pushLocalVariable(name,type){
     if(this.getLocalVariable(name)){
       throw "Es gibt bereits eine lokale Variable namens '"+name+"'.";
@@ -46,9 +47,20 @@ export class Scope{
     s[name]=obj;
   }
 
+  getLocalVariables(){
+    let obj={};
+    for(let i=0;i<this.stack.length;i++){
+      let s=this.stack[i];
+      for(var a in s){
+        obj[a]=true;
+      }
+    }
+    return obj;
+  }
+
+
   /**Liefert die lokale Variable zu diesem Namen zurueck, falls vorhanden */
   getLocalVariable(name){
-    let searching=true;
     let index=this.stack.length-1;
     /**Lokalen Stack durchsuchen: */
     while(index>=0){

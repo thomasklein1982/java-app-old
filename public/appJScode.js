@@ -2422,6 +2422,7 @@ window.appJScode=function(){
     this.element.style="width: 100%; height: 100%; background-color: #121212; color: white";
     this.element.className="console";
     this.items={};
+    this.localItems={};
     this.visible=false;
     this.variablesDiv=document.createElement("div");
     this.variablesDiv.style="height: 70%; overflow: auto";
@@ -2429,7 +2430,7 @@ window.appJScode=function(){
     this.outputDiv=document.createElement("div");
     this.outputDiv.style="height: 30%; overflow: auto";
     this.element.appendChild(this.outputDiv);
-  
+    this.localVariables=null;
   };
   
   $App.Console.prototype={
@@ -2456,17 +2457,22 @@ window.appJScode=function(){
         this.updateFromObject($main);
       }
     },
-    createConsoleItem: function(name){
+    updateLocalVariables: function(variables){
+      this.localVariables=variables;
+      //console.log(variables);
+    },
+    createConsoleItem: function(name,local){
       let item={
-          expanded: false,
-          element: document.createElement("div"),
-          value: document.createElement("span"),
-          button: document.createElement("span"),
-          line: document.createElement("div"),
-          expandable: false,
-          subItems: [],
-          sublist: document.createElement("div"),
-          object: undefined
+        local: local===true,
+        expanded: false,
+        element: document.createElement("div"),
+        value: document.createElement("span"),
+        button: document.createElement("span"),
+        line: document.createElement("div"),
+        expandable: false,
+        subItems: [],
+        sublist: document.createElement("div"),
+        object: undefined
       };
       item.sublist.style.marginLeft="1em";
       item.button.style="text-align: center; display: inline-block; width: 1em; border-radius: 3px";
@@ -2512,6 +2518,12 @@ window.appJScode=function(){
         }
       };
       item.update=function(obj){
+        if(this.local && !$App.debug.paused){
+          this.element.style.display="none";
+          return;
+        }else{
+          this.element.style.display="";
+        }
         var v;
         this.object=obj;
         if(obj===undefined){
@@ -2580,6 +2592,37 @@ window.appJScode=function(){
         }
       }
       this.items=newItems;
+      
+      newItems={};
+      if(this.localVariables){
+        for(let a in this.localVariables){
+          let obj=this.localVariables[a];
+          if(obj && obj.$hideFromConsole){
+            continue;
+          }
+          if(obj===window){
+            continue;
+          }
+          if(typeof obj==="function"){
+            continue;
+          }
+          let item;
+          if(a in this.localItems){
+            item=this.localItems[a];
+          }else{
+            item=this.createConsoleItem(a,true)
+            this.variablesDiv.appendChild(item.element);
+          }
+          item.update(obj);
+          newItems[a]=item;
+        }
+      }
+      for(let a in this.localItems){
+        if(!(a in newItems)){
+          this.variablesDiv.removeChild(this.localItems[a].element);
+        }
+      }
+      this.localItems=newItems;
     },
     setVisible: function(v){
       this.visible=v;

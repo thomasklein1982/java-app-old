@@ -2,6 +2,12 @@ import { Scope } from "../../classes/Scope";
 import { Source } from "../../classes/Source";
 import { CompileFunctions } from "../CompileFunctions";
 
+function createUpdateLocalVariablesCode(scope){
+  let locals=scope.getLocalVariables();
+  return "var $locals="+JSON.stringify(locals)+";for(var $a in $locals){eval('$locals[$a]='+$a)};$App.console.updateLocalVariables($locals);";
+}
+
+
 /**
  * 
  * @param {*} node 
@@ -19,6 +25,7 @@ export function Block(node,source,scope){
       code,errors
     }
   }
+  code+=createUpdateLocalVariablesCode(scope);
   scope.pushLayer();
   let open=true;
   while(node.nextSibling){
@@ -27,6 +34,7 @@ export function Block(node,source,scope){
       open=false;
     }else{
       try{
+        
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
         let line=source.state.doc.lineAt(node.from).number;
@@ -40,6 +48,7 @@ export function Block(node,source,scope){
     errors.push(source.createError("'}' erwartet.",node));
   }
   scope.popLayer();
+  code+=createUpdateLocalVariablesCode(scope);
   return {
     code
   }

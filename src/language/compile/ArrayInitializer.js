@@ -5,7 +5,6 @@ import { Java } from "../java";
 export function ArrayInitializer(node,source,scope,type){
   node=node.firstChild;
   node=node.nextSibling;
-  console.log(node);
   let code="[";
   let subType=new Type(type.baseType,type.dimension-1);
   while(node && node.name!=="}" && !node.type.isError){

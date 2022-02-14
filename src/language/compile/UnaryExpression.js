@@ -4,7 +4,6 @@ import { Java } from "../java";
 
 export function UnaryExpression(node,source,scope){
   let op=node.firstChild;
-  console.log(op);
   let opText=source.getText(op);
   let code=opText;
   node=op.nextSibling;

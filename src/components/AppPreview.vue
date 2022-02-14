@@ -63,8 +63,6 @@
         }
         this.$refs.wrapper.appendChild(frame);
         let code=this.project.getFullAppCode("$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");");
-        console.log("komplett:")
-        console.log(code);
         let doc=frame.contentWindow.document;
         doc.open();
         doc.write(code);

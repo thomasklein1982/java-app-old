@@ -119,8 +119,10 @@ export class Type{
       }
       return true;
     }else if(this.isString()){
+      if(value.type.baseType!==Java.datatypes.nullType){
+        value.code="("+value.code+"+'')";
+      }
       value.type=this;
-      value.code="("+value.code+"+'')";
       return true;
     }
     return false;

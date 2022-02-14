@@ -16,6 +16,7 @@ import { Type } from "../../classes/Type";
  */
 export function Identifier(node,source,scope,owner){
   let name;
+  let local=false;
   if(node.src){
     /**Spezialfall (Bug?) siehe ObjectCreationExpression */
     name=node.src;
@@ -58,6 +59,7 @@ export function Identifier(node,source,scope,owner){
       type=null;
       scope.addTypeAnnotation(node.to,new Type(obj,0),true);
     }else{
+      local=true;
       type=obj.type;
       scope.addTypeAnnotation(node.to,type,false);
     }
@@ -82,6 +84,8 @@ export function Identifier(node,source,scope,owner){
   return {
     code: code,
     object: obj,
-    type: type
+    type: type,
+    local: local,
+    name: name
   };
 }
