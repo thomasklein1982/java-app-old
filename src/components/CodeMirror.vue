@@ -188,6 +188,10 @@ export default {
       let errors=[];
       for(let i=0;i<this.clazz.errors.length;i++){
         let e=this.clazz.errors[i];
+        if(!e.line){
+          console.error("Fehlerhafter Fehler: ",e);
+          continue;
+        }
         errors.push({
           from: e.line.from,
           to: e.line.to,

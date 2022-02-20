@@ -42,10 +42,16 @@ export class ParameterList{
     let errors=[];
     node=node.firstChild;
     node=node.nextSibling;
+    let names={};
     while(node.name==="FormalParameter"){
       let p=new Parameter(this);
       errors=errors.concat(p.compile(node,source));
-      this.parameters.push(p);
+      if(names[p.name]){
+        errors.push(source.createError("Doppelter Parameter '"+p.name+"'.",node));  
+      }else{
+        this.parameters.push(p);
+        names[p.name]=true;
+      }
       node=node.nextSibling;
       if(node.name!==","){
 
