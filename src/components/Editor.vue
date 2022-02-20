@@ -91,7 +91,8 @@ export default {
       breakpoints: [],
       sizeCode: 60,
       rightClosed: false,
-      sizeCodeSaved: 60
+      sizeCodeSaved: 60,
+      closeRightAfterStopping: false
     };
   },
   watch: {
@@ -197,6 +198,12 @@ export default {
       this.$refs.editor[this.activeTab].prettifyCode();
     },
     resume(){
+      if(this.rightClosed){
+        this.closeRightAfterStopping=true;
+        this.toggleRight();
+      }else{
+        this.closeRightAfterStopping=false;
+      }
       this.$root.resetCurrent();
       
       if(this.paused){
@@ -213,6 +220,9 @@ export default {
       this.$refs.preview.step();
     },
     stop(){
+      if(this.closeRightAfterStopping && !this.rightClosed){
+        this.toggleRight();
+      }
       this.$refs.preview.stop();
       this.$root.paused=false;
       this.running=false;

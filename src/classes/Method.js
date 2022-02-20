@@ -109,10 +109,7 @@ export class Method{
   compileBody(source){
     let errors=[];
     if(!this.bodyNode){
-      return {
-        errors,
-        code: ''
-      }
+      return null;
     }
     let scope=new Scope(this.clazz.project,this);
     this.block=Block(this.bodyNode,source,scope);

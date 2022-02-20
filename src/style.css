@@ -66,3 +66,8 @@ body,html{
   background-color: gray;
   color: white;
 }
+
+.ͼ1 .cm-lint-marker-error:before {
+  content: '⚠';
+  color: red;
+}

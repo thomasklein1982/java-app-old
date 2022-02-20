@@ -18,7 +18,7 @@ export function ReturnStatement(node,source,scope){
       if(!v.type.isSubtypeOf(returnType)){
         throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern, dies ist aber ein "+v.type.toString()+".",node);
       }
-      code+="await "+v.code;
+      code+="await "+v.code+";";
     }else{
       throw source.createError("Eine void-Methode kann keinen Wert zurückgeben.",node);
     }

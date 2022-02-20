@@ -20,8 +20,8 @@ export function LocalVariableDeclaration(node,source,scope){
   }catch(e){
     throw (source.createError(e,node));
   }
-  vdekl.type.autoCastValue(type);
   if(vdekl.type){
+    vdekl.type.autoCastValue(type);
     if(!vdekl.type.isSubtypeOf(type)){
       throw source.createError("Einer Variablen vom Typ '"+type+"' kann kein Wert vom Typ '"+vdekl.type+"' zugewiesen werden.",node);
     }
@@ -32,10 +32,10 @@ export function LocalVariableDeclaration(node,source,scope){
     throw (source.createError("';' erwartet.",node));
   }
   code+=";";
-  code+="eval('$locals["+JSON.stringify(vdekl.name)+"]='+"+vdekl.name+",$App.console.updateLocalVariables($locals));";
-  console.log(code);
+  //code+="eval('$locals["+JSON.stringify(vdekl.name)+"]='+"+vdekl.name+",$App.console.updateLocalVariables($locals));";
   return {
     code,
-    type
+    type,
+    updateLocalVariablesAfter: vdekl.name
   };
 }

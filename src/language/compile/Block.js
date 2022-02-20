@@ -34,11 +34,14 @@ export function Block(node,source,scope){
       open=false;
     }else{
       try{
-        
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
         let line=source.state.doc.lineAt(node.from).number;
         code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+");"+res.code;
+        if(res.updateLocalVariablesAfter){
+          let name=res.updateLocalVariablesAfter;
+          code+="/*test*/;eval('$locals["+JSON.stringify(name)+"]="+name+"',$App.console.updateLocalVariables($locals));";
+        }
       }catch(e){
         errors.push(e);
       }

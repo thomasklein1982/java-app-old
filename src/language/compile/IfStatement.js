@@ -15,7 +15,7 @@ export function IfStatement(node,source,scope){
 
   }
   let condition=ParenthesizedExpression(node,source,scope);
-  if(!condition.type.isSubtypeOf(Java.datatypes.boolean)){
+  if(!condition.type || !condition.type.isSubtypeOf(Java.datatypes.boolean)){
     throw source.createError("Als Bedingungen sind nur Wahrheitswerte zugelassen.",node);
   }
   code+=condition.code;

@@ -1,15 +1,6 @@
 <template>
   <div id="root">
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
-    <div v-if="clazz && clazz.errors" id="errors" style="padding-bottom: 1em">
-      <table>
-        <tr v-for="(e,i) in clazz.errors" :key="'error'+i">
-          <template v-if="e">
-            <td>{{e.line? e.line.number:'??'}}:{{e.col}}:</td><td v-if="e">{{e.message}} </td>
-          </template>
-        </tr>
-      </table>
-    </div>
     <Message v-for="(e,i) in runtimeError" severity="error" :key="'re'+errorID">Z{{e.line}}: {{e.message}}</Message>
   </div>
   
@@ -18,6 +9,7 @@
 <script>
 import { EditorView, basicSetup, EditorState } from "@codemirror/basic-setup";
 import { java } from "@codemirror/lang-java";
+import { lintGutter, linter, openLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
 import {indentWithTab} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
@@ -32,7 +24,7 @@ import {getClazzFromState} from '../functions/cm/getClazzFromState';
 
 import {Type} from '../classes/Type'
 import { nextTick } from '@vue/runtime-core';
-import {markerrors, errorPlugin } from '../functions/cm/markerror';
+// import {markerrors, errorPlugin } from '../functions/cm/markerror';
 import {createAutocompletion } from '../functions/cm/autocompletion';
 
 const completePropertyAfter = ["PropertyName", ".", "?."]
@@ -192,15 +184,29 @@ export default {
     let changed=true;
     let timer;
     this.size=this.clazz.src.length;
+    const lint = linter((view) => {
+      let errors=[];
+      for(let i=0;i<this.clazz.errors.length;i++){
+        let e=this.clazz.errors[i];
+        errors.push({
+          from: e.line.from,
+          to: e.line.to,
+          severity: "error",
+          message: e.message
+        });
+      }
+      return errors;
+    });
     this.editor=new EditorView({
       state: EditorState.create({
         doc: this.clazz.src,
         extensions: [
           basicSetup,
-          errorPlugin,
           //highlightActiveLine(),
           breakpointGutter,
           EditorView.lineWrapping,
+          lint,
+          lintGutter(),
           indentUnit.of("  "),
           java(),
           autocompletion({override: [createAutocompletion()]}),
@@ -236,16 +242,16 @@ export default {
       await this.clazz.compile(this.project);
       let t2=new Date();
       console.log("update parsing done in "+(t2-t1)+"ms");
-      this.updateErrors(viewUpdate.view);
+      //this.updateErrors(viewUpdate.view);
     },
     emptyTransaction(){
       this.editor.dispatch({
       });
     },
-    updateErrors: function(view){
-      markerrors(this.clazz.errors,view);
-      this.emptyTransaction();
-    },
+    // updateErrors: function(view){
+    //   markerrors(this.clazz.errors,view);
+    //   this.emptyTransaction();
+    // },
     setCode(code){
       this.size=code.length;
       var old=this.editor.state.doc.toString();
