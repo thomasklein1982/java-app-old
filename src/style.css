@@ -71,3 +71,7 @@ body,html{
   content: '⚠';
   color: red;
 }
+
+.cm-diagnostic{
+  font-family: monospace;
+}

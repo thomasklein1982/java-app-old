@@ -25,7 +25,7 @@ function resolveTermOperations(term,operations,source){
         }
         code=left.code+op+right.code;
       }else if(op==="*"||op==="-"||op==="/"||op==="%"){
-        if(left.type.isNumeric && right.type.isNumeric){
+        if(left.type.isNumeric() && right.type.isNumeric()){
           if(op==="/" && left.type===Java.datatypes.int && right.type===Java.datatypes.int){
             code="Math.floor("+left.code+op+right.code+")";
             type=left.type;
@@ -38,7 +38,13 @@ function resolveTermOperations(term,operations,source){
             }
           }
         }else{
-          throw source.createError("Der Operator '"+op+"' funktioniert nur mit Zahlen.",left.node.parent);
+          let t;
+          if(!left.type.isNumeric()){
+            t="'"+source.getText(left.node)+"' ist keine Zahl, sondern ein '"+left.type.toString()+"'.";
+          }else{
+            t="'"+source.getText(right.node)+"' ist keine Zahl, sondern ein '"+right.type.toString()+"'.";
+          }
+          throw source.createError("Der Operator '"+op+"' funktioniert nur mit Zahlen, "+t,left.node.parent);
         }
       }else if(op==="&"||op==="&&"||op==="|"||op==="||"){
         if(left.type.isSubtypeOf(Java.datatypes.boolean) && right.type.isSubtypeOf(Java.datatypes.boolean)){
@@ -47,11 +53,11 @@ function resolveTermOperations(term,operations,source){
         }else{
           throw source.createError("Der Operator '"+op+"' funktioniert nur mit Wahrheitswerten (boolean).",left.node.parent);
         }
-      }else if(op==="=="){
+      }else if(op==="=="||op==="!="){
         if(!left.type.isSubtypeOf(right.type) && !right.type.isSubtypeOf(left.type)){
           throw source.createError("Die Datentypen '"+left.type+"' und '"+right.type+"' sind nicht kompatibel.",left.node.parent);
         }
-        code=left.code+"==="+right.code;
+        code=left.code+op+"="+right.code;
         type=new Type(Java.datatypes.boolean,0);
       }else if(op==="<" || op==="<=" ||op===">" ||op===">="){
         if(left.type.isNumericOrString() && right.type.isNumericOrString()){
@@ -97,11 +103,13 @@ export function BinaryExpression(node,source,scope){
   if(!right || right.type.isError){
     throw source.createError("Der Ausdruck '"+source.getText(wholeNode)+"' ist unvollständig.",wholeNode);
   }
+  let rightNode=right;
   right=CompileFunctions.get(right)(right,source,scope);
+  right.node=rightNode;
   term.push(right);
   resolveTermOperations(term,"*/%",source);
   resolveTermOperations(term,"+-",source);
-  resolveTermOperations(term,"<=>==",source);
+  resolveTermOperations(term,"<=>==!=",source);
   resolveTermOperations(term,"&&",source);
   resolveTermOperations(term,"||",source);
   if(term.length!==1){

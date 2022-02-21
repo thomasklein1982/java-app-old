@@ -193,8 +193,8 @@ export default {
           continue;
         }
         errors.push({
-          from: e.line.from,
-          to: e.line.to,
+          from: e.from,
+          to: e.to,
           severity: "error",
           message: e.message
         });

@@ -12,7 +12,7 @@ export function IfStatement(node,source,scope){
   node=node.nextSibling;
   code="if";
   if(node.name!=="ParenthesizedExpression"){
-
+    throw source.createError("'(' erwartet",node);
   }
   let condition=ParenthesizedExpression(node,source,scope);
   if(!condition.type || !condition.type.isSubtypeOf(Java.datatypes.boolean)){

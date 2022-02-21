@@ -42,6 +42,7 @@ function createSnippets(data){
     inMethod: [],
     App: {}
   }
+
   for(let ev in data.eventHandlers){
     ev=data.eventHandlers[ev];
     snippets.eventListeners.push(autocomplete.snippetCompletion("void "+ev.name+createParamsString(ev.args)+"{\n\t${}\n}", {
@@ -50,7 +51,6 @@ function createSnippets(data){
       type: "function"
     }));
   }
-  
 
   for(let ev in data.functions){
     ev=data.functions[ev];
@@ -146,25 +146,31 @@ function createSnippets(data){
     info: "Definiert eine neue Funktion.",
     type: "keyword"
   }));
-  
-  array.push(autocomplete.snippetCompletion("for (let ${i} = 0; ${i} < ${max}; ${i}++) {\n\t${}\n}", {
+  */
+  snippets.inMethod.push(autocomplete.snippetCompletion("for (int ${i} = 0; ${i} < ${max}; ${i}++) {\n\t${}\n}", {
       label: "for",
       info: "Eine for-Schleife wiederholt ihren Inhalt mehrere Male.",
       type: "keyword"
   }));
 
-  array.push(autocomplete.snippetCompletion("if (${bedingung}) {\n\t${}\n}", {
+  snippets.inMethod.push(autocomplete.snippetCompletion("while (${bedingung}) {\n\t${}\n}", {
+    label: "while",
+    info: "Die Anweisungen werden so lange wiederholt, wie die Bedingung erfüllt ist.",
+    type: "keyword"
+  }));
+
+  snippets.inMethod.push(autocomplete.snippetCompletion("if (${bedingung}) {\n\t${}\n}", {
     label: "if",
     info: "Die Anweisungen werden nur dann ausgeführt, wenn die Bedingung erfüllt ist.",
     type: "keyword"
   }));
 
-  array.push(autocomplete.snippetCompletion("if (${bedingung}) {\n\t${}\n}else{\n\t${}\n}", {
+  snippets.inMethod.push(autocomplete.snippetCompletion("if (${bedingung}) {\n\t${}\n}else{\n\t${}\n}", {
     label: "ifelse",
     info: "Die ersten Anweisungen werden nur dann ausgeführt, wenn die Bedingung erfüllt ist, ansonsten die zweiten.",
     type: "keyword"
   }));
-*/
+
   return snippets;
 }
 

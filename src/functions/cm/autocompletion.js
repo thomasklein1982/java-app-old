@@ -24,11 +24,14 @@ export function createAutocompletion(){
     let nodeBefore = context.state.tree.resolveInner(pos, -1);
     nodeBefore=getRealNodeBefore(nodeBefore,pos);
     if(!nodeBefore) return;
+    if(nodeBefore.name===";"){
+      return;
+    }
     //innerhalb einer Methode?
     let method=null;
     let clazz=getClazzFromState(context.state);
     if(!clazz) return;
-    let n=nodeBefore;
+    let n=nodeBefore.parent.parent;
     while(n){
       if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
         if(n.name==="ConstructorDeclaration"){
@@ -67,6 +70,24 @@ export function createAutocompletion(){
         return {
           from,
           options: snippets.eventListeners,
+          span: /^[\w$]*$/
+        }
+      }else{
+        if(nodeBefore.name==="TypeName"){
+          from=nodeBefore.from;
+        }else{
+          from=pos;
+        }
+        let options=[
+          autocomplete.snippetCompletion("public static void main(String[] args){\n\tnew "+clazz.name+"();\n}", {
+            label: "main",
+            info: "Statische main-Methode.",
+            type: "function"
+          })
+        ];
+        return {
+          from,
+          options: options,
           span: /^[\w$]*$/
         }
       }
@@ -125,17 +146,14 @@ export function createAutocompletion(){
       }
       if(!annotation) annotation=method.typeAnnotations[nodeBefore.to];
     }
-    console.log("autocomplete");
-    console.log(method.typeAnnotations);
-    console.log(nodeBefore.to,context.pos);
     if(annotation){
-      return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel);
+      return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method);
     }
     return null
   };
 }
 
-function completeProperties(from, type, isStatic, includeClasses) {
+function completeProperties(from, type, isStatic, includeClasses, method) {
   let options = [];
   if(type.dimension>0){
     options.push({
@@ -180,6 +198,11 @@ function completeProperties(from, type, isStatic, includeClasses) {
           type: "class",
           info: c.comment
         });
+      }
+    }
+    if(method){
+      for(let i=0;i<snippets.inMethod.length;i++){
+        options.push(snippets.inMethod[i]);
       }
     }
   }

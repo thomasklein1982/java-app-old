@@ -36,7 +36,7 @@ export function ArrayCreationExpression(node,source,scope,errors){
   }else{
     code+=dimensions.length;
   }
-  let arraytype=new Type(type.type,dimensions.length);
+  let arraytype=new Type(type.type.baseType,dimensions.length);
   if(node && node.name==="ArrayInitializer"){
     let ai=ArrayInitializer(node,source,scope,arraytype);
     code+=","+ai.code;

@@ -1,8 +1,8 @@
 import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
 
-let start="<!--Project Code Start";
-let stop="Project Code Stop-->";
+let start="Project Code Start";
+let stop="Project Code Stop";
 
 export class Project{
   constructor(){

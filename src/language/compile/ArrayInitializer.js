@@ -9,7 +9,7 @@ export function ArrayInitializer(node,source,scope,type){
   let subType=new Type(type.baseType,type.dimension-1);
   while(node && node.name!=="}" && !node.type.isError){
     let a=CompileFunctions.get(node,source)(node,source,scope,subType);
-    type.autoCastValue(a);
+    subType.autoCastValue(a);
     code+=a.code;
     node=node.nextSibling;
     if(node.name===","){
@@ -20,6 +20,6 @@ export function ArrayInitializer(node,source,scope,type){
   code+="]";
   return {
     code: code,
-    type: subType
+    type: type
   };
 }
