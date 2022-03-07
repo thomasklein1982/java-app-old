@@ -1,6 +1,7 @@
 import { Java } from "../java";
 import { ParenthesizedExpression } from "./ParenthesizedExpression";
 import { Block } from "./Block";
+import { CompileFunctions } from "../CompileFunctions";
 
 export function IfStatement(node,source,scope){
   node=node.firstChild;
@@ -20,7 +21,8 @@ export function IfStatement(node,source,scope){
   }
   code+=condition.code;
   node=node.nextSibling;
-  let thenBlock=Block(node,source,scope);
+  let thenBlock;
+  thenBlock=CompileFunctions.get(node,source)(node,source,scope);
   if(thenBlock.errors && thenBlock.errors.length>0){
     throw thenBlock.errors[0];
   }
@@ -29,7 +31,7 @@ export function IfStatement(node,source,scope){
   if(node && node.name==="else"){
     code+="else";
     node=node.nextSibling;
-    let elseBlock=Block(node,source,scope);
+    let elseBlock=CompileFunctions.get(node,source)(node,source,scope);
     code+="{"+elseBlock.code+"}";
   }
   return {

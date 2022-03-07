@@ -73,40 +73,37 @@ function resolveTermOperations(term,operations,source){
   }
 }
 
+function addCompiledBinaryExpressions(node,source,scope,termArray){
+  let leftNode=node.firstChild;
+  let op=leftNode.nextSibling;
+  let rightNode=op.nextSibling;
+  if(leftNode.name==="BinaryExpression"){
+    addCompiledBinaryExpressions(leftNode,source,scope,termArray);
+  }else{
+    if(leftNode.type.isError){
+      throw source.createError("Syntax-Fehler.",leftNode);
+    }
+    let left=CompileFunctions.get(leftNode)(leftNode,source,scope);
+    termArray.push(left);
+  }
+  termArray.push(source.getText(op));
+  if(rightNode.name==="BinaryExpression"){
+    addCompiledBinaryExpressions(rightNode,source,scope,termArray);
+  }else{
+    if(rightNode.type.isError){
+      throw source.createError("Syntax-Fehler.",rightNode);
+    }
+    let right=CompileFunctions.get(rightNode)(rightNode,source,scope);
+    termArray.push(right);
+  }
+}
+
 export function BinaryExpression(node,source,scope){
   let code;
   let type;
   let wholeNode=node;
-  node=node.firstChild;
   let term=[];
-  let leftNode=node;
-  let op=node.nextSibling;
-  let right=op.nextSibling;
-  let left=CompileFunctions.get(leftNode)(leftNode,source,scope);
-  left.node=leftNode;
-  term.push(left);
-  if(op.name!=="ArithOp"){
-
-  }
-  op=source.getText(op);
-  term.push(op);
-  while(right.name==="BinaryExpression"){
-    leftNode=right.firstChild;
-    op=leftNode.nextSibling;
-    right=op.nextSibling;
-    op=source.getText(op);
-    left=CompileFunctions.get(leftNode)(leftNode,source,scope);
-    left.node=leftNode;
-    term.push(left);
-    term.push(op);
-  }
-  if(!right || right.type.isError){
-    throw source.createError("Der Ausdruck '"+source.getText(wholeNode)+"' ist unvollständig.",wholeNode);
-  }
-  let rightNode=right;
-  right=CompileFunctions.get(right)(right,source,scope);
-  right.node=rightNode;
-  term.push(right);
+  addCompiledBinaryExpressions(node,source,scope,term);
   resolveTermOperations(term,"*/%",source);
   resolveTermOperations(term,"+-",source);
   resolveTermOperations(term,"<=>==!=",source);

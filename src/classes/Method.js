@@ -106,6 +106,12 @@ export class Method{
     return errors;
   }
 
+  getScopeAtPosition(pos){
+    let scope=new Scope(this.clazz.project,this,pos);
+    Block(this.bodyNode,this.clazz.source,scope);
+    return scope;
+  }
+
   compileBody(source){
     let errors=[];
     if(!this.bodyNode){

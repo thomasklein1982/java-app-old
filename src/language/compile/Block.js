@@ -3,7 +3,7 @@ import { Source } from "../../classes/Source";
 import { CompileFunctions } from "../CompileFunctions";
 
 function createUpdateLocalVariablesCode(scope){
-  let locals=scope.getLocalVariables();
+  let locals=scope.getLocalVariableNames();
   return "var $locals="+JSON.stringify(locals)+";for(var $a in $locals){eval('$locals[$a]='+$a)};$App.console.updateLocalVariables($locals);";
 }
 
@@ -30,6 +30,9 @@ export function Block(node,source,scope){
   let open=true;
   while(node.nextSibling){
     node=node.nextSibling;
+    if(scope.isNodeBeyondEndPosition(node)){
+      return scope;
+    }
     if(node.name==='}'){
       open=false;
     }else{
@@ -39,8 +42,13 @@ export function Block(node,source,scope){
         let line=source.state.doc.lineAt(node.from).number;
         code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+");"+res.code;
         if(res.updateLocalVariablesAfter){
-          let name=res.updateLocalVariablesAfter;
-          code+="/*test*/;eval('$locals["+JSON.stringify(name)+"]="+name+"',$App.console.updateLocalVariables($locals));";
+          let vnames=res.updateLocalVariablesAfter;
+          code+="eval('";
+          for(let i=0;i<vnames.length;i++){
+            let name=vnames[i];
+            code+="$locals["+JSON.stringify(name)+"]="+name+";";
+          }
+          code+="',$App.console.updateLocalVariables($locals));";
         }
       }catch(e){
         errors.push(e);

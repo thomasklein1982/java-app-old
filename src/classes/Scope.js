@@ -4,13 +4,18 @@ import { Java } from "../language/java";
 import { PrimitiveType } from "./PrimitiveType";
 
 export class Scope{
-  constructor(project,method){
+  constructor(project,method,endPosition){
     this.project=project;
     this.method=method;
+    this.endPosition=endPosition;
     this.stack=[];
     this.typeAnnotations={};
     this.pushLayer();
     this.pushParameterList(method.params);
+  }
+
+  isNodeBeyondEndPosition(node){
+    return (this.endPosition!==undefined && node.from>this.endPosition);
   }
 
   addTypeAnnotation(pos,type,isStatic){
@@ -47,12 +52,23 @@ export class Scope{
     s[name]=obj;
   }
 
-  getLocalVariables(){
+  getLocalVariableNames(){
     let obj={};
     for(let i=0;i<this.stack.length;i++){
       let s=this.stack[i];
       for(var a in s){
         obj[a]=true;
+      }
+    }
+    return obj;
+  }
+
+  getLocalVariables(){
+    let obj={};
+    for(let i=0;i<this.stack.length;i++){
+      let s=this.stack[i];
+      for(var a in s){
+        obj[a]=s[a];
       }
     }
     return obj;

@@ -202,22 +202,19 @@ window.appJScode=function(){
       m=e.message;
     }
     if(e.stack){
-      var stack=e.stack;
-      var pos=stack.lastIndexOf("(");
-      var pos2=stack.lastIndexOf(")");
-      if(pos>0 && pos2>0){
-        var zeile=stack.substring(pos+1,pos2);
-        //TODO: Verweise auf appJS herausnehmen??
+      m=e.stack;
+      m=m.replace(/<anonymous>:/g,"");
+      var pos=m.indexOf("(");
+      var pos2=m.indexOf(":",pos);
+      if(pos2>pos && pos>=0){
+        line=m.substring(pos+1,pos2)*1;
       }
-    }else{
-      stack=m;
     }
     
     $App.handleError({
       message: m,
       line: line,
-      col: col,
-      completeMessage: stack
+      col: col
     });
   }
   
@@ -242,7 +239,6 @@ window.appJScode=function(){
     el.updateAlignContent=function(v){
       var a=$App.Canvas.$getAlignment(v);
       this.appJSData.alignContent=a;
-      console.log(a);
       if(a.h==="center"){
         //this.style.transform
         // this.style.marginLeft="auto";
@@ -1659,6 +1655,29 @@ window.appJScode=function(){
   };
 
   $App.World.prototype={
+    toString: function(){
+      var s="";
+      for(var i=0;i<this.tiles.length;i++){
+        if(i>0) s+="\n";
+        var row=this.tiles[this.tiles.length-i-1];
+        for(var j=0;j<row.length;j++){
+          s+=row[j];
+        }
+      }
+      return s;
+    },
+    reset: function(){
+      this.tiles=null;
+      this.zoom=1;
+      this.cx=0;
+      this.cy=0;
+      this.width=0;
+      this.height=0;
+      this.mouse={
+        x: -1,
+        y: -1,
+      }
+    },
     addRow: function(description){
       if(this.height===0){
         this.create(0,0);
@@ -2423,6 +2442,7 @@ window.appJScode=function(){
     this.element.className="console";
     this.items={};
     this.localItems={};
+    this.watchedVariables=[];
     this.visible=false;
     this.variablesDiv=document.createElement("div");
     this.variablesDiv.style="height: 70%; overflow: auto";
@@ -2434,6 +2454,9 @@ window.appJScode=function(){
   };
   
   $App.Console.prototype={
+    addWatchedVariables: function(arrayWithVarNames){
+      this.watchedVariables=this.watchedVariables.concat(arrayWithVarNames);
+    },
     log: function(){
       let div=document.createElement("div");
       let args=[]
@@ -2563,7 +2586,7 @@ window.appJScode=function(){
       if(!source) return;
       let newItems={};
       for(let a in source){
-        if(source===window && (a in $App.systemVariables)){
+        if(source===window && !(this.watchedVariables.indexOf(a)>=0) && (a in $App.systemVariables)){
           continue;
         }
         let obj=source[a];
@@ -2681,7 +2704,7 @@ window.appJScode=function(){
     };
     this.helpButton=document.createElement("button");
     this.helpButton.textContent="?"
-    this.helpButton.style="font-size: 150%; position: absolute; right: 0.5rem; top: 0.5rem; border-radius: 2px";
+    this.helpButton.style="font-size: 150%; opacity: 0.5; position: absolute; right: 0.5rem; top: 0.5rem; border-radius: 2px";
     this.helpButton.onclick=()=>{
       this.setVisible(true);
     };
@@ -3077,9 +3100,9 @@ window.appJScode=function(){
   
   $App.addFunction(function isKeyDown(key){
     if(typeof key==="string"){
-      key=key.codePointAt(0);
+      key=key.toLowerCase().codePointAt(0);
     }
-    return $App.keyboard.down[keycode]===true;
+    return $App.keyboard.down[key]===true;
   },'boolean','Prüft, ob eine bestimmte Taste auf der Tastatur gedrückt wird.',[{name: 'key', type: 'String', info: 'Das Zeichen, von dem geprüft werden soll, ob die zugehörige Taste gedrückt wird; bspw. "W", " " oder "4".'}],'');
   
   $App.addFunction(function hideHelp(){
@@ -3976,6 +3999,12 @@ window.appJScode=function(){
   
 
   $App.addObject('world',true,{
+    delete: function(){
+      $App.world.reset();
+    },
+    toString: function(){
+      return $App.world.toString();
+    },
     create: function(width,height){
       $App.world.create(width,height);
     },
@@ -4086,6 +4115,11 @@ window.appJScode=function(){
         {name: 'y', type: 'double', info: 'y-Koordinate in der Welt'}
       ],
       info: 'Gibt den Typ (das Zeichen) an der angegebenen Position zurück. Falls es an der Position kein eindeutiges Zeichen gibt, wird null zurückgegeben.'
+    },
+    {
+      name: 'delete',
+      returnType: null, 
+      info: 'Löscht die aktuelle Spielwelt, damit z. B. eine neue erschaffen werden kann.'
     }, 
     {
       name: 'setType', 
@@ -4299,5 +4333,4 @@ window.appJScode=function(){
   }else{
     $main=null;
   }
-
 }

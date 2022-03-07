@@ -113,7 +113,7 @@ export function createAutocompletion(){
       }
       for(let name in Java.clazzes){
         let c=Java.clazzes[name];
-        if(c.cannotBeInstantiated) continue;
+        if(c.cannotBeInstantiated || c.name==="null") continue;
         let m=c.constructor;
         options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
           label: name+"(...)",
@@ -135,25 +135,26 @@ export function createAutocompletion(){
         nodeBefore=nodeBefore.prevSibling;
         from++;
       }else{
-        if(nodeBefore.prevSibling){
+        if(nodeBefore.prevSibling && nodeBefore.prevSibling.name!=="(" && !nodeBefore.prevSibling.name.endsWith("Op")){
           nodeBefore=nodeBefore.prevSibling;
           if(nodeBefore && nodeBefore.name==="."){
             nodeBefore=nodeBefore.prevSibling;
           }
         }else{
-          annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
+          let scope=method.getScopeAtPosition(from);
+          annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true, scope: scope};
         }
       }
       if(!annotation) annotation=method.typeAnnotations[nodeBefore.to];
     }
     if(annotation){
-      return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method);
+      return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method, annotation.scope);
     }
     return null
   };
 }
 
-function completeProperties(from, type, isStatic, includeClasses, method) {
+function completeProperties(from, type, isStatic, includeClasses, method, scope) {
   let options = [];
   if(type.dimension>0){
     options.push({
@@ -162,6 +163,16 @@ function completeProperties(from, type, isStatic, includeClasses, method) {
       info: "Die Länge des Arrays."
     });
   }else{
+    if(scope){
+      let locals=scope.getLocalVariables();
+      for(let vname in locals){
+        options.push({
+          label: vname,
+          type: "variable",
+          info: "Eine lokale Variable des Typs "+locals[vname].type.toString()
+        });
+      }
+    }
     let clazz=type.baseType;
     while(clazz){
       for (let name in clazz.attributes) {
@@ -209,6 +220,6 @@ function completeProperties(from, type, isStatic, includeClasses, method) {
   return {
     from,
     options,
-    span: /^[\w$]*$/
+    span: /^[\w]*$/
   }
 }

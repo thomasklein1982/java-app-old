@@ -11,23 +11,31 @@ export function LocalVariableDeclaration(node,source,scope){
   type=type.type;
   code="let ";
   node=node.nextSibling;
-  if(!node.name==="VariableDeclarator"){
-
-  }
-  let vdekl=VariableDeclarator(node,source,scope,type);
-  try{
-    scope.pushLocalVariable(vdekl.name,type);
-  }catch(e){
-    throw (source.createError(e,node));
-  }
-  if(vdekl.type){
-    vdekl.type.autoCastValue(type);
-    if(!vdekl.type.isSubtypeOf(type)){
-      throw source.createError("Einer Variablen vom Typ '"+type+"' kann kein Wert vom Typ '"+vdekl.type+"' zugewiesen werden.",node);
+  let weiter=true;
+  let vnames=[];
+  while(weiter){
+    let vdekl=VariableDeclarator(node,source,scope,type);
+    try{
+      scope.pushLocalVariable(vdekl.name,type);
+      vnames.push(vdekl.name);
+    }catch(e){
+      throw (source.createError(e,node));
+    }
+    if(vdekl.type){
+      vdekl.type.autoCastValue(type);
+      if(!vdekl.type.isSubtypeOf(type)){
+        throw source.createError("Einer Variablen vom Typ '"+type+"' kann kein Wert vom Typ '"+vdekl.type+"' zugewiesen werden.",node);
+      }
+    }
+    code+=vdekl.code;
+    node=node.nextSibling;
+    if(node.name!==","){
+      weiter=false;
+    }else{
+      code+=",";
+      node=node.nextSibling;
     }
   }
-  code+=vdekl.code;
-  node=node.nextSibling;
   if(node.type.isError || node.name!==";"){
     throw (source.createError("';' erwartet.",node));
   }
@@ -36,6 +44,6 @@ export function LocalVariableDeclaration(node,source,scope){
   return {
     code,
     type,
-    updateLocalVariablesAfter: vdekl.name
+    updateLocalVariablesAfter: vnames
   };
 }

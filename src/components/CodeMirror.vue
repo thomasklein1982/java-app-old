@@ -226,6 +226,11 @@ export default {
             timer = setTimeout(() => {
               if (changed) {
                 this.update(v);
+                let lintPlugin=this.editor.plugins[12];
+                if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
+                  lintPlugin.value.run()
+                }
+                //lint.value.source(this.editor);
                 changed=false;
               }
             }, 500 );
@@ -301,7 +306,7 @@ export default {
       return this.state.doc.slice(from,to);
     },
     reset: function(sourceCode){
-      this.runtimeError=null;
+      this.runtimeError=[];
       this.$root.sourceCode=sourceCode;
       this.editor.dispatch({
         changes: {from: 0, to: this.size, insert: this.$root.sourceCode}
@@ -315,10 +320,11 @@ export default {
       redo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
     },
     setRuntimeError: function(error){
-      console.log(this.runtimeError);
-      this.errorID++;
       this.runtimeError.pop();
-      this.runtimeError.push(error);
+      if(error){
+        this.errorID++;
+        this.runtimeError.push(error);
+      }
     },
     insert(text){
       let pos=this.editor.state.selection.ranges[0].from;
