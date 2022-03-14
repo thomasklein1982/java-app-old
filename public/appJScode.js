@@ -812,6 +812,20 @@ window.appJScode=function(){
         audio.src=fullurl;
   
         asset=audio;
+      }else if(url.endsWith("txt")){
+        try{
+          var r=await fetch(fullurl);
+          var text=await r.text();
+          asset.lines=text.split("\n");
+          asset.currentLine=0;
+          asset.lineCount=asset.lines.length;
+          asset.nextLine=function(){
+            this.currentLine++;
+            return this.lines[this.currentLine-1];
+          }
+        }catch(e){
+          console.log("Asset '"+fullurl+"' konnte nicht geladen werden.");
+        }
       }else{
         let image=new Image();
         p=new Promise((resolve,reject)=>{
@@ -883,7 +897,9 @@ window.appJScode=function(){
       lineWidth: 0.5,
       fontSize: 5,
       opacity: 1,
-      font: 'monospace'
+      font: 'monospace',
+      mirrored: false,
+      rotation: 0
     };
     this.reset();
   };
@@ -1105,6 +1121,18 @@ window.appJScode=function(){
       }
       this.ctx.font=this.getHeight(this.state.fontSize,true)+"px "+this.state.font;
     },
+    setMirrored: function(mirrored,dontAdd){
+      this.state.mirrored=mirrored;
+      if(!dontAdd){
+        this.addCommand("setMirrored",[mirrored]);
+      }
+    },
+    setRotation: function(angle,dontAdd){
+      this.state.rotation=angle;
+      if(!dontAdd){
+        this.addCommand("setRotation",[angle]);
+      }
+    },
     setFont: function(name,dontAdd){
       this.state.font=name;
       if(!dontAdd){
@@ -1271,6 +1299,16 @@ window.appJScode=function(){
       }
       x=this.getX(x);
       y=this.getY(y);
+      var cx=x;
+      var cy=y;
+      this.ctx.save();
+      this.ctx.translate(cx,cy);
+      if(this.state.mirrored){
+        this.ctx.scale(-1,1);
+        this.ctx.rotate(Math.PI*this.state.rotation/180);
+      }else{
+        this.ctx.rotate(-Math.PI*this.state.rotation/180);
+      }
       if(text.split){
         var lines=text.split("\n");
       }else{
@@ -1281,14 +1319,18 @@ window.appJScode=function(){
       this.ctx.textBaseline=align.v;
       
       if(align.v==="bottom"){
-        y-=lineHeight*(lines.length-1);  
+        y=-lineHeight*(lines.length-1);  
       }else if(align.v==="middle"){
-        y-=lineHeight*((lines.length-1)/2);
-      } 
+        y=-lineHeight*((lines.length-1)/2);
+      }else{
+        y=0;
+      }
+      
       for(var i=0;i<lines.length;i++){
-        this.ctx.fillText(lines[i],x,y);
+        this.ctx.fillText(lines[i],0,y);
         y+=lineHeight;
       }
+      this.ctx.restore();
     },
     $adjustInputPosition: function(){
       var x=this.getRawX(this.input.x);
@@ -3052,14 +3094,22 @@ window.appJScode=function(){
   $App.addFunction(function drawImage(image,cx,cy,width,height,rotation,mirrored){
     $App.canvas.drawImage(image,cx,cy,width,height,rotation,mirrored);
   },null,'Zeichnet ein Bild. Dieses musst du vorher mittels loadAsset laden.',
-  [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.'}],
+  [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.', hide: true}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.', hide: true}],
   '');
   $App.addFunction(function drawImagePart(image,cx,cy,width,height,scx,scy,swidth,sheight,rotation,mirrored){
     $App.canvas.drawImage(image,cx,cy,width,height,rotation,mirrored,{cx: scx, cy: scy, w: swidth, h: sheight});
   },null,'Zeichnet einen rechteckigen Ausschnitt eines Bildes. Dieses musst du vorher mittels "loadAsset" laden.',
-  [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'},{name: 'scx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'scy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'width', type: 'double', info: 'Breite des Ausschnittes.'}, {name: 'height', type: 'double', info: 'Höhe des Ausschnittes.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.'}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.'}],
+  [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'},{name: 'scx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'scy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'width', type: 'double', info: 'Breite des Ausschnittes.'}, {name: 'height', type: 'double', info: 'Höhe des Ausschnittes.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.', hide: true}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.', hide: true}],
   '');
   
+  $App.addFunction(function setMirrored(m){
+    $App.canvas.setMirrored(m);
+  },null,'Legt für alle nachfolgenden write-Befehle fest, ob der Text gespiegelt werden soll.',[{name: 'm', type: 'boolean', info: 'Wenn true, dann wird der Text aller nachfolgenden write-Befehle vertikal gespiegelt. Wenn false, wird der Text wieder normal geschrieben.'}],'');
+
+  $App.addFunction(function setRotation(angle){
+    $App.canvas.setRotation(angle);
+  },null,'Legt die Drehung für alle nachfolgenden write-Befehle fest.',[{name: 'angle', type: 'double', info: 'Der Winkel um den gedreht werden soll. 0 entspricht keiner Drehung. Es wird gegen den Uhrzeigersinn gedreht.'}],'');
+
   $App.addFunction(function setColor(color){
     $App.canvas.setColor(color);
   },null,'Legt die Farbe für alle nachfolgenden Zeichnungen fest.',[{name: 'color', type: 'String', info: 'Farbe, die ab sofort zum Zeichnen und Füllen verwendet werden soll. Kann eine beliebige Bezeichnung für eine HTML-Farbe sein, z. B. <code>"red"</code>, <code>"blue"</code> oder <code>"#e307A6"</code>. Diese Bezeichnungen findest du bspw. unter <a href="https://htmlcolorcodes.com/" target="_blank">htmlcolorcodes</a>.'}],'');
@@ -3083,7 +3133,7 @@ window.appJScode=function(){
   $App.addFunction(function write(text,x,y,align){
     $App.canvas.write(text,x,y,align);
   },null,'Schreibt Text auf den Bildschirm.',
-  [{name: 'text', type: 'String', info: 'Der Text, der geschrieben werden soll. Verwende <code>&bsol;n</code> für Zeilenumbrüche.'}, {name: 'x', type: 'double', info: 'Die x-Koordinate des Texts.'}, {name: 'y', type: 'double', info: 'Die y-Koordinate des Texts.'}, {name: 'align', type: 'String', info: 'Eine Angabe aus bis zu 2 Wörtern, die bestimmen, wie der Text am Punkt (<code>x</code>|<code>y</code>) ausgerichtet sein soll. Mögliche Wörter: <code>"left"</code>, <code>"center"</code>, <code>"right"</code> und <code>"top"</code>, <code>"middle"</code>, <code>"bottom"</code>.'}],
+  [{name: 'text', type: 'String', info: 'Der Text, der geschrieben werden soll. Verwende <code>&bsol;n</code> für Zeilenumbrüche.'}, {name: 'x', type: 'double', info: 'Die x-Koordinate des Texts.'}, {name: 'y', type: 'double', info: 'Die y-Koordinate des Texts.'}, {name: 'align', type: 'String', info: 'Eine Angabe aus bis zu 2 Wörtern, die bestimmen, wie der Text am Punkt (<code>x</code>|<code>y</code>) ausgerichtet sein soll. Mögliche Wörter: <code>"left"</code>, <code>"center"</code>, <code>"right"</code> und <code>"top"</code>, <code>"middle"</code>, <code>"bottom"</code>.', hide: true}],
   '');
   
   /*$App.addFunction(async function read(placeholdertext,x,y,width,align){
@@ -3108,6 +3158,63 @@ window.appJScode=function(){
   $App.addFunction(function hideHelp(){
     $App.help.setButtonVisible(false);
   },null,'Versteckt den Hilfe-Button oben rechts.',[],'',"everywhere");
+  
+  $App.addFunction(function range(start,stop,step){
+    var text="range(";
+    if(step===undefined){
+      if(stop===undefined){
+        stop=start;
+        start=1;
+        step=1;
+        text+=stop;
+      }else{
+        step=1;
+        text+=start+","+stop
+      }
+    }else{
+      text+=start+","+stop+","+step
+    }
+    text+="): ";
+    if(!step){
+      console.log(text+"Der Schritt darf nicht "+step+" sein." )
+      return [];
+    }
+    if(step>0){
+      if(start>stop){
+        console.log(text+"Der Startwert darf nicht größer als der Endwert sein.");
+        return [];
+      }
+    }else if(step<0){
+      if(start<stop){
+        console.log(text+"Der Startwert darf nicht kleiner als der Endwert sein, wenn der Schritt negativ ist.");
+        return [];
+      }
+    }
+    start*=1;
+    stop*=1;
+    step*=1;
+    if(isNaN(start)){
+      console.log(text+"Der Startwert ist keine Zahl.");
+      return [];
+    }
+    if(isNaN(stop)){
+      console.log(text+"Der Endwert ist keine Zahl.");
+      return [];
+    }
+    if(isNaN(step)){
+      console.log(text+"Der Schritt ist keine Zahl.");
+      return [];
+    }
+    var array=[];
+    for(var i=start;i*step<=stop*step;i+=step){
+      array.push(i);
+    }
+    return array;
+  },{baseType: 'int', dimension: 1},'Generiert ein Array mit den Zahlen von min bis max. Kann z. B. in for-Schleifen verwendet werden.',[
+    {name: "start", type: 'int', info: 'Erste Zahl', hide: true},
+    {name: "stop", type: 'int', info: 'Letzte Zahl'},
+    {name: "step", type: 'int', info: 'Schritt zwischen zwei Zahlen', hide: true}
+  ],'',"everywhere");
   
   $App.addFunction(function showHelp(){
     $App.help.setButtonVisible(true);
@@ -3606,6 +3713,8 @@ window.appJScode=function(){
           b.text=ev.target.result;
           b.lines=b.text.split("\n");
           b.files[0].lineCount=b.lines.length;
+          b.files[0].lines=b.lines;
+          b.lineCount=b.files[0].lineCount;
         };
         b.onchange=function(ev){
           if(!this.files) return;
@@ -3615,12 +3724,14 @@ window.appJScode=function(){
           this.fr.readAsText(f);
           f.nextLine=function(){
             let lines=this.input.lines;
-            if(!lines||lines.length===0){
+            if(!lines||this.currentLine>=lines.length){
               return null;
             }
-            return lines.splice(0,1)[0];
+            this.currentLine++;
+            return lines[this.currentLine-1];
           }
-          
+          this.currentLine=0;
+          this.nextLine=f.nextLine;
         };
       }
       Object.defineProperty(b,"value",{
@@ -4210,7 +4321,7 @@ window.appJScode=function(){
       name: 'write',
       returnType: null, 
       args: [
-        {name: 'text', type: 'String', info: 'Der Text, der geschrieben werden soll. Verwende <code>&bsol;n</code> für Zeilenumbrüche.'}, {name: 'x', type: 'double', info: 'Die x-Koordinate des Texts.'}, {name: 'y', type: 'double', info: 'Die y-Koordinate des Texts.'}, {name: 'align', type: 'String', info: 'Eine Angabe aus bis zu 2 Wörtern, die bestimmen, wie der Text am Punkt (<code>x</code>|<code>y</code>) ausgerichtet sein soll. Mögliche Wörter: <code>"left"</code>, <code>"center"</code>, <code>"right"</code> und <code>"top"</code>, <code>"middle"</code>, <code>"bottom"</code>.'}
+        {name: 'text', type: 'String', info: 'Der Text, der geschrieben werden soll. Verwende <code>&bsol;n</code> für Zeilenumbrüche.'}, {name: 'x', type: 'double', info: 'Die x-Koordinate des Texts.'}, {name: 'y', type: 'double', info: 'Die y-Koordinate des Texts.'}, {name: 'align', type: 'String', info: 'Eine Angabe aus bis zu 2 Wörtern, die bestimmen, wie der Text am Punkt (<code>x</code>|<code>y</code>) ausgerichtet sein soll. Mögliche Wörter: <code>"left"</code>, <code>"center"</code>, <code>"right"</code> und <code>"top"</code>, <code>"middle"</code>, <code>"bottom"</code>.', hide: true}
       ],
       info: 'Schreibt Text in die Spielwelt.'
     },
@@ -4241,13 +4352,13 @@ window.appJScode=function(){
     {
       name: 'drawImage',
       returnType: null, 
-      args: [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.'}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.'}],
+      args: [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.', hide: true}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.', hide: true}],
       info: 'Zeichnet ein Bild in die Spielwelt. Dieses musst du vorher mittels "loadAsset" laden.'
     },
     {
       name: 'drawImagePart',
       returnType: null, 
-      args: [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'},{name: 'scx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'scy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'width', type: 'double', info: 'Breite des Ausschnittes.'}, {name: 'height', type: 'double', info: 'Höhe des Ausschnittes.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.'}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.'}],
+      args: [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'},{name: 'scx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'scy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'width', type: 'double', info: 'Breite des Ausschnittes.'}, {name: 'height', type: 'double', info: 'Höhe des Ausschnittes.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.', hide: true}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.', hide: true}],
       info: 'Zeichnet einen rechteckigen Ausschnitt eines Bild in die Spielwelt. Dieses musst du vorher mittels "loadAsset" laden.'
     },
     {
@@ -4324,7 +4435,9 @@ window.appJScode=function(){
   
   if($App.language==="js"){
     /**Vordefinierte Variablennamen speichern:*/
-    $App.systemVariables={};
+    $App.systemVariables={
+      __VUE_DEVTOOLS_IFRAME__: true
+    };
     (function(){
       for(var a in window){
         $App.systemVariables[a]=true;
