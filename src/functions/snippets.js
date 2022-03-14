@@ -171,6 +171,47 @@ function createSnippets(data){
     type: "keyword"
   }));
 
+  snippets.inMethod.push(autocomplete.snippetCompletion("if (${bedingung}) {\n\t${}\n}else{\n\t${}\n}", {
+    label: "ifelse",
+    info: "Die ersten Anweisungen werden nur dann ausgeführt, wenn die Bedingung erfüllt ist, ansonsten die zweiten.",
+    type: "keyword"
+  }));
+
+  let unicode="😀😁😆😈😉😌😍😎😐😒😖😘😡😢😧😩😭😱"
+  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+    label: "unicode smileys",
+    info: "Fügt eine Auswahl von Unicode-Smileys ein: "+unicode,
+    type: "macro"
+  }));
+
+  unicode="🐝🕷🕸️😾👸👹👻👼👽👾👿⛄💀💃🧚🧛🧜🧝🧞🐅🦄🐕🦇🐉🦖🐬🐟";
+  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+    label: "unicode kreaturen",
+    info: "Fügt eine Auswahl von Unicode-Kreaturen ein: "+unicode,
+    type: "macro"
+  }));
+
+  unicode="🕸️🌸💮🏵️🌺🌹🌻🌼🌷🌲🌴🌵🌿🍀🍄☁️⛅🌤️🌧️🌨️🌩️🌪️🔥❄️💧🎄";
+  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+    label: "unicode natur",
+    info: "Fügt eine Auswahl von Unicode-Symbolen zum Thema Natur ein: "+unicode,
+    type: "macro"
+  }));
+
+  unicode="🚀🚁🚂🚃🚍🚑🚒🚓🚔🚘🚜🚢✈";
+  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+    label: "unicode fahrzeuge",
+    info: "Fügt eine Auswahl von Unicode-Fahrzeugen ein: "+unicode,
+    type: "macro"
+  }));
+
+  unicode="❤🔥⛰️💥💫✨✔️👍⚡";
+  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+    label: "unicode symbole",
+    info: "Fügt eine Auswahl von Unicode-Symbolen ein: "+unicode,
+    type: "macro"
+  }));
+
   return snippets;
 }
 
