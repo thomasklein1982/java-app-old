@@ -5,13 +5,18 @@
       :right-closed="rightClosed"
       @download="downloadProject"
       @upload="uploadProject"
-      @new="newProject"
+      @new="$refs.dialogNewApp.setVisible(true)"
       @prettify="prettifyCode"
       @undo="$refs.editor[activeTab].undo()"
       @redo="$refs.editor[activeTab].redo()"
       @search="$refs.editor[activeTab].openSearchPanel()"
       @toggleright="toggleRight()"
+      @resources="$refs.dialogResources.setVisible(true)"
     />
+    <LinksDialog
+      ref="dialogResources"
+    />
+    <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
     <Splitter ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
       <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
         <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
@@ -75,6 +80,8 @@ import Outline from './Outline.vue';
 import { download, saveLocally, upload } from '../functions/helper.js';
 import { STORAGE_PROJECT } from '../consts/strings.js';
 import { uploadProject } from "../functions/uploadProject.js";
+import LinksDialog from "./LinksDialog.vue";
+import NewAppDialog from "./NewAppDialog.vue";
 
 export default {
   props: {
@@ -181,8 +188,8 @@ export default {
     getProject(){
       return this.project;
     },
-    async newProject(){
-      let p=new Project();
+    async createNewApp(name,code){
+      let p=new Project(name,code);
       await p.initialize();
       this.openProject(p);
     },
@@ -249,7 +256,9 @@ export default {
     ProjectExplorer,
     Outline,
     AppPreview,
-    NewClazzWizard
+    NewClazzWizard,
+    LinksDialog,
+    NewAppDialog
   }
 }
 </script>

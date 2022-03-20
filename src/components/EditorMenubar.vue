@@ -4,6 +4,7 @@
       <img alt="logo" src="../assets/icon-transparent.png" height="40" >
     </template>
     <template #end>
+      <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-star" @click="$emit('resources')"/>
       <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-search" @click="$emit('search')"/>
       <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-undo" @click="$emit('undo')"/>
       <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-refresh" @click="$emit('redo')"/>
@@ -28,10 +29,7 @@ export default {
               label: 'Neu',
               icon: 'pi pi-file',
               command: (ev)=>{
-                let a=confirm('Willst du wirklich ein neues Projekt beginnen?\nDer bisherige Code geht verloren!');
-                if(a){
-                  this.$emit('new');
-                }
+                this.$emit('new');
               }
             },
             {

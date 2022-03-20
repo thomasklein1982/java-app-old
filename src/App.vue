@@ -23,7 +23,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 31,
+      version: 34,
       paused: false,
       current: {line: -1, name: null}
     }

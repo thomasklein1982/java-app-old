@@ -26,6 +26,7 @@ import ToggleButton from 'primevue/togglebutton';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Message from "primevue/message";
+import Listbox from 'primevue/listbox';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -78,6 +79,8 @@ app.component('ToggleButton',ToggleButton);
 app.component('TabPanel',TabPanel);
 app.component('TabView',TabView);
 app.component('Message',Message);
+app.component('Listbox',Listbox);
+
 window.app=app.mount('#app');
 
 let text=(appJScode+"");

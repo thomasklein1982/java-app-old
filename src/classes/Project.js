@@ -5,10 +5,14 @@ let start="Project Code Start";
 let stop="Project Code Stop";
 
 export class Project{
-  constructor(){
+  constructor(name,code){
     this.clazzes=[];
-    var c=new Clazz("MyApp",this);
-    c.src="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
+    if(!name){
+      name="MyApp";
+      code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
+    }
+    var c=new Clazz(name,this);
+    c.src=code;
     this.clazzes.push(c);
   }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
@@ -49,7 +53,7 @@ export class Project{
       }
       code+="\n"+c.getJavaScriptCode();
     }
-    code+="\nasync function onStart(){await "+mainClazz.name+".main([]); if($main.onStart){$main.onStart();}}";
+    code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n\n(async function(){await "+mainClazz.name+".main([]);})()";
     return code;
   }
   async initialize(){

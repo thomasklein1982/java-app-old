@@ -11,6 +11,12 @@ function additionalJSCode(){
     }
   }
 
+  function onNextFrame(){
+    if($main && $main.onNextFrame){
+      $main.onNextFrame();
+    }
+  }
+
   
   class JComponent{
     constructor(x,y,width,height){
