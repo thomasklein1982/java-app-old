@@ -17,7 +17,44 @@ function additionalJSCode(){
     }
   }
 
+  function onMouseDown(){
+    if($main && $main.onMouseDown){
+      $main.onMouseDown();
+    }
+  }
+
+  function onMouseUp(){
+    if($main && $main.onMouseUp){
+      $main.onMouseUp();
+    }
+  }
+
+  function onTimeout(name){
+    if($main && $main.onTimeout){
+      $main.onTimeout(name);
+    }
+  }
   
+  function onGamepadDown(button){
+    if($main && $main.onGamepadDown){
+      $main.onGamepadDown(button);
+    }
+  }
+
+  function onGamepadUp(){
+    if($main && $main.onGamepadUp){
+      $main.onGamepadUp();
+    }
+  }
+
+  function onTileDraw(x,y,type){
+    if($main && $main.onTileDraw){
+      $main.onTileDraw(x,y,type);
+      return true;
+    }
+    return false;
+  }
+
   class JComponent{
     constructor(x,y,width,height){
       this.x=x;
