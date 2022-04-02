@@ -45,6 +45,16 @@ export default {
               command: (ev)=>{
                 this.$emit('download');
               }
+            },
+            {
+              separator:true
+            },
+            {
+              label: 'Datenbank',
+              icon: 'pi pi-database',
+              command: (ev)=>{
+                this.$emit('database');
+              }
             }
           ]
         },

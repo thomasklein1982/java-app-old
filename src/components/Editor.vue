@@ -12,11 +12,13 @@
       @search="$refs.editor[activeTab].openSearchPanel()"
       @toggleright="toggleRight()"
       @resources="$refs.dialogResources.setVisible(true)"
+      @database="$refs.dialogDatabase.setVisible(true)"
     />
     <LinksDialog
       ref="dialogResources"
     />
     <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
+    <DatabaseDialog ref="dialogDatabase"/>
     <Splitter ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
       <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
         <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
@@ -82,6 +84,7 @@ import { STORAGE_PROJECT } from '../consts/strings.js';
 import { uploadProject } from "../functions/uploadProject.js";
 import LinksDialog from "./LinksDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
+import DatabaseDialog from "./DatabaseDialog.vue";
 
 export default {
   props: {
@@ -258,7 +261,8 @@ export default {
     AppPreview,
     NewClazzWizard,
     LinksDialog,
-    NewAppDialog
+    NewAppDialog,
+    DatabaseDialog
   }
 }
 </script>
