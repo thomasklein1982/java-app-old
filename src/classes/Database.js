@@ -34,8 +34,8 @@ class Database{
     }
   }
   fromCSVString(){
-    
-  },
+
+  }
   toCSVString(){
     var s="";
     for(var tn in this.tables){

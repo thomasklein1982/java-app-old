@@ -152,7 +152,7 @@ export class Project{
     }
     let db;
     if(this.database){
-      db=this.database.
+      db=this.database;
     }else{
       db=null;
     }
