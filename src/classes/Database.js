@@ -1,19 +1,22 @@
-import Table from "./Table";
-
-class Database{
+import {Table} from "./Table";
+alasql_code();
+export class Database{
 
   static String={name: "String", id: "STRING"};
   static Number={name: "Number", id: "NUMERIC"};
   static Date={name: "Date", id: "DATE"};
   constructor(sourceCSV,fileName){
-    Database.clear();
+    this.clear();
     this.tables=[];
   }
   addTable(name){
     var t=new Table(name);
     this.tables.push(t);
   }
-  static clear(){
+  isEmpty(){
+    return this.tables.length===0;
+  }
+  clear(){
     var tables=Object.keys(alasql.tables);
     if(tables){
       for(var i=0;i<tables.length;i++){
@@ -33,8 +36,18 @@ class Database{
       throw e.message;
     }
   }
-  fromCSVString(){
-
+  fromCSVString(s){
+    this.clear();
+    var tableData=s.split(this.separator+this.separator+"\n");
+    for(let i=0;i<tableData.length;i++){
+      var td=tableData[i];
+      if(td.length===0){
+        continue;
+      }
+      var table=new Table();
+      table.fromCSVString(td,this.separator);
+      this.tables.push(table);
+    }
   }
   toCSVString(){
     var s="";
@@ -107,3 +120,5 @@ class Database{
     return true;
   }
 };
+
+export const database=new Database();

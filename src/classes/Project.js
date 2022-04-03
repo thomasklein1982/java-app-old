@@ -1,6 +1,6 @@
 import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
-import {Database} from "./Database";
+import {database} from "./Database";
 
 let start="Project Code Start";
 let stop="Project Code Stop";
@@ -15,7 +15,6 @@ export class Project{
     var c=new Clazz(name,this);
     c.src=code;
     this.clazzes.push(c);
-    this.database=null;
   }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
@@ -150,12 +149,7 @@ export class Project{
       var c=this.clazzes[i];
       t.push(c.src);
     }
-    let db;
-    if(this.database){
-      db=this.database;
-    }else{
-      db=null;
-    }
+    let db=database.toCSVString();
     return start+JSON.stringify({
       clazzesSourceCode: t,
       database: db
@@ -173,6 +167,9 @@ export class Project{
     }
     try{
       var o=JSON.parse(saveString);
+      if(o.database){
+        database.fromCSVString(o.database);
+      }
     }catch(e){
       return;
     }

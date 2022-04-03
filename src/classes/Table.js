@@ -1,4 +1,4 @@
-class Table{
+export class Table{
   constuctor(name){
     this.name=name;
     this.attributes=[];
@@ -46,19 +46,25 @@ class Table{
     var pos=s.indexOf("\n");
     return s.substring(pos+1);
   }
+  fromCSVString(s,sep){
+    s=s.trim();
+
+  }
   toCSVString(sep){
     var s=this.name+"\n";
-    for(var i=0;i<this.attributes.length;i++){
-      var a=this.attributes[i];
-      s+='"'+a.name+'"';
-      if(i<this.attributes.length-1){
-        s+=sep;
+    if(this.attributes){
+      for(var i=0;i<this.attributes.length;i++){
+        var a=this.attributes[i];
+        s+='"'+a.name+'"';
+        if(i<this.attributes.length-1){
+          s+=sep;
+        }
       }
-    }
-    s+="\n";
-    for(var i=0;i<this.records.length;i++){
-      var r=this.records[i];
-      s+=r.toCSVString(this.attributes,sep)+"\n";
+      s+="\n";
+      for(var i=0;i<this.records.length;i++){
+        var r=this.records[i];
+        s+=r.toCSVString(this.attributes,sep)+"\n";
+      }
     }
     return s;
   }
@@ -137,13 +143,11 @@ class Table{
       }
     }
   }
-  addAttribute(a,tableName){
-    if(tableName===undefined){
-      tableName=this.name;
-    }
+  addAttribute(a,type){
+    var tableName=this.name;
     var at={
       name: a.toUpperCase(),
-      type: Database.String,
+      type: type,
       index: this.attributes.length,
       tableName: tableName
     };

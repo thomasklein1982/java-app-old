@@ -1,4 +1,4 @@
-class Record{
+export class Record{
 
   constructor(){
     this.data=[];

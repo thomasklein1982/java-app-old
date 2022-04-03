@@ -33,11 +33,9 @@
 import DatabaseRelation from "./DatabaseRelation.vue";
 import Textarea from 'primevue/textarea';
 import DatabaseNewRelationDialog from "./DatabaseNewRelationDialog.vue";
+import {database} from "../classes/Database.js"
 
 export default {
-  props: {
-    database: Object
-  },
   data(){
     return {
       show: false,
@@ -46,8 +44,8 @@ export default {
   },
   computed: {
     relations(){
-      if(this.database){
-        return this.database.tables;
+      if(database){
+        return 
       }else{
         return [];
       }
@@ -58,7 +56,7 @@ export default {
       this.show=v;
     },
     addRelation(name){
-      this.database.addTable(name);
+      database.addTable(name);
     }
   },
   components: {
