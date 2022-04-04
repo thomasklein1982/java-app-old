@@ -1,11 +1,16 @@
+import { Database } from "./Database";
+
 export class Table{
-  constuctor(name){
+  constructor(database,name){
+    this.database=database;
     this.name=name;
     this.attributes=[];
     this.records=[];
   }
 
-  createSQL(){
+  createInMemory(commandsOnly){
+    var commands=[];
+    if(this.attributes.length===0) return;
     var code="CREATE TABLE "+this.name+" (";
     for(var i=0;i<this.attributes.length;i++){
       var a=this.attributes[i];
@@ -14,32 +19,49 @@ export class Table{
         code+=",";
       }
     }
-    code+=")"+"\n";
-    alasql(code);
+    code+=")";
+    if(!commandsOnly){
+      alasql(code);
+    }
+    commands.push(code);
     for(var i=0;i<this.records.length;i++){
       var r=this.records[i];
-      code="\nINSERT INTO "+this.name+" VALUES (";
-      for(var j=0;j<r.data.length;j++){
-        var d=r.data[j];
-        if(d===undefined){
+      code="INSERT INTO "+this.name+" VALUES (";
+      for(var j=0;j<r.length;j++){
+        if(j>=this.attributes.length){
+          j--;
+          r.pop();
+          continue;
+        }
+        if(j>0){
+          code+=",";
+        }
+        var d=r[j];
+        if(d===undefined||d===null){
           code+="NULL";
         }else{
           var typ=this.attributes[j].type;
-          if(typ===Database.String){
+          if(typ.id===Database.String.id){
             code+="'"+d+"'";
-          }else if(typ===Database.Date){
+          }else if(typ.id===Database.Date.id){
             code+="'"+d+"'";/*"new Date('"+d+"')";*/
           }else{
-            code+=d;
+            if(typeof d==="number"){
+              code+=d;
+            }else{
+              code+="'"+d+"'";
+            }
+            
           }
-        }
-        if(j<r.data.length-1){
-          code+=",";
         }
       }
       code+=")";
-      alasql(code);
+      if(!commandsOnly){
+        alasql(code);
+      }
+      commands.push(code);
     }
+    return commands;
   }
   $toString(){
     var s=this.toCSVString();
@@ -48,14 +70,41 @@ export class Table{
   }
   fromCSVString(s,sep){
     s=s.trim();
-
+    var lines=s.split("\n");
+    this.name=lines[0];
+    this.attributes=[];
+    this.records=[];
+    if(lines.length===1){
+      return;
+    }
+    var attributes=lines[1].split(sep);
+    for(var i=0;i<attributes.length;i++){
+      var a=attributes[i].trim();
+      if(a.length===0){
+        continue;
+      }
+      var teile=a.split("/");
+      var name=teile[0];
+      var type=Database.getTypeByName(teile[1]);
+      if(!type) return;
+      this.addAttribute(name,type);
+    }
+    for(var i=2;i<lines.length;i++){
+      var records=lines[i].split(sep);
+      var rec=[];
+      for(var j=0;j<records.length;j++){
+        var r=JSON.parse(records[j]);
+        rec.push(r);
+      }
+      this.records.push(rec);
+    }
   }
   toCSVString(sep){
     var s=this.name+"\n";
     if(this.attributes){
       for(var i=0;i<this.attributes.length;i++){
         var a=this.attributes[i];
-        s+='"'+a.name+'"';
+        s+=a.name+"/"+a.type.name;
         if(i<this.attributes.length-1){
           s+=sep;
         }
@@ -63,7 +112,14 @@ export class Table{
       s+="\n";
       for(var i=0;i<this.records.length;i++){
         var r=this.records[i];
-        s+=r.toCSVString(this.attributes,sep)+"\n";
+        var sr="";
+        for(var j=0;j<r.length;j++){
+          if(j>0){
+            s+=sep;
+          }
+          s+=JSON.stringify(r[j]);
+        }
+        s+="\n";
       }
     }
     return s;
@@ -143,6 +199,29 @@ export class Table{
       }
     }
   }
+  removeAttribute(a){
+    for(var i=0;i<this.attributes.length;i++){
+      var a2=this.attributes[i];
+      if(a2===a){
+        this.attributes.splice(i,1);
+        for(var j=0;j<this.records.length;j++){
+          var r=this.records[j];
+          r.splice(i,1);
+        }
+        return;
+      }
+    }
+  }
+  getAttributeNames(){
+    var s="";
+    for(var i=0;i<this.attributes.length;i++){
+      if(i>0){
+        s+=", ";
+      }
+      s+=this.attributes[i].name;
+    }
+    return s;
+  }
   addAttribute(a,type){
     var tableName=this.name;
     var at={
@@ -152,7 +231,19 @@ export class Table{
       tableName: tableName
     };
     this.attributes.push(at);
+    for(var i=0;i<this.records.length;i++){
+      var r=this.records[i];
+      r.push(type.value);
+    }
     return at;
+  }
+  appendNewRecord(){
+    var r=[];
+    for(var i=0;i<this.attributes.length;i++){
+      var a=this.attributes[i];
+      r.push(a.type.value);
+    }
+    this.records.push(r);
   }
   addRecord(r){
     this.records.push(r);

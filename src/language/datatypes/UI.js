@@ -178,5 +178,10 @@ function defineDatatable(Clazz,Java){
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
-  
+  createMethod({
+    name: 'setRecordArray',
+    args: [
+      {name: 'recordArray', type: {baseType: 'Record', dimension: 1}}
+    ]
+  },Clazz,false,false,Java);
 }

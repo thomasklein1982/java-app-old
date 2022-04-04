@@ -67,6 +67,33 @@ body,html{
   color: white;
 }
 
+table{
+  border-collapse: collapse;
+}
+
+.datatable tr td{
+  border: 1pt solid black;
+  text-align: center;
+}
+
+.database-table td,th{
+  text-align: center;
+  border: 1pt solid black;
+}
+
+.p-dialog{
+  max-width: 100%;
+}
+
+.database-table{
+  max-width: 100%;
+  overflow: auto;
+}
+
+.inline-buttons>*{
+  margin-left: 0.2rem;
+}
+
 .ͼ1 .cm-lint-marker-error:before {
   content: '⚠';
   color: red;

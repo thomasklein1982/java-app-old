@@ -172,5 +172,78 @@ function additionalJSCode(){
       this.$el=ui.datatable(array,x,y,width,height);
       this.$el.component=this;
     }
+    setRecordArray(array){
+      this.$el.array=array;
+    }
+  }
+
+  class Database{
+    constructor(){
+
+    }
+    sql(cmd){
+      try{
+        var result=alasql(cmd);
+        var records=[];
+        if(result){
+          for(var i=0;i<result.length;i++){
+            var r=new Record(result[i]);
+            records.push(r);
+          }
+        }
+        return records;
+      }catch(e){
+        return null;
+      }
+    }
+    sqlError(cmd){
+      try{
+        alasql(cmd);
+        return null;
+      }catch(e){
+        return e.message;
+      }
+    }
+    areResultsEqual(array1,array2){
+      if(!array1 || !array2) return false;
+      if(array1.length!==array2.length){
+        return false;
+      }
+      if(array1.length===0){
+        return true;
+      }
+      var n1=0;
+      var r1=array1[0];
+      for(var a in r1){
+        n1++;
+      }
+      var r2=array2[0];
+      var n2=0;
+      for(var a in r2){
+        n2++;
+      }
+      if(n1!==n2) return false;
+      for(var i=0;i<n1;i++){
+        var r1=array1[i];
+        var r2=array2[i];
+        for(var a in r1.data){
+          if(a in r2.data){
+            if(r1.data[a]!==r2.data[a]) return false;
+          }else{
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+  }
+
+  class Record{
+    constructor(data){
+      this.data=data;
+    }
+    get(attribute){
+      return this.data[attribute];
+    }
   }
 }

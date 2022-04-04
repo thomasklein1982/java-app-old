@@ -6,6 +6,7 @@ import { appjsdata } from "../functions/snippets";
 import { defineString } from "./datatypes/string";
 import { defineUIClazzes } from "./datatypes/UI";
 import { defineMath } from "./datatypes/Math";
+import {defineDatabaseClazzes} from "./datatypes/Database";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -43,6 +44,9 @@ let JCombobox=new Clazz("JCombobox");
 let Datatable=new Clazz("Datatable");
 let App=new Clazz("App");
 App.cannotBeInstantiated=true;
+let Database=new Clazz("Database");
+let Record=new Clazz("Record");
+Record.cannotBeInstantiated=true;
 
 //let Record=new Clazz("Record");
 //let Matrix=new Clazz("Matrix");
@@ -55,11 +59,11 @@ App.cannotBeInstantiated=true;
 
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable, Database, Record
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JLabel, JTextArea, JTextField,JCombobox, JCheckBox, Datatable, Database, Record
 }
 
 export const Java={
@@ -77,3 +81,4 @@ defineGenericClazz(World,appjsdata.objects.world,Java);
 defineGenericClazz(Time,appjsdata.objects.time,Java);
 defineApp(App,Java);
 defineUIClazzes(Java);
+defineDatabaseClazzes(Java);

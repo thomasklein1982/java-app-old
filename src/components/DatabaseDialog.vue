@@ -1,27 +1,55 @@
 <template>
-<Dialog header="Datenbank" v-model:visible="show" :modal="true" class="p-dialog-maximized">
+<Dialog :header="'Datenbank'+(database.changed? '*':'')" v-model:visible="show" :modal="true" class="p-dialog-maximized">
   <DatabaseNewRelationDialog 
     ref="dialogNewRelation"
     @confirm="addRelation"
   />
   <Splitter :style="{flex: 1}" style="overflow: hidden;width: 100%;height: 100%;">
     <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
-      <div :style="{flex: 1}">
+      <div style="overflow:auto;" :style="{flex: 1}">
         <DatabaseRelation 
           :key="i" 
           v-for="(r,i) in relations"
           :relation="r"
+          @trash="database.tables.splice(i,1)"
         />
       </div>
       <div style="text-align: right">
-        <Button @click="$refs.dialogNewRelation.setVisible(true)" label="Neue Relation"/>
+        <Button @click="$refs.dialogNewRelation.setVisible(true)" icon="pi pi-plus" label="Neue Relation"/>
       </div>
     </SplitterPanel>
-    <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
-      <div :style="{flex: 1}">
-
+    <SplitterPanel style="overflow: auto;" :style="{display: 'flex', flexDirection: 'column'}">
+      <div style="overflow:auto;" :style="{flex: 1}">
+        <div v-if="sqlExecution.result">
+          Die Anfrage
+          <div style="font-family: monospace">
+            {{sqlExecution.command}}
+          </div>
+          ergab:
+          <div v-if="sqlExecution.error">
+            Fehler: {{sqlExecution.error}}
+          </div>
+          <div v-else>
+            <div v-if="sqlExecution.result.length>0">
+              <table class="database-table">
+                <tr>
+                  <th v-for="(a,j) in sqlExecution.result[0]">{{j.toUpperCase()}}</th>
+                </tr>
+                <tr v-for="(ds,i) in sqlExecution.result">
+                  <td v-for="(a,j) in ds">{{a===undefined? 'NULL' : a}}</td>
+                </tr>
+              </table>
+            </div>
+            <div v-else>
+              Die Suchanfrage ergab keine Treffer.
+            </div>
+          </div>
+        </div>
       </div>
       <Textarea :rows="6" v-model="sqlcommand" autoresize/>
+      <div style="text-align: right">
+        <Button @click="executeSQL()" icon="pi pi-play" label="SQL-Befehl ausführen"/>
+      </div>
     </SplitterPanel>
   </Splitter>
   
@@ -33,19 +61,27 @@
 import DatabaseRelation from "./DatabaseRelation.vue";
 import Textarea from 'primevue/textarea';
 import DatabaseNewRelationDialog from "./DatabaseNewRelationDialog.vue";
-import {database} from "../classes/Database.js"
+
 
 export default {
+  props: {
+    database: Object
+  },
   data(){
     return {
       show: false,
-      sqlcommand: ""
+      sqlcommand: "",
+      sqlExecution: {
+        command: null,
+        result: null,
+        error: false
+      }
     };
   },
   computed: {
     relations(){
-      if(database){
-        return 
+      if(this.database){
+        return this.database.tables;
       }else{
         return [];
       }
@@ -56,7 +92,19 @@ export default {
       this.show=v;
     },
     addRelation(name){
-      database.addTable(name);
+      this.database.addTable(name);
+    },
+    executeSQL(){
+      if(this.database.changed){
+        this.database.createInMemory();
+      }
+      this.sqlExecution.command=this.sqlcommand;
+      try{
+        this.sqlExecution.result=alasql(this.sqlcommand);
+        this.sqlExecution.error=false;
+      }catch(e){
+        this.sqlExecution.error=e.message;
+      }
     }
   },
   components: {

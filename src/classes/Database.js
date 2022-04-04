@@ -2,16 +2,41 @@ import {Table} from "./Table";
 alasql_code();
 export class Database{
 
-  static String={name: "String", id: "STRING"};
-  static Number={name: "Number", id: "NUMERIC"};
-  static Date={name: "Date", id: "DATE"};
+  static String={name: "String", id: "STRING", value: "", icon: "pi pi-comment"};
+  static Numeric={name: "Numeric", id: "NUMERIC", value: 0, icon : "pi pi-percentage"};
+  static Date={name: "Date", id: "DATE", value: "01.01.1970", icon: "pi pi-calendar"};
   constructor(sourceCSV,fileName){
     this.clear();
     this.tables=[];
+    this.separator=";";
+    this.changed=false;
   }
+
+  static getTypeByName(type){
+    type=type.toLowerCase();
+    if(type==="string"){
+      return Database.String;
+    }else if(type==="numeric"){
+      return Database.Numeric;
+    }else if(type==="date"){
+      return Database.Date;
+    }
+    return null;
+  }
+
   addTable(name){
-    var t=new Table(name);
+    var t=new Table(this,name);
     this.tables.push(t);
+    this.changed=true;
+  }
+  getTableByName(name){
+    for(var i=0;i<this.tables.length;i++){
+      var t=this.tables[i];
+      if(t.name===name){
+        return t;
+      }
+    }
+    return null;
   }
   isEmpty(){
     return this.tables.length===0;
@@ -20,13 +45,26 @@ export class Database{
     var tables=Object.keys(alasql.tables);
     if(tables){
       for(var i=0;i<tables.length;i++){
+        var c="drop table "+tables[i];
         try{
-          alasql("drop table "+tables[i]);
+          alasql(c);
         }catch(e){
           console.log(e);
         }
       }
     }
+  }
+  createInMemory(commandsOnly){
+    if(!commandsOnly){
+      this.clear();
+    }
+    var s=[];
+    for(var i=0;i<this.tables.length;i++){
+      var t=this.tables[i];
+      s=s.concat(t.createInMemory(commandsOnly));
+    }
+    this.changed=false;
+    return s;
   }
   query(sqlSource){
     try{
@@ -40,14 +78,15 @@ export class Database{
     this.clear();
     var tableData=s.split(this.separator+this.separator+"\n");
     for(let i=0;i<tableData.length;i++){
-      var td=tableData[i];
+      var td=tableData[i].trim();
       if(td.length===0){
         continue;
       }
-      var table=new Table();
+      var table=new Table(this);
       table.fromCSVString(td,this.separator);
       this.tables.push(table);
     }
+    this.changed=true;
   }
   toCSVString(){
     var s="";
@@ -55,7 +94,7 @@ export class Database{
       var t=this.tables[tn];
       s+=t.toCSVString(this.separator)+this.separator+this.separator+"\n";
     }
-    s=s.substring(0,s.length-1);
+    s=s.substring(0,s.length-3);
     return s;
   }
   parseNextTable(){
@@ -122,3 +161,5 @@ export class Database{
 };
 
 export const database=new Database();
+
+window.database=database;

@@ -1,8 +1,8 @@
 <template>
-  <Dialog header="Neue Relation" v-model:visible="show">
+  <Dialog header="Neue Relation" modal v-model:visible="show">
     <div class="field">
       <label for="relationname">Name</label>
-      <InputText autofocus id="relationname" type="text" />
+      <InputText autofocus id="relationname" v-model="name" type="text" />
       <small>Der Name der neuen Relation.</small>
     </div>
     <template #footer>

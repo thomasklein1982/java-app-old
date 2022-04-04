@@ -3825,10 +3825,10 @@ window.appJScode=function(){
             array=array.values;
           } 
           while(this.table.firstChild){
-            this.table.removeChild(this.firstChild);
+            this.table.removeChild(this.table.firstChild);
           }
           b._rows=[];
-          if(array.length===0) return;
+          if(!array || array.length===0) return;
           let obj=array[0];
           let captions=document.createElement("tr");
           let th=document.createElement("th");
@@ -3851,6 +3851,9 @@ window.appJScode=function(){
             let td=document.createElement("td");
             td.textContent=i;
             tr.appendChild(td);
+            if(Record && obj instanceof Record){
+              obj=obj.data;
+            }
             for(let a in obj){
               let attr=obj[a];
               if(typeof attr==="function"){

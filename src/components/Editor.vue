@@ -18,7 +18,7 @@
       ref="dialogResources"
     />
     <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
-    <DatabaseDialog ref="dialogDatabase"/>
+    <DatabaseDialog :database="database" ref="dialogDatabase"/>
     <Splitter ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
       <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
         <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
@@ -85,6 +85,7 @@ import { uploadProject } from "../functions/uploadProject.js";
 import LinksDialog from "./LinksDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
 import DatabaseDialog from "./DatabaseDialog.vue";
+import {database} from "../classes/Database.js"
 
 export default {
   props: {
@@ -102,7 +103,8 @@ export default {
       sizeCode: 60,
       rightClosed: false,
       sizeCodeSaved: 60,
-      closeRightAfterStopping: false
+      closeRightAfterStopping: false,
+      database: database
     };
   },
   watch: {
@@ -193,6 +195,7 @@ export default {
     },
     async createNewApp(name,code){
       let p=new Project(name,code);
+      this.database.clear();
       await p.initialize();
       this.openProject(p);
     },
@@ -202,6 +205,7 @@ export default {
     async uploadProject(){
       let p=await uploadProject();
       if(!p) return;
+      this.database.clear();
       this.openProject(p,this.useBlockEditor);
     },
     prettifyCode(){

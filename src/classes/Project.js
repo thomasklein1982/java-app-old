@@ -19,6 +19,15 @@ export class Project{
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
   getFullAppCode(additionalCode, includeSave){
+    let databaseCode="";
+    let cmds=database.createInMemory(true);
+    if(cmds && cmds.length>1){
+      databaseCode+=alasql_code+"\nalasql_code();\n";
+      for(var i=0;i<cmds.length;i++){
+        databaseCode+="alasql("+JSON.stringify(cmds[i])+");\n";
+      }
+    }
+    
     let js=this.getJavaScriptCode();
     let body="";
     if(includeSave){
@@ -35,6 +44,7 @@ export class Project{
         ${includeSave? 'console.hide()':''}
         ${window.additionalJSCode}
         ${additionalCode}
+        ${databaseCode}
         ${js}
       </script>
     </head>
