@@ -7,7 +7,7 @@
     </div>
     <div style="margin-top: 0.5rem">Wähle eine Vorlage für die neue App:</div>
     <Listbox optionLabel="name" :options="templates" v-model="template"/>
-    <small style="display: block">{{template.description}}</small>
+    <small style="display: block">{{template? template.description: 'Keine Vorlage ausgewählt'}}</small>
     <div style="text-align: right">
       <Button :disabled="nameerror || !template" @click="clickOK()" label="OK"/> <Button @click="show=false" label="Abbrechen"/>
     </div>

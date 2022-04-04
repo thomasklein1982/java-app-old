@@ -50,9 +50,9 @@ function additionalJSCode(){
   function onTileDraw(x,y,type){
     if($main && $main.onTileDraw){
       $main.onTileDraw(x,y,type);
-      return true;
+    }else{
+      delete window.onTileDraw;
     }
-    return false;
   }
 
   class JComponent{

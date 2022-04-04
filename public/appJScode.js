@@ -1852,14 +1852,9 @@ window.appJScode=function(){
           var x=j+1;
           var y=i+1;
           var tile=this.getTile(x,y);
-          var drawRects=true;
           if(window.onTileDraw){
-            drawRects=await window.onTileDraw(x,y,tile.type,tile.info);
-            if(drawRects===false){
-              drawRects=true;
-            }
-          }
-          if(drawRects){
+            await window.onTileDraw(x,y,tile.type,tile.info);  
+          }else{
             this.paintRect(x,y,1,1,false);
             this.write(tile.type,x,y);
           }
@@ -1874,18 +1869,9 @@ window.appJScode=function(){
           var x=j+1;
           var y=i+1;
           var tile=this.getTile(x,y);
-          var drawRects=true;
           if(window.onTileDraw){
-            drawRects=window.onTileDraw(x,y,tile.type,tile.info);
-            if(drawRects===true){
-              drawRects=false;
-            }else if(drawRects===false){
-              drawRects=true;
-            }else{
-              drawRects=false;
-            }
-          }
-          if(drawRects){
+            window.onTileDraw(x,y,tile.type,tile.info);
+          }else{
             this.paintRect(x,y,1,1,false);
             this.write(tile.type,x,y);
           }
@@ -4169,12 +4155,13 @@ window.appJScode=function(){
     replaceTypes: function(oldType,newType){
       $App.world.replaceTypes(oldType,newType);
     },
-    draw: async function(){
-      if($App.debug.enabled){
-        await $App.world.drawAsync();
-      }else{
-        $App.world.draw();
-      }
+    draw: function(){
+      $App.world.draw();
+      // if($App.debug.enabled){
+      //   $App.world.drawAsync();
+      // }else{
+      //   $App.world.draw();
+      // }
     },
     scroll(cx,cy){
       $App.world.setCenter(cx,cy);
