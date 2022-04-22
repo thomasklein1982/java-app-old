@@ -65,7 +65,9 @@ export class Project{
       }
       code+="\n"+c.getJavaScriptCode();
     }
-    code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n\n(async function(){await "+mainClazz.name+".main([]);})()";
+    if(mainClazz){
+      code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n\n(async function(){await "+mainClazz.name+".main([]);})()";
+    }
     return code;
   }
   async initialize(){

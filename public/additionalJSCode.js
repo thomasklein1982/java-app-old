@@ -32,6 +32,12 @@ function additionalJSCode(){
     }
   }
 
+  function onMouseMove(){
+    if($main && $main.onMouseMove){
+      $main.onMouseMove();
+    }
+  }
+
   function onTimeout(name){
     if($main && $main.onTimeout){
       $main.onTimeout(name);

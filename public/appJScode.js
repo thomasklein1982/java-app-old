@@ -3375,9 +3375,10 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
         return;
       }
       if(name){
+        name=name.toLowerCase();
         for(var i=0; i<$App.timer.length;i++){
           let t=$App.timer[i];
-          if(t.name.toLowerCase===name){
+          if(t.name.toLowerCase()===name){
             $App.timer.splice(i,1);
             clearTimeout(t.id);
             return;
