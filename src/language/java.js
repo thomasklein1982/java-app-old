@@ -79,6 +79,7 @@ defineGenericClazz(Console,appjsdata.objects.console,Java);
 defineGenericClazz(Path,appjsdata.objects.path,Java);
 defineGenericClazz(World,appjsdata.objects.world,Java);
 defineGenericClazz(Time,appjsdata.objects.time,Java);
+defineGenericClazz(Mouse,appjsdata.objects.mouse,Java);
 defineApp(App,Java);
 defineUIClazzes(Java);
 defineDatabaseClazzes(Java);
