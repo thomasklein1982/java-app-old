@@ -115,7 +115,7 @@ function defineJComponent(Clazz,Java){
 function defineJButton(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'label'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -125,7 +125,7 @@ function defineJButton(Clazz,Java){
 function defineJLabel(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'text'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'text'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -135,7 +135,7 @@ function defineJLabel(Clazz,Java){
 function defineJTextField(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -145,7 +145,7 @@ function defineJTextField(Clazz,Java){
 function defineJTextArea(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -155,7 +155,7 @@ function defineJTextArea(Clazz,Java){
 function defineJCombobox(Clazz,Java){
   createConstructor ({
     args: [
-      {type: {baseType: 'String', dimension: 1}, name: 'options'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: {baseType: 'String', dimension: 1}, name: 'options'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -165,7 +165,7 @@ function defineJCombobox(Clazz,Java){
 function defineJCheckBox(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'label'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -175,7 +175,7 @@ function defineJCheckBox(Clazz,Java){
 function defineDatatable(Clazz,Java){
   createConstructor ({
     args: [
-      {type: {baseType: 'Object', dimension: 1}, name: 'array'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: {baseType: 'Object', dimension: 1}, name: 'array'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -190,7 +190,7 @@ function defineDatatable(Clazz,Java){
 function defineJPanel(Clazz,Java){
   createConstructor ({
     args: [
-      {type: {baseType: 'String', dimension: 0}, name: 'template'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: {baseType: 'String', dimension: 0}, name: 'template'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;

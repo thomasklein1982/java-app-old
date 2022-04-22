@@ -16,6 +16,7 @@ export function createMethod(data,clazz,isStatic,isConstructor,Java){
   }
   m.comment=data.info;
   m.params=new ParameterList(m);
+  let minCount=-1;
   if(data.args){
     for(let j=0;j<data.args.length;j++){
       let a=data.args[j];
@@ -27,6 +28,12 @@ export function createMethod(data,clazz,isStatic,isConstructor,Java){
       }
       p.name=a.name;
       m.params.parameters.push(p);
+      if(minCount<0){
+        if(a.optional){
+          minCount=j;
+          m.params.minCount=minCount;
+        }
+      }
     }
   }
   if(data.jsName){

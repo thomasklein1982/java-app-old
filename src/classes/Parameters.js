@@ -4,6 +4,7 @@ export class ParameterList{
   constructor(method){
     this.method=method;
     this.parameters=[];
+    this.minCount=-1;
   }
   get count(){
     return this.parameters.length;

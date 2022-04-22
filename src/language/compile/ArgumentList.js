@@ -7,6 +7,10 @@ export function ArgumentList(node,source,scope,parameters){
   let codeArgs=[];
   let i=0;
   let pcount=parameters? parameters.count:0;
+  let minCount=-1;
+  if(parameters && parameters.minCount>=0){
+    minCount=parameters.minCount;
+  }
   while(node.nextSibling && node.nextSibling.name!==")"){
     if(!parameters || i>=pcount){
       throw source.createError("Nur "+parameters.count+" Argumente erwartet. Zu viele Argumente!",node);
@@ -33,8 +37,12 @@ export function ArgumentList(node,source,scope,parameters){
     list.push(arg);
     i++;
   }
-  if(i<pcount){
-    throw source.createError("Zu wenig Argumente! Es müssen "+pcount+" Argumente sein.",node);
+  if(i!==minCount && i<pcount){
+    if(minCount>=0){
+      throw source.createError("Es müssen "+minCount+" oder "+pcount+" Argumente sein.",node);
+    }else{
+      throw source.createError("Zu wenig Argumente! Es müssen "+pcount+" Argumente sein.",node);
+    }
   }
   code+=codeArgs.join(",");
   code+=")";
