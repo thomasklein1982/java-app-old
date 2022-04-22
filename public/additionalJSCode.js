@@ -1,3 +1,4 @@
+
 function additionalJSCode(){
   function $u(v){if(v===undefined){throw {message: "Undefinierter Wert."}} return v;}
   function $v(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{return v*1;}}
@@ -14,6 +15,8 @@ function additionalJSCode(){
   function onNextFrame(){
     if($main && $main.onNextFrame){
       $main.onNextFrame();
+    }else{
+      delete window.onNextFrame;
     }
   }
 
@@ -53,6 +56,34 @@ function additionalJSCode(){
     }else{
       delete window.onTileDraw;
     }
+  }
+
+  App.gamepad.setA=function(keycode){
+    this.A=keycode;
+  }
+  App.gamepad.setB=function(keycode){
+    this.B=keycode;
+  }
+  App.gamepad.setX=function(keycode){
+    this.Y=keycode;
+  }
+  App.gamepad.setE=function(keycode){
+    this.E=keycode;
+  }
+  App.gamepad.setF=function(keycode){
+    this.F=keycode;
+  }
+  App.gamepad.setUp=function(keycode){
+    this.up=keycode;
+  }
+  App.gamepad.setDown=function(keycode){
+    this.down=keycode;
+  }
+  App.gamepad.setLeft=function(keycode){
+    this.left=keycode;
+  }
+  App.gamepad.setRight=function(keycode){
+    this.right=keycode;
   }
 
   class JComponent{
@@ -244,6 +275,20 @@ function additionalJSCode(){
     }
     get(attribute){
       return this.data[attribute];
+    }
+  }
+
+  function $clearAlaSQL(){
+    var tables=Object.keys(alasql.tables);
+    if(tables){
+      for(var i=0;i<tables.length;i++){
+        var c="drop table "+tables[i];
+        try{
+          alasql(c);
+        }catch(e){
+          console.log(e);
+        }
+      }
     }
   }
 }

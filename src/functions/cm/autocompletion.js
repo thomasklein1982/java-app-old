@@ -131,21 +131,27 @@ export function createAutocompletion(){
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
     }else{
       from=nodeBefore.from;
-      if(nodeBefore.name==="."){
+      if((nodeBefore.name==="Identifier" || nodeBefore.name==="TypeName") && nodeBefore.prevSibling && nodeBefore.prevSibling.name==="."){
+        /**zuruecklesen bis zu moeglichem Punkt */
         nodeBefore=nodeBefore.prevSibling;
+        from--;
+      }
+      if(nodeBefore.name==="."){
         from++;
+        annotation=method.typeAnnotations[nodeBefore.to-1];
       }else{
         if(nodeBefore.prevSibling && nodeBefore.prevSibling.name!=="(" && !nodeBefore.prevSibling.name.endsWith("Op")){
           nodeBefore=nodeBefore.prevSibling;
           if(nodeBefore && nodeBefore.name==="."){
             nodeBefore=nodeBefore.prevSibling;
           }
+          annotation=method.typeAnnotations[nodeBefore.to];
         }else{
           let scope=method.getScopeAtPosition(from);
           annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true, scope: scope};
         }
       }
-      if(!annotation) annotation=method.typeAnnotations[nodeBefore.to];
+      
     }
     if(annotation){
       return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method, annotation.scope);
@@ -202,6 +208,11 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
       clazz=clazz.superClazz;
     }
     if(includeClasses){
+      if(method){
+        for(let i=0;i<snippets.inMethod.length;i++){
+          options.push(snippets.inMethod[i]);
+        }
+      }
       for(let name in Java.clazzes){
         let c=Java.clazzes[name];
         options.push({
@@ -211,11 +222,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
         });
       }
     }
-    if(method){
-      for(let i=0;i<snippets.inMethod.length;i++){
-        options.push(snippets.inMethod[i]);
-      }
-    }
+    
   }
   return {
     from,

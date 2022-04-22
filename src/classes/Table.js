@@ -44,14 +44,18 @@ export class Table{
           if(typ.id===Database.String.id){
             code+="'"+d+"'";
           }else if(typ.id===Database.Date.id){
-            code+="'"+d+"'";/*"new Date('"+d+"')";*/
-          }else{
-            if(typeof d==="number"){
-              code+=d;
+            if(/^\d\d\.\d\d\.\d\d\d\d$/.test(d)){
+              code+="'"+d+"'";/*"new Date('"+d+"')";*/
             }else{
-              code+="'"+d+"'";
+              code+=null;
             }
             
+          }else{
+            d=+d;
+            if(isNaN(d)){
+              d=null;
+            }
+            code+=d;
           }
         }
       }

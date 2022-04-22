@@ -216,24 +216,46 @@ export default {
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
+            let updateImmediately=false;
             if(!changed){
               changed=v.docChanged;
             }
             if(changed){
+              if(v.transactions.length===1){
+                let t=v.transactions[0];
+                if(t.changes && t.changes.inserted.length>0){
+                  let lastChange=t.changes.inserted[t.changes.inserted.length-1];
+                  if(lastChange.text && lastChange.text.length>0){
+                    let inserted=lastChange.text[0];
+                    if(inserted==='.'){
+                      updateImmediately=true;
+                    }
+                  }
+                }
+              }
               this.size=v.state.doc.length;
             }
             if(timer) clearTimeout(timer);
-            timer = setTimeout(() => {
-              if (changed) {
-                this.update(v);
-                let lintPlugin=this.editor.plugins[12];
-                if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
-                  lintPlugin.value.run()
-                }
-                //lint.value.source(this.editor);
-                changed=false;
+            if(updateImmediately){
+              this.update(v);
+              let lintPlugin=this.editor.plugins[12];
+              if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
+                lintPlugin.value.run()
               }
-            }, 500 );
+              changed=false;
+            }else{
+              timer = setTimeout(() => {
+                if (changed) {
+                  this.update(v);
+                  let lintPlugin=this.editor.plugins[12];
+                  if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
+                    lintPlugin.value.run()
+                  }
+                  //lint.value.source(this.editor);
+                  changed=false;
+                }
+              }, 500 );
+            }
           }),
         ]
       }),

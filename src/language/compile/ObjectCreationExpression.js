@@ -19,9 +19,17 @@ export function ObjectCreationExpression(node,source,scope){
     if(c==="."){
       /**Seltsames Verhalten? Hier scheinen alle Ausdruecke zu landen, die mit einem . enden */
       console.log(source.getText(root));
-      let src=source.getText(root);
-      src=src.substring(0,src.length-1);
-      return Identifier({node: root, src: src, from: root.from,to: root.to-1},source,scope);
+      let node=root.firstChild;
+      console.log("seltsam",node);
+      let f=CompileFunctions.get(node,source);
+      if(f){
+        return f(node,source,scope);
+      }
+      throw source.createError("Seltsamer Fehler?", node);
+      // let src=source.getText(root);
+
+      // src=src.substring(0,src.length-1);
+      // return Identifier({node: root, src: src, from: root.from,to: root.to-1},source,scope);
     }
   }
   node=node.nextSibling;

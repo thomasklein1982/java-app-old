@@ -10,6 +10,7 @@ import {Identifier} from "./compile/Identifier";
 import { FieldAccess } from "./compile/FieldAccess";
 import { ObjectCreationExpression } from "./compile/ObjectCreationExpression";
 import { TypeName } from "./compile/TypeName";
+import { ScopedTypeName } from "./compile/ScopedTypeName";
 import { LocalVariableDeclaration } from "./compile/LocalVariableDeclaration";
 import { PrimitiveType } from "./compile/PrimitiveType";
 import { AssignmentExpression } from "./compile/AssignmentExpression";
@@ -46,6 +47,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName
   }
 }

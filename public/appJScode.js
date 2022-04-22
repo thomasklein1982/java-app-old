@@ -1,5 +1,6 @@
 window.appJScode=function(){
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   window.onmessage=function(message){
     $App.debug.onMessage(message);
@@ -1852,9 +1853,15 @@ window.appJScode=function(){
           var x=j+1;
           var y=i+1;
           var tile=this.getTile(x,y);
+          var drawRects=true;
           if(window.onTileDraw){
-            await window.onTileDraw(x,y,tile.type,tile.info);  
-          }else{
+            drawRects=false;
+            await window.onTileDraw(x,y,tile.type,tile.info);
+            if(!window.onTileDraw){
+              drawRects=true;
+            }
+          }
+          if(drawRects){
             this.paintRect(x,y,1,1,false);
             this.write(tile.type,x,y);
           }
@@ -1869,9 +1876,18 @@ window.appJScode=function(){
           var x=j+1;
           var y=i+1;
           var tile=this.getTile(x,y);
+          var drawRects=true;
           if(window.onTileDraw){
-            window.onTileDraw(x,y,tile.type,tile.info);
-          }else{
+            drawRects=window.onTileDraw(x,y,tile.type,tile.info);
+            if(drawRects===true){
+              drawRects=false;
+            }else if(drawRects===false){
+              drawRects=true;
+            }else{
+              drawRects=false;
+            }
+          }
+          if(drawRects){
             this.paintRect(x,y,1,1,false);
             this.write(tile.type,x,y);
           }
@@ -2059,6 +2075,10 @@ window.appJScode=function(){
   };  
   
   $App.Gamepad.prototype={
+    resetAllButtons: function(){
+      this.updateButtons(false,false,false,false,false,false);
+      this.updateJoystickDirection(false,false,false,false);
+    },
     updateButtons: function(ADown,BDown,XDown,YDown,EDown,FDown){
       var down={
         A: ADown, B: BDown, X: XDown, Y: YDown, E: EDown, F: FDown
@@ -2066,9 +2086,9 @@ window.appJScode=function(){
       for(var a in this.buttons){
         var b=this.buttons[a];
         if(down[a]){
-          b.el.style.opacity="0.5";
+          b.el.style.opacity="0.3";
         }else{
-          b.el.style.opacity="1";
+          b.el.style.opacity="0.6";
         }
       }
     },
@@ -2256,7 +2276,7 @@ window.appJScode=function(){
       for(var a in this.buttons){
         let b=this.buttons[a];
         b=document.createElement("div");
-        b.style="font-family: sans-serif;font-weight:bold;border-radius: 2000px; width: 1cm; height: 1cm; position: absolute; z-index: 10; border: 1pt solid black;text-align: center; line-height: 1cm; user-select: none;cursor: pointer;opacity: 1";
+        b.style="font-family: sans-serif;font-weight:bold;border-radius: 2000px; width: 1cm; height: 1cm; position: absolute; z-index: 10; border: 1pt solid black;text-align: center; line-height: 1cm; user-select: none;cursor: pointer;opacity: 0.6";
         b.className="gamepad-button";
         b.textContent=a;
         this.buttons[a]={
@@ -3005,11 +3025,27 @@ window.appJScode=function(){
     {name: "millis", type: 'int', info: 'Anzahl Millisekunden, die das Programm abwarten soll.'}
   ],'Dieser Befehl funktioniert nur zusammen mit async/await.');
   
-  $App.addFunction("alert",null,'Zeigt eine Messagebox mit einer Nachricht.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
+  $App.alert=window.alert;
+  $App.confirm=window.confirm;
+  $App.promt=window.prompt;
+
+  $App.handleModalDialog=function(){
+    $App.gamepad.resetAllButtons();
+    $App.mouse.down=false;
+  };
+
+  $App.addFunction(function alert(text){
+    $App.handleModalDialog();
+    $App.alert(text);
+  },null,'Zeigt eine Messagebox mit einer Nachricht.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
   
-  $App.addFunction("prompt",'String','Zeigt eine Messagebox mit einer Nachricht und  einem Eingabefeld. Liefert den eingegebenen Text zurück.',[{name: 'text', type: 'String',info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
+  $App.addFunction(function prompt(text){
+    $App.handleModalDialog();
+    return $App.prompt(text);
+  },'String','Zeigt eine Messagebox mit einer Nachricht und  einem Eingabefeld. Liefert den eingegebenen Text zurück.',[{name: 'text', type: 'String',info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
   
   $App.addFunction(function promptNumber(text){
+    Application.handleModalDialog();
     let a;
     let zusatz="";
     do{
@@ -3019,7 +3055,10 @@ window.appJScode=function(){
     return a;
   },'double','Zeigt eine Messagebox mit einer Nachricht und einem Eingabefeld. Liefert die eingegebene Zahl zurück.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
   
-  $App.addFunction("confirm",'boolean','Zeigt eine Messagebox mit einer Nachricht. Der Benutzer muss zwischen OK und Abbrechen wählen. Die Auswahl wird als <code>true</code> oder <code>false</code> zurückgegeben.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
+  $App.addFunction(function confirm(text){
+    $App.handleModalDialog();
+    return $App.confirm(text);
+  },'boolean','Zeigt eine Messagebox mit einer Nachricht. Der Benutzer muss zwischen OK und Abbrechen wählen. Die Auswahl wird als <code>true</code> oder <code>false</code> zurückgegeben.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
   
   $App.addFunction(function toast(text,position,duration){
     $App.toast.show(text,position,duration);
@@ -3519,7 +3558,7 @@ window.appJScode=function(){
       name: 'setA',
       language: "java",
       returnType: null,
-      args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "A" verbunden werden soll.'}],
+      args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "A" verbunden werden soll.'}],
       info: 'Legt fest, welche Taste auf der Tastatur mit "A" verbunden werden soll.',
     },
     {
@@ -3531,7 +3570,7 @@ window.appJScode=function(){
       name: 'setB',
       language: "java",
       returnType: null,
-      args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "B" verbunden werden soll.'}],
+      args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "B" verbunden werden soll.'}],
       info: 'Legt fest, welche Taste auf der Tastatur mit "B" verbunden werden soll.',
     }, 
     {
@@ -3543,7 +3582,7 @@ window.appJScode=function(){
       name: 'setX',
       language: "java",
       returnType: null,
-      args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "X" verbunden werden soll.'}],
+      args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "X" verbunden werden soll.'}],
       info: 'Legt fest, welche Taste auf der Tastatur mit "X" verbunden werden soll.',
     },
     {
@@ -3555,7 +3594,7 @@ window.appJScode=function(){
       name: 'setY',
       language: "java",
       returnType: null,
-      args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Y" verbunden werden soll.'}],
+      args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "Y" verbunden werden soll.'}],
       info: 'Legt fest, welche Taste auf der Tastatur mit "Y" verbunden werden soll.',
     },
     {
@@ -3567,7 +3606,7 @@ window.appJScode=function(){
       name: 'setE',
       language: "java",
       returnType: null,
-      args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "E" verbunden werden soll.'}],
+      args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "E" verbunden werden soll.'}],
       info: 'Legt fest, welche Taste auf der Tastatur mit "E" verbunden werden soll.',
     },
     {
@@ -3579,7 +3618,7 @@ window.appJScode=function(){
       name: 'setF',
       language: "java",
       returnType: null,
-      args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "F" verbunden werden soll.'}],
+      args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "F" verbunden werden soll.'}],
       info: 'Legt fest, welche Taste auf der Tastatur mit "F" verbunden werden soll.',
     },
   ],'Durch Zuweisen eines Zeichens zu einer Taste kannst du festlegen, welche Taste zu welchem Button gehoert:<code><pre>function onStart(){\n\tgamepad.show();\n\t//Bewegung mit WASD:\n\tgamepad.up = "W";\n\tgamepad.down = "S";\n\tgamepad.left = "A";\n\tgamepad.right = "D";\n\t//Buttons E und F ausblenden:\n\tgamepad.E = null;\n\tgamepad.F = null;\n\t//Button B durch Leertaste:\n\tgamepad.B = " ";\n}</pre></code>');
@@ -3811,10 +3850,10 @@ window.appJScode=function(){
             array=array.values;
           } 
           while(this.table.firstChild){
-            this.table.removeChild(this.table.firstChild);
+            this.table.removeChild(this.firstChild);
           }
           b._rows=[];
-          if(!array || array.length===0) return;
+          if(array.length===0) return;
           let obj=array[0];
           let captions=document.createElement("tr");
           let th=document.createElement("th");
@@ -3837,9 +3876,6 @@ window.appJScode=function(){
             let td=document.createElement("td");
             td.textContent=i;
             tr.appendChild(td);
-            if(Record && obj instanceof Record){
-              obj=obj.data;
-            }
             for(let a in obj){
               let attr=obj[a];
               if(typeof attr==="function"){
@@ -4155,13 +4191,12 @@ window.appJScode=function(){
     replaceTypes: function(oldType,newType){
       $App.world.replaceTypes(oldType,newType);
     },
-    draw: function(){
-      $App.world.draw();
-      // if($App.debug.enabled){
-      //   $App.world.drawAsync();
-      // }else{
-      //   $App.world.draw();
-      // }
+    draw: async function(){
+      if($App.debug.enabled){
+        await $App.world.drawAsync();
+      }else{
+        $App.world.draw();
+      }
     },
     scroll(cx,cy){
       $App.world.setCenter(cx,cy);

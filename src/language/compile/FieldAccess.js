@@ -2,6 +2,7 @@ import { Clazz } from "../../classes/Clazz";
 import { Error } from "../../classes/Error";
 import { Scope } from "../../classes/Scope";
 import { Source } from "../../classes/Source";
+import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { ArrayAccess } from "./ArrayAccess";
 import { Identifier } from "./Identifier";
@@ -15,12 +16,12 @@ import { ThisExpression } from "./ThisExpression";
  * @returns 
  */
 export function FieldAccess(node,source,scope){
+
   node=node.firstChild;
   let code="";
   let owner;
-  if(node.name==="FieldAccess"){
+  if(node.name==="FieldAccess" || node.name==="ScopedTypeName"){
     let fa=FieldAccess(node,source,scope);
-    node=node.nextSibling;
     code+=fa.code;
     owner={
       type: fa.type,
@@ -28,7 +29,6 @@ export function FieldAccess(node,source,scope){
     };
   }else if(node.name==="ArrayAccess"){
     let fa=ArrayAccess(node,source,scope);
-    node=node.nextSibling;
     code+=fa.code;
     if(fa.type.dimension>0){
       throw source.createError("Ein Array hat keine Attribute.",node.node);
@@ -40,15 +40,13 @@ export function FieldAccess(node,source,scope){
   }else if(node.name==="this"){
     let This=ThisExpression(node,source,scope);
     code+=This.code;
-    node=node.nextSibling;
     owner={
       type: This.type,
       static: false
     };
-  }else if(node.name==="Identifier"){
+  }else if(node.name==="Identifier" || node.name==="TypeName"){
     let ident=Identifier(node,source,scope);
     code+=ident.code;
-    node=node.nextSibling;
     if(ident.object instanceof Clazz){
       owner={
         type: ident.object,
@@ -61,13 +59,24 @@ export function FieldAccess(node,source,scope){
       };
     }
   }
+  let type=owner.type;
+  if(!type.baseType){
+    type=new Type(type,0);
+  }
+  scope.addTypeAnnotation(node.to,type,owner.static);
+  node=node.nextSibling;
   let object=null;
   if(node.name==="."){
     code+=".";
     node=node.nextSibling;
-    if(node.name==="Identifier"){
+    if(node.name==="Identifier" || node.name==="TypeName"){
       object=Identifier(node,source,scope,owner);
       code+=object.code;
+      let type=object.type;
+      if(!type.baseType){
+        type=new Type(type,0);
+      }
+      scope.addTypeAnnotation(node.to,type,false);
     }
   }else{
     let f=CompileFunctions.get(node,source);
