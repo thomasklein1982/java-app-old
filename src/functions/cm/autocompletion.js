@@ -126,7 +126,7 @@ export function createAutocompletion(){
         options,
         span: /^[\w$]*$/
       }
-    }else if(nodeBefore.name==="Block"){
+    }else if(nodeBefore.name==="Block"||nodeBefore.name==="["){
       from=context.pos;
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
     }else{

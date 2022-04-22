@@ -20,6 +20,9 @@ export function ArrayAccess(node,source,scope){
   node=node.nextSibling;
   f=CompileFunctions.get(node,source);
   let index=f(node,source,scope);
+  if(!index.type){
+    throw source.createError("'int' erwartet.",node);
+  }
   if(!index.type.isSubtypeOf(Java.datatypes.int)){
     throw source.createError("'int' erwartet, aber '"+index.type+"' gefunden.",node);
   }
