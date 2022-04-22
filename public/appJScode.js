@@ -1,6 +1,5 @@
 window.appJScode=function(){
-
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   window.onmessage=function(message){
     $App.debug.onMessage(message);
@@ -13,7 +12,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
   })
 
   window.$App={
-    version: 21,
+    version: 22,
     language: window.language? window.language:'js',
     setupData: null,
     debug: {
@@ -1036,7 +1035,11 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
         height=el.offsetHeight;
         height=this.getCanvasHeight(height);
       }
-      el.style.position="absolute";
+      if(el.noAbsolutePosition){
+        el.style.position="";
+      }else{
+        el.style.position="absolute";
+      }
       var x,y;
       if(align.h==="center"){
         x=cx-width/2;
@@ -3736,6 +3739,52 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
   ],'');
   
   $App.addObject('ui',false,{
+    panel: function (template,cx,cy,width,height){
+      var b=$App.createElement("div");
+      if(!template){
+        b.noAbsolutePosition=true;
+      }else{
+        b.noAbsolutePosition=false;
+        template+="";
+      }
+      
+      if(!b.noAbsolutePosition){
+        var teile=template.split("/");
+        for(var i=0;i<teile.length;i++){
+          var t=teile[i].trim();
+          if(/^\d+$/.test(t)){
+            teile[i]="repeat("+t+",1fr)";
+          }
+        }
+        if(teile.length===2){
+          b.style.gridTemplateRows=teile[0];
+          b.style.gridTemplateColumns=teile[1];
+        }else{
+          b.style.gridTemplateColumns=teile[0];
+        }
+        b.style.display="grid"; 
+        b.style.alignItems="stretch";
+        b.style.justifyContent="stretch";
+      }
+      b.add=function(c){
+        if(!this.noAbsolutePosition){
+          c.style.position="";
+          c.style.width="auto";
+          c.style.height="auto";
+        }
+        if(c.parent){
+          c.parent.removeChild(c);
+        }
+        this.appendChild(c);
+      };
+      b.remove=function(c){
+        c.style.position="absolute";
+        this.removeChild(c);
+        $App.canvas.addElement(c,c.appJSData.cx,c.appJSData.cy,c.appJSData.width,c.appJSData.height,c.appJSData.align);
+      }
+      $App.canvas.addElement(b,cx,cy,width,height);
+      return b;
+    },
     button: function (text,cx,cy,width,height){
       var b=$App.createElement("button");
       b.innerHTML=text;
@@ -3960,6 +4009,12 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
       returnType: 'JButton',
       args: [{name: 'text', type: 'String', info: 'Aufschrift des Buttons'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}, {name: 'height', type: 'double', info: 'Höhe. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}],
       info: 'Erzeugt einen neuen Button mit der Aufschrift <code>text</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Höhe <code>height</code>. Liefert den Button zurück.'
+    },
+    {
+      name: 'panel', 
+      returnType: 'JPanel',
+      args: [{name: 'template', type: 'String', info: 'Definition der Zeilen und Spalten des Panels. "" oder null bedeutet, dass es keine Spalten und Zeilen gibt. "3" bedeutet "3 gleich breite Spalten", "2fr 1fr" bedeutet "2 Spalten, die erste doppelt so breit wie die zweite". Hier sind alle Werte möglich, die auch für die CSS-Eigenschaften "grid-template" oder "grid-template-columns" verwendet werden können.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}, {name: 'height', type: 'double', info: 'Höhe. Bei einem negativen Wert wird das Element in seiner natürlichen Größe gezeichnet.'}],
+      info: 'Erzeugt ein neues Panel, ein Container für andere Elemente.'
     },
     {
       name: 'image', 

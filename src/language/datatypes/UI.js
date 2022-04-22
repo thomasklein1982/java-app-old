@@ -11,6 +11,7 @@ export function defineUIClazzes(Java){
   defineJCheckBox(Java.datatypes.JCheckBox,Java);
   defineJCombobox(Java.datatypes.JCombobox,Java);
   defineDatatable(Java.datatypes.Datatable,Java);
+  defineJPanel(Java.datatypes.JPanel,Java);
 }
 
 function defineJComponent(Clazz,Java){
@@ -182,6 +183,27 @@ function defineDatatable(Clazz,Java){
     name: 'setRecordArray',
     args: [
       {name: 'recordArray', type: {baseType: 'Record', dimension: 1}}
+    ]
+  },Clazz,false,false,Java);
+}
+
+function defineJPanel(Clazz,Java){
+  createConstructor ({
+    args: [
+      {type: {baseType: 'String', dimension: 0}, name: 'template'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+    ]
+  },Clazz,Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
+  createMethod({
+    name: 'add',
+    args: [
+      {name: 'component', type: 'JComponent'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'remove',
+    args: [
+      {name: 'component', type: 'JComponent'}
     ]
   },Clazz,false,false,Java);
 }

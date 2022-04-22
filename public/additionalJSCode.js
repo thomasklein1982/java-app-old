@@ -171,6 +171,20 @@ function additionalJSCode(){
     }
   }
 
+  class JPanel extends JComponent{
+    constructor(template,x,y,width,height){
+      super(x,y,width,height);
+      this.$el=ui.panel(template,x,y,width,height);
+      this.$el.component=this;
+    }
+    add(comp){
+      this.$el.add(comp.$el);
+    }
+    remove(comp){
+      this.$el.remove(comp.$el);
+    }
+  }
+
   class JLabel extends JComponent{
     constructor(text,x,y,width,height){
       super(x,y,width,height);
