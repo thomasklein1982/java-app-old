@@ -9,7 +9,7 @@ export function defineUIClazzes(Java){
   defineJTextArea(Java.datatypes.JTextArea,Java);
   defineJTextField(Java.datatypes.JTextField,Java);
   defineJCheckBox(Java.datatypes.JCheckBox,Java);
-  defineJCombobox(Java.datatypes.JCombobox,Java);
+  defineJComboBox(Java.datatypes.JComboBox,Java);
   defineDatatable(Java.datatypes.Datatable,Java);
   defineJPanel(Java.datatypes.JPanel,Java);
 }
@@ -152,14 +152,24 @@ function defineJTextArea(Clazz,Java){
   
 }
 
-function defineJCombobox(Clazz,Java){
+function defineJComboBox(Clazz,Java){
   createConstructor ({
     args: [
       {type: {baseType: 'String', dimension: 1}, name: 'options'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
-  
+  createMethod({
+    name: 'getSelectedIndex',
+    args: [],
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setSelectedIndex',
+    args: [
+      {name: 'index', type: 'int'}
+    ]
+  },Clazz,false,false,Java);
 }
 
 function defineJCheckBox(Clazz,Java){

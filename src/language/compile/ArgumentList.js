@@ -30,7 +30,7 @@ export function ArgumentList(node,source,scope,parameters){
       throw source.createError(arg.error,node);
     }
     p.type.autoCastValue(arg);
-    if(!arg.type.isSubtypeOf(p.type)){
+    if(!arg.type || !arg.type.isSubtypeOf(p.type)){
       throw source.createError( "Das "+(i+1)+"-te Argument '"+arg.code+"' ist kein "+p.type+".",node);
     }
     codeArgs.push(arg.code);

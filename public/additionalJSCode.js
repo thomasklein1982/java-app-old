@@ -201,6 +201,20 @@ function additionalJSCode(){
     }
   }
 
+  class JComboBox extends JComponent{
+    constructor(options,x,y,width,height){
+      super(x,y,width,height);
+      this.$el=ui.select(options.values,x,y,width,height);
+      this.$el.component=this;
+    }
+    getSelectedIndex(){
+      return this.$el.selectedIndex;
+    }
+    setSelectedIndex(index){
+      this.$el.selectedIndex=index;
+    }
+  }
+
   class JCheckBox extends JComponent{
     constructor(label,x,y,width,height){
       super(x,y,width,height);
