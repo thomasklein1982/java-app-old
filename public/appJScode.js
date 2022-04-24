@@ -1,5 +1,6 @@
 window.appJScode=function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   window.onmessage=function(message){
     $App.debug.onMessage(message);
@@ -12,7 +13,7 @@ window.appJScode=function(){
   })
 
   window.$App={
-    version: 22,
+    version: 23,
     language: window.language? window.language:'js',
     setupData: null,
     debug: {
@@ -213,6 +214,7 @@ window.appJScode=function(){
     
     $App.handleError({
       message: m,
+      completeMessage: m,
       line: line,
       col: col
     });
@@ -448,7 +450,7 @@ window.appJScode=function(){
       this.canvas=new $App.Canvas(root,100,100);
       this.world=new $App.World(this.canvas);
       let left=document.createElement("div");
-      left.style="font-family: monospace; position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none";
+      left.style="font-family: monospace; position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
       let right=document.createElement("div");
       right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 1rem";
       this.body.right=right;
@@ -576,6 +578,9 @@ window.appJScode=function(){
   };
   window.onresize=function(e){
     $App.onResize();
+    if(window.onResize){
+      window.onResize();
+    }
   };
   
   window.onkeydown=function(ev){
@@ -860,7 +865,9 @@ window.appJScode=function(){
     this.container.style.right=0;
     this.container.style.top=0;
     this.container.style.bottom=0;
-    this.container.style.overflow="hidden";
+    this.container.style.width="100%";
+    this.container.style.height="100%";
+    //this.container.style.overflow="hidden";
     this.container.appendChild(this.el);
     this.el.style.position="absolute";
     this.el.style.left=0;
@@ -869,6 +876,10 @@ window.appJScode=function(){
     this.el.style.height="100%";
     this.width=width;
     this.height=height;
+    this.origin={
+      x: 0,
+      y: 0
+    };
     this.pixelWidth=-1;
     this.pixelHeight=-1;
     this.dpr=window.devicePixelRatio||1;
@@ -876,18 +887,6 @@ window.appJScode=function(){
     this.ctx=this.el.getContext("2d");
     this.commands=[];
     this.elements=[];
-    var input=document.createElement("input");
-    input.style.position="absolute";
-    input.style.diplay="none";
-    this.container.appendChild(input);
-    this.input={
-      element: input,
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      align: ""
-    };
     this.lastPoint={
       x: 0,
       y: 0
@@ -1013,6 +1012,10 @@ window.appJScode=function(){
         f.apply(this,c.args);
       }
     },
+    setOrigin: function(x,y){
+      this.origin.x=x;
+      this.origin.y=y;
+    },
     setSize: function(width,height,fullWidth,fullHeight){
       this.width=width;
       this.height=height;
@@ -1027,11 +1030,11 @@ window.appJScode=function(){
         align=$App.Canvas.$getAlignment("center");
       }
       el.appJSData.align=align;
-      if(width===undefined){
+      if(!width){
         width=el.offsetWidth;
         width=this.getCanvasWidth(width);
       }
-      if(height===undefined){
+      if(!height){
         height=el.offsetHeight;
         height=this.getCanvasHeight(height);
       }
@@ -1049,32 +1052,28 @@ window.appJScode=function(){
         x=cx-width;
       }
       if(align.v==="middle"){
-        y=cy-height/2;
+        y=cy+height/2;
       }else if(align.v==="top"){
-        y=cy-height;
+        y=cy+height;
       }else{
         y=cy;
       }
-      el.style.left=(100*(x))/(this.width)+"%";
-      el.style.bottom=(100*(y))/(this.height)+"%";
-      el.style.width=100*width/this.width+"%";
-      el.style.height=100*height/this.height+"%";
+      // el.style.left=(100*(x))/(this.width)+"%";
+      // el.style.bottom=(100*(y))/(this.height)+"%";
+      el.style.left=this.getRawX(x)+"px";
+      el.style.top=this.getRawY(y)+"px";
+      el.style.width=this.getRawWidth(width)+"px";
+      el.style.height=this.getRawHeight(height)+"px";
     },
     addElement: function(el,cx,cy,width,height){
       this.container.appendChild(el);
-      // cx=this.getX(cx);
-      // cy=this.getY(cy);
-      // if(width!==undefined){
-      //   width=this.getWidth(width);
-      // }
-      // if(height!==undefined){
-      //   height=this.getHeight(height);
-      // }
       this.updateElementPosition(el,cx,cy,width,height);
       
     },
     resize: function(w,h,force){
       if(force || (w!==this.pixelWidth || h!==this.pixelHeight)){
+        this.el.width=Math.round(w*this.dpr);
+        this.el.height=Math.round(h*this.dpr);
         var left, right, bottom, top;
         left=0; right=0; top=0; bottom=0;
         if(w*this.height>=h*this.width){
@@ -1088,17 +1087,21 @@ window.appJScode=function(){
           top=(h-realH)/2;
           h=realH;
         }
+        this.pixelLeft=left;
+        this.pixelTop=top;
         this.pixelWidth=w;
         this.pixelHeight=h;
-        this.container.style.width=this.pixelWidth+"px";
-        this.container.style.height=this.pixelHeight+"px";
-        this.container.style.top=top+"px";
-        this.container.style.left=left+"px";
-        var w=Math.round(w*this.dpr);
-        var h=Math.round(h*this.dpr);
-        this.el.width=w;
-        this.el.height=h;
-        this.$adjustInputPosition();
+        // this.container.style.width=this.pixelWidth+"px";
+        // this.container.style.height=this.pixelHeight+"px";
+        // this.container.style.top=top+"px";
+        // this.container.style.left=left+"px";
+        // this.el.style.width=this.pixelWidth+"px";
+        // this.el.style.height=this.pixelHeight+"px";
+        // this.el.style.top=top+"px";
+        // this.el.style.left=left+"px";
+
+        // this.el.width=Math.round(w*this.dpr);
+        // this.el.height=Math.round(h*this.dpr);
         this.redraw();
       }
     },
@@ -1346,54 +1349,6 @@ window.appJScode=function(){
       }
       this.ctx.restore();
     },
-    $adjustInputPosition: function(){
-      var x=this.getRawX(this.input.x);
-      var y=this.getRawY(this.input.y);
-      var width=this.getRawWidth(this.input.width);
-      var height=this.input.height;
-      var align=this.input.align;
-      align=$App.Canvas.$getAlignment(align);
-      this.input.element.style.textAlign="left";
-      if(align.h==="center"){
-        x-=width/2;
-        this.input.element.style.textAlign="center";
-      }else if(align.h==="right"){
-        x-=width;
-      }
-      if(align.v==="middle"){
-        y-=height/2;
-      }else if(align.v==="bottom"){
-        y-=height;
-      }
-      this.input.element.style.left=x+"px";
-      this.input.element.style.top=y+"px";
-      this.input.element.style.width=width+"px";
-      this.input.element.style.height=height+"px";
-    },
-    read: async function(placeholdertext,x,y,width,align,inputtype){
-      this.input.x=x;
-      this.input.y=y;
-      this.input.width=width;
-      this.input.height=this.getPixelFontsize();
-      this.input.align=align;
-      this.$adjustInputPosition();
-      this.input.element.placeholder=placeholdertext;
-      this.input.element.type=inputtype;
-      this.input.element.style.display="";
-      var p=new Promise((resolve,reject)=>{
-        this.input.element.onchange=()=>{
-          this.input.element.style.display="none";
-          var v=this.input.element.value;
-          this.input.element.value="";
-          resolve(v);
-        }
-      });
-      var q=await p;
-      if(inputtype==="number"){
-        q=parseFloat(q);
-      }
-      return q;
-    },
     drawImage: function(image,cx,cy,w,h,angle,mirrored,sourceRect,dontAdd){
       if(!image) return;
       if(!dontAdd){
@@ -1432,6 +1387,18 @@ window.appJScode=function(){
     },
     getImageBase64: function(){
       return this.el.toDataURL("image/png");
+    },
+    fillOutside: function(dontAdd){
+      if(!dontAdd){
+        this.addCommand("fillOutside",[]);
+      }
+      if(this.pixelLeft){
+        this.ctx.fillRect(0,0,this.pixelLeft*this.dpr,this.pixelHeight*this.dpr);
+        this.ctx.fillRect((this.pixelWidth+this.pixelLeft)*this.dpr,0,this.pixelLeft*this.dpr,this.pixelHeight*this.dpr);
+      }else if(this.pixelTop){
+        this.ctx.fillRect(0,0,this.pixelWidth*this.dpr,this.pixelTop*this.dpr);
+        this.ctx.fillRect(0,(this.pixelHeight+this.pixelTop)*this.dpr,this.pixelWidth*this.dpr,this.pixelTop*this.dpr);
+      }
     },
     paintRect: function(x,y,w,h,fill,dontAdd){
       if(!dontAdd){
@@ -1500,22 +1467,34 @@ window.appJScode=function(){
         args: args
       });
     },
+    getCanvasMinX: function(){
+      return this.getCanvasX(0);
+    },
+    getCanvasMaxX: function(){
+      return this.getCanvasX(this.pixelWidth+this.pixelLeft*2);
+    },
+    getCanvasMinY: function(){
+      return this.getCanvasY(this.pixelHeight+this.pixelTop*2);
+    },
+    getCanvasMaxY: function(){
+      return this.getCanvasY(0);
+    },
     getCanvasX: function(x){
       if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
         var s=this.pixelHeight/this.height;
-        return (x-(this.pixelWidth-s*this.width)/2)/(s);
+        return (x-this.pixelLeft-(this.pixelWidth-s*this.width)/2)/(s)-this.origin.x;
       }else{
         var s=this.pixelWidth/this.width;
-        return x/(s);
+        return (x-this.pixelLeft)/(s)-this.origin.x;
       }
     },
     getCanvasY: function(y){
       if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
         var s=this.pixelHeight/this.height;
-        return -(y-this.pixelHeight)/s;
+        return -(y-this.pixelTop-this.pixelHeight)/s-this.origin.y;
       }else{
         var s=this.pixelWidth/this.width;
-        return (-(y-this.pixelHeight)-(this.pixelHeight-s*this.height)/2)/s;
+        return (-(y-this.pixelTop-this.pixelHeight)-(this.pixelHeight-s*this.height)/2)/s-this.origin.y;
       }
     },
     getCanvasWidth: function(w){
@@ -1539,19 +1518,19 @@ window.appJScode=function(){
     getRawX: function(x){
       if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
         var s=this.pixelHeight/this.height;
-        return (s*(x+0)+(this.pixelWidth-s*this.width)/2);
+        return (s*(x+this.origin.x)+this.pixelLeft+(this.pixelWidth-s*this.width)/2);
       }else{
         var s=this.pixelWidth/this.width;
-        return (s*(x+0));
+        return (s*(x+this.origin.x)+this.pixelLeft);
       }
     },
     getRawY: function(y){
       if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
         var s=this.pixelHeight/this.height;
-        return (this.pixelHeight-s*(y+0));
+        return (this.pixelHeight+this.pixelTop-s*(y+this.origin.y));
       }else{
         var s=this.pixelWidth/this.width;
-        return (this.pixelHeight-(s*(y+0)+(this.pixelHeight-s*this.height)/2));
+        return (this.pixelHeight+this.pixelTop-(s*(y+this.origin.y)+(this.pixelHeight-s*this.height)/2));
       }
     },
     getRawWidth: function(w){
@@ -2088,10 +2067,12 @@ window.appJScode=function(){
       };
       for(var a in this.buttons){
         var b=this.buttons[a];
-        if(down[a]){
-          b.el.style.opacity="0.3";
-        }else{
-          b.el.style.opacity="0.6";
+        if(b && b.el){
+          if(down[a]){
+            b.el.style.opacity="0.3";
+          }else{
+            b.el.style.opacity="0.6";
+          }
         }
       }
     },
@@ -2112,7 +2093,9 @@ window.appJScode=function(){
           dir+="E";
         }
       }
-      this.joystick.setDir(dir);
+      if(this.joystick){
+        this.joystick.setDir(dir);
+      }
     },
     getMappedButton: function(keycode){
       for(var a in this.keycodes){
@@ -2983,6 +2966,7 @@ window.appJScode=function(){
   /**API */
   
   $App.addEventHandler("onStart",[],'Wird einmalig ausgeführt, wenn das Programm startet.','');
+  $App.addEventHandler("onResize",[],'Wird ausgeführt, wenn sich die Abmessungen des Bildschirms verändern, z. B. wenn das Fenster kleiner oder größer gemacht wird.','');
   $App.addEventHandler("onTileDraw",[
     {name: 'x', type: 'double', info: 'x-Koordinate des Mittelpunkts des Feldes.'},
     {name: 'y', type: 'double', info: 'y-Koordinate des Mittelpunkts des Feldes.'},
@@ -3017,6 +3001,23 @@ window.appJScode=function(){
     $App.canvas.clear();
   },null,'Löscht den Inhalt der Zeichenfläche.',[],'Verwende diesen Befehl zu Beginn der Funktion <a href="#help-onNextFrame"><code>onNextFrame</code></a>, damit du danach alles neu zeichnen kannst.');
 
+  $App.addFunction(function fillOutside(){
+    $App.canvas.fillOutside();
+  },null,'Füllt alle Bereiche, die außerhalb des Koordinatensystems liegen, mit der aktuellen Farbe.',[],'');
+
+  $App.addFunction(function getMinX(){
+    return $App.canvas.getCanvasMinX();
+  },'double','Liefert den kleinsten x-Wert, der aktuell noch sichtbar ist.',[],'');
+  $App.addFunction(function getMaxX(){
+    return $App.canvas.getCanvasMaxX();
+  },'double','Liefert den größten x-Wert, der aktuell noch sichtbar ist.',[],'');
+  $App.addFunction(function getMinY(){
+    return $App.canvas.getCanvasMinY();
+  },'double','Liefert den kleinsten y-Wert, der aktuell noch sichtbar ist.',[],'');
+  $App.addFunction(function getMaxY(){
+    return $App.canvas.getCanvasMaxY();
+  },'double','Liefert den größten y-Wert, der aktuell noch sichtbar ist.',[],'');
+
   $App.addFunction(async function sleep(millis){
     var p=new Promise((resolve,reject)=>{
       setTimeout(()=>{
@@ -3039,7 +3040,7 @@ window.appJScode=function(){
 
   $App.addFunction(function alert(text){
     $App.handleModalDialog();
-    $App.alert(text);
+    $App.alert.call(window,text);
   },null,'Zeigt eine Messagebox mit einer Nachricht.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
   
   $App.addFunction(function prompt(text){
@@ -3154,6 +3155,21 @@ window.appJScode=function(){
   [{name: 'image', type: 'String', info: 'Bild-Asset. Muss vorher mittels <a href="#help-loadAsset"><code>loadAsset</code></a> geladen werden.'},{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Höhe.'},{name: 'scx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'scy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Ausschnittes.'}, {name: 'width', type: 'double', info: 'Breite des Ausschnittes.'}, {name: 'height', type: 'double', info: 'Höhe des Ausschnittes.'}, {name: 'rotation', type: 'double', info: 'Winkel, um den das Bild gedreht werden soll.', hide: true}, {name: 'mirrored', type: 'boolean', info: 'true, wenn das Bild vertikal gespiegelt werden soll.', hide: true}],
   '');
   
+  $App.addFunction(function setCoordinatesystem(width,height,originX,originY){
+    if(originX!==undefined && originY!==undefined){
+      $App.canvas.setOrigin(originX,originY);
+    }
+    $App.canvas.setSize(width,height,$App.body.width,$App.body.height);
+  },null,'Legt das Koordiantensystem der App fest.',[{name: 'width', type: 'double', info: 'Breite des Koordinatensystems'}, {name: 'height', type: 'double', info: 'Höhe des Koordinatensystems'}, {name: 'originX', type: 'double', info: 'x-Koordinate des Koordinatenursprungs', optional: true}, {name: 'originY', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],'');
+
+  $App.addFunction(function getWidth(){
+    return $App.body.width;
+  },'double','Liefert die aktuelle Breite des Bildschirms in Pixeln.',[],'');
+
+  $App.addFunction(function getHeight(){
+    return $App.body.height;
+  },'double','Liefert die aktuelle Höhe des Bildschirms in Pixeln.',[],'');
+
   $App.addFunction(function setMirrored(m){
     $App.canvas.setMirrored(m);
   },null,'Legt für alle nachfolgenden write-Befehle fest, ob der Text gespiegelt werden soll.',[{name: 'm', type: 'boolean', info: 'Wenn true, dann wird der Text aller nachfolgenden write-Befehle vertikal gespiegelt. Wenn false, wird der Text wieder normal geschrieben.'}],'');
