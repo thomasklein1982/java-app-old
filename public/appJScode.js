@@ -3921,6 +3921,9 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
           b._rows=[];
           if(!array || array.length===0) return;
           let obj=array[0];
+          if($App.language==="java" && "data" in obj){
+            obj=obj.data;
+          }
           let captions=document.createElement("tr");
           let th=document.createElement("th");
           th.textContent="INDEX";
@@ -3928,6 +3931,9 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
           this.table.appendChild(captions);
           for(let i=0;i<array.length;i++){
             let obj=array[i];
+            if($App.language==="java" && "data" in obj){
+              obj=obj.data;
+            }
             let tr=document.createElement("tr");
             b._rows.push(tr);
             tr.index=i;
