@@ -3916,7 +3916,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
             array=array.values;
           } 
           while(this.table.firstChild){
-            this.table.removeChild(this.firstChild);
+            this.table.removeChild(this.table.firstChild);
           }
           b._rows=[];
           if(!array || array.length===0) return;

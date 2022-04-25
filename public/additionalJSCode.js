@@ -290,6 +290,15 @@ function additionalJSCode(){
       if(n1!==n2) return false;
       for(var i=0;i<n1;i++){
         var r1=array1[i];
+        var s1=0;
+        for(var a in r1.data){
+          s1++;
+        }
+        var s2=0;
+        for(var a in r2.data){
+          s2++;
+        }
+        if(s1!==s2) return false;
         var r2=array2[i];
         for(var a in r1.data){
           if(a in r2.data){
