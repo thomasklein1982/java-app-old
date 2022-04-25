@@ -3919,7 +3919,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
             this.table.removeChild(this.firstChild);
           }
           b._rows=[];
-          if(array.length===0) return;
+          if(!array || array.length===0) return;
           let obj=array[0];
           let captions=document.createElement("tr");
           let th=document.createElement("th");
