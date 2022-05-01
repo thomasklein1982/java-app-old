@@ -5,13 +5,13 @@ export function ForStatement(node,source,scope){
   let code="for(";
   node=node.firstChild;
   node=node.nextSibling;
-  console.log(node);
   let forSpec=node;
   node=node.firstChild;
   if(node.name!=="("){
 
   }
   node=node.nextSibling;
+  scope.pushLayer();
   let p1=CompileFunctions.get(node,source)(node,source,scope);
   code+=p1.code;
   node=node.nextSibling;
@@ -27,6 +27,7 @@ export function ForStatement(node,source,scope){
   let block=forSpec.nextSibling;
   block=Block(block,source,scope);
   code+="{"+block.code+"}";
+  scope.popLayer();
   return {
     code: code,
     type: null

@@ -14,7 +14,7 @@ export class Attribute{
   getJavaScriptCode(){
     let code="this."+this.name+"=";
     let v;
-    if(this.type.baseType instanceof Clazz){
+    if(this.type.baseType instanceof Clazz || this.type.dimension>0){
       v="null";
     }else{
       v=JSON.stringify(this.type.baseType.initialValue);

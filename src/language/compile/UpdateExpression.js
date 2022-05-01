@@ -9,10 +9,27 @@ export function UpdateExpression(node,source,scope){
   if(!v.type.isNumeric()){
     throw source.createError("Diese Operation funktioniert nur mit Zahlen, aber nicht mit einem '"+v.type.toString()+"'.",node);
   }
-  let code=v.code;
+  let code;
+  if(v.codeUpdate){
+    code=v.codeUpdate;
+  }else{
+    code=v.code;
+  }
   node=node.nextSibling;
   if(node.name==="UpdateOp"){
-    code+=source.getText(node);
+    if(v.codeUpdate){
+      let op=source.getText(node);
+      if(op==="++"){
+        code+="+1";
+      }else if(op==="--"){
+        code+="-1";
+      }
+      if(v.codeUpdateAfter){
+        code+=v.codeUpdateAfter;
+      }
+    }else{
+      code+=source.getText(node);
+    }
   }
   return {
     code: code,

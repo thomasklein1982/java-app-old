@@ -6,6 +6,8 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  
+
   function onAction(element){
     if($main && $main.onAction){
       $main.onAction(element.component);

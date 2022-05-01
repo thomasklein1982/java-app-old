@@ -227,7 +227,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
     //el.style.position="absolute";
     this.implementStyleGetterAndSetter(el);
     el.appJSData={
-      oldDisplayValue: undefined,
+      oldDisplayValue: null,
       cx: null,
       cy: null,
       width: null,
@@ -379,8 +379,14 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
     }
     Object.defineProperty(el, 'visible', {
       set: function(v) {
+        if(this.appJSData.oldDisplayValue===null){
+          var d=this.style.display;
+          if(d==="none"){
+            d="";
+          }
+          this.appJSData.oldDisplayValue=d;
+        }
         if(!v){
-          this.appJSData.oldDisplayValue=this.style.display;
           this.style.display="none";
         }else{
           this.style.display=this.appJSData.oldDisplayValue;
@@ -2254,7 +2260,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
       if(this.element) return;
       var div=document.createElement("div");
       this.element=div;
-      div.style="position: absolute; left: 0.5cm; bottom: 0.5cm; width: 2cm; height: 2cm; z-index: 10;";
+      div.style="position: absolute; left: 0.5cm; bottom: 0.5cm; width: 2cm; height: 2cm; z-index: 1000;";
       div.onmouseleave=function(){
   
       };
@@ -3031,7 +3037,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
   
   $App.alert=window.alert;
   $App.confirm=window.confirm;
-  $App.promt=window.prompt;
+  $App.prompt=window.prompt;
 
   $App.handleModalDialog=function(){
     $App.gamepad.resetAllButtons();
@@ -3045,7 +3051,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
   
   $App.addFunction(function prompt(text){
     $App.handleModalDialog();
-    return $App.prompt(text);
+    return $App.prompt.call(window,text);
   },'String','Zeigt eine Messagebox mit einer Nachricht und  einem Eingabefeld. Liefert den eingegebenen Text zurück.',[{name: 'text', type: 'String',info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
   
   $App.addFunction(function promptNumber(text){

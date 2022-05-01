@@ -147,7 +147,7 @@ function createSnippets(data){
     type: "keyword"
   }));
   */
-  snippets.inMethod.push(autocomplete.snippetCompletion("for (int ${i} = 0; ${i} < ${max}; ${i}++) {\n\t${}\n}", {
+  snippets.inMethod.push(autocomplete.snippetCompletion("for (int i = 1; i <= max; i++) {\n\t${}\n}", {
       label: "for",
       info: "Eine for-Schleife wiederholt ihren Inhalt mehrere Male.",
       type: "keyword"

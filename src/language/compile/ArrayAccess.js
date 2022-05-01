@@ -10,8 +10,9 @@ export function ArrayAccess(node,source,scope){
   if(object.type.dimension===0){
     throw source.createError("Dieser Ausdruck ist kein Array.",node);
   }
-  code+=object.code;
+  code+="$u("+object.code+")";
   let codeSet=code;
+  let codeUpdate=code;
   node=node.nextSibling;
   if(node.name!=="["){
 
@@ -29,9 +30,10 @@ export function ArrayAccess(node,source,scope){
   indices.push(index.code);
   code+=".get("+index.code+")";
   codeSet+=".checkBounds("+index.code+").set("+index.code+",";
-  let type=new Type(object.type.baseType,object.type.dimension-indices.length)
+  codeUpdate+=".set("+index.code+","+object.code+".get("+index.code+")";
+  let type=new Type(object.type.baseType,object.type.dimension-indices.length);
   scope.addTypeAnnotation(node.to,type,false);
   return {
-    code, codeSet,type: type
+    code, codeSet,codeUpdate, type: type, codeUpdateAfter: ")"
   }
 }
