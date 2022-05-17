@@ -19,6 +19,7 @@ export function ReturnStatement(node,source,scope){
         throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern, dies ist aber ein "+v.type.toString()+".",node);
       }
       code+="await "+v.code+";";
+      node=node.nextSibling;
     }else{
       throw source.createError("Eine void-Methode kann keinen Wert zurückgeben.",node);
     }
@@ -26,8 +27,9 @@ export function ReturnStatement(node,source,scope){
     if(returnType){
       throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern.",node);
     }
+    code+=";";
   }
-  if(!node || node.nextSibling.type.isError || node.nextSibling.name!==";"){
+  if(!node || node.type.isError || node.name!==";"){
     throw (source.createError("';' erwartet.",node.nextSibling));
   }
   return {
