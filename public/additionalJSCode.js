@@ -109,6 +109,12 @@ function additionalJSCode(){
     isVisible(){
       return this.visible;
     }
+    setEnabled(v){
+      this.$el.disabled=!v;
+    }
+    isEnabled(){
+      return this.$el.disabled;
+    }
     get visible(){
       return this.$el.visible;
     }
@@ -169,6 +175,14 @@ function additionalJSCode(){
     constructor(label,x,y,width,height){
       super(x,y,width,height);
       this.$el=ui.button(label,x,y,width,height);
+      this.$el.component=this;
+    }
+  }
+
+  class JImage extends JComponent{
+    constructor(url,x,y,width,height){
+      super(x,y,width,height);
+      this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
     }
   }

@@ -36,6 +36,7 @@ Time.cannotBeInstantiated=true;
 let JComponent=new Clazz("JComponent");
 JComponent.cannotBeInstantiated=true;
 let JButton=new Clazz("JButton");
+let JImage=new Clazz("JImage");
 let JTextField=new Clazz("JTextField");
 let JLabel=new Clazz("JLabel");
 let JTextArea=new Clazz("JTextArea");
@@ -60,11 +61,11 @@ Record.cannotBeInstantiated=true;
 
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, Datatable, Database, Record
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Datatable, Database, Record
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, Datatable, Database, Record
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,Datatable, Database, Record
 }
 
 export const Java={

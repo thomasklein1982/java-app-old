@@ -5,6 +5,7 @@ import { createMethod } from "../helper/createMethod";
 export function defineUIClazzes(Java){
   defineJComponent(Java.datatypes.JComponent,Java);
   defineJButton(Java.datatypes.JButton,Java);
+  defineJImage(Java.datatypes.JImage,Java);
   defineJLabel(Java.datatypes.JLabel,Java);
   defineJTextArea(Java.datatypes.JTextArea,Java);
   defineJTextField(Java.datatypes.JTextField,Java);
@@ -102,6 +103,16 @@ function defineJComponent(Clazz,Java){
       {name: 'align', type: 'String'}
     ]
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'setEnabled',
+    args: [
+      {name: 'e', type: 'boolean'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'isEnabled',
+    returnType: 'boolean'
+  },Clazz,false,false,Java);
   // createAttribute({
   //   name: "value",
   //   type: Java.datatypes.String,
@@ -120,6 +131,15 @@ function defineJButton(Clazz,Java){
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
   
+}
+
+function defineJImage(Clazz,Java){
+  createConstructor ({
+    args: [
+      {type: 'String', name: 'url'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+    ]
+  },Clazz,Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
 }
 
 function defineJLabel(Clazz,Java){

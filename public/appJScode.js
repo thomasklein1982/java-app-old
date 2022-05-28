@@ -3886,6 +3886,10 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
           }else{
             return v;
           }
+        },
+        set: function(v){
+          var valueProp=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value");
+          var v=valueProp.set.call(b,v);
         }
       });
       b.placeholder=placeholdertext;

@@ -31,6 +31,10 @@ export function ObjectCreationExpression(node,source,scope){
       // src=src.substring(0,src.length-1);
       // return Identifier({node: root, src: src, from: root.from,to: root.to-1},source,scope);
     }
+    if(node.name==="Identifier"){
+      Identifier(node,source,scope);
+      console.log(source.getText(node));
+    }
   }
   node=node.nextSibling;
   if(node.name!=='TypeName'){
