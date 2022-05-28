@@ -2386,10 +2386,11 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
   
   /*****Array */
   $App.Array=function(type, dim, values){
-    this.type=type;
+    this.type=type.name;
     if(Array.isArray(dim)){
       this.dim=dim;
-      this.values=$App.Array.createArrayValues(type,null,dim,0);
+      console.log("new Array",type);
+      this.values=$App.Array.createArrayValues(type,dim,0);
     }else{
       this.values=values;
       var a=values;
@@ -2423,11 +2424,11 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
     }
   };
 
-  $App.Array.createArrayValues=function(type,value,dim){
+  $App.Array.createArrayValues=function(type,dim){
     if(dim.length===1){
       var array=[];
       for(var i=0;i<dim[0];i++){
-        array.push(value);
+        array.push(type.initialValue!==undefined? type.initialValue:null);
       }
       return array;
     }else{
@@ -2523,6 +2524,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
     },
     log: function(){
       let div=document.createElement("div");
+      div.style.whiteSpace="pre";
       let args=[]
       for(let i=0;i<arguments.length;i++){
         args.push(arguments[i]);
@@ -2561,6 +2563,8 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
         sublist: document.createElement("div"),
         object: undefined
       };
+      item.element.style.whiteSpace="noWrap";
+      item.value.style.whiteSpace="pre";
       item.sublist.style.marginLeft="1em";
       item.button.style="text-align: center; display: inline-block; width: 1em; border-radius: 3px";
       item.element.appendChild(item.line);

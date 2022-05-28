@@ -27,6 +27,7 @@ import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Message from "primevue/message";
 import Listbox from 'primevue/listbox';
+import TextArea from 'primevue/textarea';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -80,6 +81,7 @@ app.component('TabPanel',TabPanel);
 app.component('TabView',TabView);
 app.component('Message',Message);
 app.component('Listbox',Listbox);
+app.component('TextArea',TextArea);
 
 window.app=app.mount('#app');
 

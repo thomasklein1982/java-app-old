@@ -1,4 +1,18 @@
 <template>
+  <Dialog header="Relation importieren" v-model:visible="dialogs.importRelation.show" :modal="true">
+    <p>In die folgende TextArea kannst du Daten einfügen, die du z. B. aus Excel kopiert hast.</p>
+    <div class="field">
+      <TextArea rows="5" cols="30" autofocus v-model="dialogs.importRelation.text" />
+    </div>
+    <div v-if="importedRelation" class="field">
+      <p>Erkannt: Relation ({{importedRelation.getAttributeNames()}}) mit {{importedRelation.records.length}} Datensätzen</p>
+      ACHTUNG: Durch Klick auf 'OK' wird die alte Relation gelöscht und durch die neuen Daten ersetzt.
+    </div>
+    <template #footer>
+      <Button :disabled="!importedRelation" @click="confirmImportRelation()" label="OK"/>
+      <Button @click="dialogs.importRelation.show=false" class="p-button-outlined" label="Abbrechen"/>
+    </template>
+  </Dialog>
   <Dialog header="Neues Attribut" v-model:visible="dialogs.newAttribute.show" :modal="true">
     <div class="field">
       <label for="relationname">Name</label>
@@ -48,15 +62,18 @@
           </span>
           <span v-else>{{r[i]}}</span>
         </td>
-        <td><Button v-if="j===currentRecord" class="p-button-outlined" @click="stopEditRecord()" icon="pi pi-times"/><Button v-else class="p-button-outlined" @click="editRecord(j)" icon="pi pi-pencil"/></td>
+        <td><Button v-if="showTrash" class="p-button-outlined" @click="trashRecord(j)" icon="pi pi-trash"/><Button v-else-if="j===currentRecord" class="p-button-outlined" @click="stopEditRecord()" icon="pi pi-times"/><Button v-else class="p-button-outlined" @click="editRecord(j)" icon="pi pi-pencil"/></td>
       </tr>
     </table>
     <Button @click="relation.appendNewRecord()" label="Neuer Datensatz"/>
+    <ToggleButton v-model="showTrash" onLabel="Löschen freigegeben" offLabel="Löschen nicht freigegeben"/>
+    <Button @click="dialogs.importRelation.show=true" label="Importieren"/>
   </Dialog>
 </template>
 
 <script>
   import {Database} from "../classes/Database";
+  import {Table} from "../classes/Table";
   import SplitButton from 'primevue/splitbutton';
 
   export default {
@@ -64,6 +81,10 @@
       relation: Object
     },
     computed: {
+      importedRelation(){
+        console.log("update");
+        return this.parseRelationFromText(this.dialogs.importRelation.text);
+      },
       errorMessage(){
         if(this.name!==this.relation.name){
           let t=this.relation.database.getTableByName(this.name);
@@ -93,17 +114,34 @@
             name: "",
             datatype: Database.String,
             isPrimaryKey: false
+          },
+          importRelation: {
+            show: false,
+            text: ''
           }
         },
         currentRecord: null,
         currentAttribute: null,
+        showTrash: false,
         show: false,
         name: this.relation.name
       }
     },
     methods: {
+      parseRelationFromText(text){
+        var relation=new Table(this.relation.database,this.name);
+        var ok=relation.fromCSVString("import\n"+text,"\t");
+        if(ok){
+          return relation;
+        }else{
+          return null;
+        }
+      },
       editRecord(index){
         this.currentRecord=index;
+      },
+      trashRecord(index){
+        this.relation.records.splice(index,1);
       },
       stopEditRecord(){
         this.currentRecord=null;
@@ -151,6 +189,10 @@
         this.currentAttribute.name=name;
         this.currentAttribute.type=datatype;
         this.dialogs.editAttribute.show=false;
+      },
+      confirmImportRelation(){
+        this.relation.fromTable(this.importedRelation);
+        this.dialogs.importRelation.show=false;
       }
     },
     components: {

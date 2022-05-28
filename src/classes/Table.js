@@ -7,7 +7,12 @@ export class Table{
     this.attributes=[];
     this.records=[];
   }
-
+  fromTable(table){
+    this.attributes=table.attributes;
+    this.records=table.records;
+    this.name=table.name;
+    this.database=table.database;
+  }
   createInMemory(commandsOnly){
     var commands=[];
     if(this.attributes.length===0) return;
@@ -75,12 +80,12 @@ export class Table{
   fromCSVString(s,sep){
     s=s.trim();
     var lines=s.split("\n");
-    this.name=lines[0];
     this.attributes=[];
     this.records=[];
     if(lines.length===1){
-      return;
+      return false;
     }
+    this.name=lines[0].trim();
     var attributes=lines[1].split(sep);
     for(var i=0;i<attributes.length;i++){
       var a=attributes[i].trim();
@@ -89,19 +94,24 @@ export class Table{
       }
       var teile=a.split("/");
       var name=teile[0];
-      var type=Database.getTypeByName(teile[1]);
-      if(!type) return;
+      if(teile.length>1){
+        var type=Database.getTypeByName(teile[1]);
+      }else{
+        var type=Database.String;
+      }
+      if(!type) return false;
       this.addAttribute(name,type);
     }
     for(var i=2;i<lines.length;i++){
       var records=lines[i].split(sep);
       var rec=[];
       for(var j=0;j<records.length;j++){
-        var r=JSON.parse(records[j]);
+        var r=records[j];
         rec.push(r);
       }
       this.records.push(rec);
     }
+    return true;
   }
   toCSVString(sep){
     var s=this.name+"\n";
