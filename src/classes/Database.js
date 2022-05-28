@@ -6,7 +6,7 @@ export class Database{
   static Numeric={name: "Numeric", id: "NUMERIC", value: 0, icon : "pi pi-percentage"};
   static Date={name: "Date", id: "DATE", value: "01.01.1970", icon: "pi pi-calendar"};
   constructor(sourceCSV,fileName){
-    this.clear();
+    this.clearFromMemory();
     this.tables=[];
     this.separator=";";
     this.changed=false;
@@ -41,7 +41,7 @@ export class Database{
   isEmpty(){
     return this.tables.length===0;
   }
-  clear(){
+  clearFromMemory(){
     var tables=Object.keys(alasql.tables);
     if(tables){
       for(var i=0;i<tables.length;i++){
@@ -54,9 +54,15 @@ export class Database{
       }
     }
   }
+  clear(){
+    this.clearFromMemory();
+    this.tables=[];
+    this.separator=";";
+    this.changed=true;
+  }
   createInMemory(commandsOnly){
     if(!commandsOnly){
-      this.clear();
+      this.clearFromMemory();
     }
     var s=[];
     for(var i=0;i<this.tables.length;i++){

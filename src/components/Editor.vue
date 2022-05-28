@@ -203,9 +203,9 @@ export default {
       download(this.project.getFullAppCode("",true),this.project.getName(),"text/html");
     },
     async uploadProject(){
+      this.database.clear();
       let p=await uploadProject();
       if(!p) return;
-      this.database.clear();
       this.openProject(p,this.useBlockEditor);
     },
     prettifyCode(){

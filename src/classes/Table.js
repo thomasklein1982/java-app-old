@@ -106,7 +106,11 @@ export class Table{
       var records=lines[i].split(sep);
       var rec=[];
       for(var j=0;j<records.length;j++){
-        var r=records[j];
+        try{
+          var r=JSON.parse(records[j]);
+        }catch(e){
+          var r=records[j];
+        }
         rec.push(r);
       }
       this.records.push(rec);
