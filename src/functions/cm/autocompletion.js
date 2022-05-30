@@ -94,7 +94,10 @@ export function createAutocompletion(){
       return;
     }
     let annotation;
-
+    if(nodeBefore.name==="Identifier" && nodeBefore.prevSibling){
+      context.pos=nodeBefore.from;
+      nodeBefore=nodeBefore.prevSibling;
+    }
     if(nodeBefore.name==="new"){
       if(context.pos===nodeBefore.to){
         return;

@@ -9,9 +9,9 @@ export function UnaryExpression(node,source,scope){
   node=op.nextSibling;
   let f=CompileFunctions.get(node,source);
   let v=f(node,source,scope);
-  if(op.name==="ArithOp" && !v.type.isNumeric()){
+  if(op.name==="ArithOp" && (!v.type || !v.type.isNumeric())){
     throw source.createError("int oder double erwartet",node);
-  }else if(op.name==="LogicOp" && !v.type.isBoolean()){
+  }else if(op.name==="LogicOp" && (!v.type || !v.type.isBoolean())){
     throw source.createError("boolean erwartet",node);
   }
   code+=v.code;
