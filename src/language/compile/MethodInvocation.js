@@ -17,13 +17,13 @@ export function MethodInvocation(node,source,scope){
   node=node.firstChild;
   
   let mn,al,methods;
-  let code="await ";
+  let code="";
   let owner={
     clazz: null,
     static: false
   };
   if(node.name==="MethodName"){
-    code+="this.";
+    code+="this";
   }else{
     if(node.name==="Identifier"){
       let id=Identifier(node,source,scope);
@@ -49,7 +49,6 @@ export function MethodInvocation(node,source,scope){
     }
     node=node.nextSibling;
     if(node.name==="."){
-      code+=".";
     }else{
       throw (source.createError(null,node));
     }
@@ -59,10 +58,15 @@ export function MethodInvocation(node,source,scope){
   }
   mn=source.getText(node);
   let method=scope.getMethod(mn,owner.static,owner.clazz);
-  if(method.jsName){
-    code+=method.jsName;
-  }else{
-    code+=mn;
+  if(method.isExtraFunction){
+    
+  }else{ 
+    code+=".";
+    if(method.jsName){
+      code+=method.jsName;
+    }else{
+      code+=mn;
+    }
   }
   node=node.nextSibling;
   if(method.error){
@@ -71,8 +75,12 @@ export function MethodInvocation(node,source,scope){
   if(node.name!=="ArgumentList"){
   }
   al=ArgumentList(node,source,scope,method.params);
-  code+=al.code;
-  
+  if(method.isExtraFunction){
+    code=method.jsName+"("+code+","+al.code.substring(1);
+  }else{
+    code+=al.code;
+  }
+  code="await "+code;
   return {
     method,arguments: al, code, type: method.type? method.type: null
   }

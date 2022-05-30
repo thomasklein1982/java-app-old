@@ -6,7 +6,72 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  function $StringReplaceAll(string,s,r){
+    var regexp=new RegExp(s,"g");
+    return string.replace(regexp,r);
+  }
   
+  function $StringReplaceFirst(string,s,r){
+    var regexp=new RegExp(s);
+    return string.replace(regexp,r);
+  }
+
+  function $StringSplit(string,regexp,limit){
+    var r=new RegExp(regexp);
+    return string.split(r,limit);
+  }
+
+  function $StringContains(string,string2){
+    return string.indexOf(string2)>=0;
+  }
+
+  function $StringApplyRegexp(string,regexp,flags){
+    if(!flags) flags="";
+    try{
+      var r=new RegExp(regexp,flags);
+    }catch(e){
+
+    }
+    var res=r.exec(string);
+    if(res){
+      return res;
+    }else{
+      return null;
+    }
+  }
+
+  function $StringCompareTo(string1,string2){
+    var l1=string1.length;
+    var l2=string2.length;
+    for(var i=0;i<l1;i++){
+      if(i>=l2){
+        return l1-l2;
+      }
+      var c1=string1.codePointAt(i);
+      var c2=string2.codePointAt(i);
+      if(c1!==c2){
+        return c1-c2;
+      }
+    }
+    return l2-l1;
+  }
+
+  function $StringCompareToIgnoreCase(string1,string2){
+    return $StringCompareTo(string1.toLowerCase(),string2.toLowerCase());
+  }
+
+  function $StringEquals(string1,string2){
+    return string1===string2;
+  }
+
+  function $StringEqualsIgnoreCase(string1,string2){
+    return $StringEquals(string1.toLowerCase(),string2.toLowerCase());
+  }
+
+  function $StringMatches(string,regexp){
+    var r=new RegExp(regexp);
+    return r.test(string);
+  }
 
   function onAction(element){
     if($main && $main.onAction){

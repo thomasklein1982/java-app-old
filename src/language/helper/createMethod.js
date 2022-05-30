@@ -39,6 +39,9 @@ export function createMethod(data,clazz,isStatic,isConstructor,Java){
   if(data.jsName){
     m.jsName=data.jsName;
   }
+  if(data.isExtraFunction){
+    m.isExtraFunction=true;
+  }
   if(data.returnType){
     let baseType=data.returnType;
     if(baseType.baseType){

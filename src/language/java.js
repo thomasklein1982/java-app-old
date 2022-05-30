@@ -3,7 +3,7 @@ import { Clazz } from "../classes/Clazz";
 import { defineApp } from "./datatypes/App.js";
 import { defineGenericClazz } from "./datatypes/GenericClazz";
 import { appjsdata } from "../functions/snippets";
-import { defineString } from "./datatypes/string";
+import { defineString } from "./datatypes/String";
 import { defineUIClazzes } from "./datatypes/UI";
 import { defineMath } from "./datatypes/Math";
 import {defineDatabaseClazzes} from "./datatypes/Database";
