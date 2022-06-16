@@ -12,7 +12,9 @@ export function ArrayInitializer(node,source,scope,type){
     subType.autoCastValue(a);
     code+=a.code;
     node=node.nextSibling;
-    if(node.name===","){
+    if(node.name==="⚠"){
+      throw source.createError("',' erwartet",node);
+    }else if(node.name===","){
       code+=",";
       node=node.nextSibling;
     }
