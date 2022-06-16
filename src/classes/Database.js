@@ -1,10 +1,12 @@
 import {Table} from "./Table";
 alasql_code();
+alasql.options.casesensitive=false;
+
 export class Database{
 
   static String={name: "String", id: "STRING", value: "", icon: "pi pi-comment"};
   static Numeric={name: "Numeric", id: "NUMERIC", value: 0, icon : "pi pi-percentage"};
-  static Date={name: "Date", id: "DATE", value: "01.01.1970", icon: "pi pi-calendar"};
+  static Date={name: "Date", id: "date", value: "1970-01-01", icon: "pi pi-calendar"};
   constructor(sourceCSV,fileName){
     this.clearFromMemory();
     this.tables=[];

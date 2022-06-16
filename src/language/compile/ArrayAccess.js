@@ -15,7 +15,7 @@ export function ArrayAccess(node,source,scope){
   let codeUpdate=code;
   node=node.nextSibling;
   if(node.name!=="["){
-
+    throw source.createError("'[' erwartet.",node);
   }
   var indices=[];
   node=node.nextSibling;
@@ -32,6 +32,11 @@ export function ArrayAccess(node,source,scope){
   codeSet+=".checkBounds("+index.code+").set("+index.code+",";
   codeUpdate+=".set("+index.code+","+object.code+".get("+index.code+")";
   let type=new Type(object.type.baseType,object.type.dimension-indices.length);
+  console.log("array access",type);
+  node=node.nextSibling;
+  if(node.name!=="]"){
+    throw source.createError("']' erwartet.",node);
+  }
   scope.addTypeAnnotation(node.to,type,false);
   return {
     code, codeSet,codeUpdate, type: type, codeUpdateAfter: ")"

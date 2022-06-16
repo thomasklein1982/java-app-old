@@ -49,7 +49,7 @@ export class Table{
           if(typ.id===Database.String.id){
             code+="'"+d+"'";
           }else if(typ.id===Database.Date.id){
-            if(/^\d\d\.\d\d\.\d\d\d\d$/.test(d)){
+            if(/^\d\d\d\d-\d\d\-\d\d$/.test(d)){
               code+="'"+d+"'";/*"new Date('"+d+"')";*/
             }else{
               code+=null;
@@ -142,81 +142,81 @@ export class Table{
     }
     return s;
   }
-  calcDatatypes(){
-    for(var i=0;i<this.attributes.length;i++){
-      var a=this.attributes[i];
-      var isNumber=true;
-      var isDate=true;
-      var isDateReversed=null;
-      for(var j=0;j<this.records.length;j++){
-        var r=this.records[j].get(i);
-        if(r===undefined){
-          continue;
-        }
-        if(isNumber){
-          /*check for Number:*/
-          if(r.charAt(0)==='0' || isNaN(r.replace(/,/g,".")*1)){
-            isNumber=false;
-          }
-        }
-        if(isDate){
-          /*check for date:*/
-          if(r.match(/^\d\d.\d\d.\d\d\d\d$/g)){
-            isDate=true;
-            if(isDateReversed===true){
-              isDate=false;
-            }else{
-              isDateReversed=false;
-            }
-          }else if(r.match(/^\d\d\d\d.\d\d.\d\d$/g)){
-            isDate=true;
-            if(isDateReversed===false){
-              isDate=false;
-            }else{
-              isDateReversed=true;
-            }
-          }else{
-            isDate=false;
-          }
-        }
-        if(!isNumber && !isDate){
-          break;
-        }
-      }
-      if(isNumber && isDate || !isNumber && !isDate){
-        a.type=Database.String;
-      }else if(isNumber){
-        a.type=Database.Number;
-      }else{
-        a.type=Database.Date;
-      }
-      if(a.type!==Database.String){
-        for(var j=0;j<this.records.length;j++){
-          var r=this.records[j];
-          var d=r.get(i);
-          if(d!==undefined){
-            if(a.type===Database.Number){
-              r.set(i,d.replace(/,/g,".")*1);
-            }else if(a.type===Database.Date){
-              if(isDateReversed){
-                var y=d.substring(0,4);
-                var month=d.substring(5,7);
-                var day=d.substring(8);
-              }else{
-                var day=d.substring(0,2);
-                var month=d.substring(3,5);
-                var y=d.substring(6);
-              }
-              /*d=new Date(y,month,day,0,0,0);
-              d.setUTCDate(day);
-              d.setUTCHours(0);*/
-              r.set(i,y+"."+month+"."+day);
-            }
-          }
-        }
-      }
-    }
-  }
+  // calcDatatypes(){
+  //   for(var i=0;i<this.attributes.length;i++){
+  //     var a=this.attributes[i];
+  //     var isNumber=true;
+  //     var isDate=true;
+  //     var isDateReversed=null;
+  //     for(var j=0;j<this.records.length;j++){
+  //       var r=this.records[j].get(i);
+  //       if(r===undefined){
+  //         continue;
+  //       }
+  //       if(isNumber){
+  //         /*check for Number:*/
+  //         if(r.charAt(0)==='0' || isNaN(r.replace(/,/g,".")*1)){
+  //           isNumber=false;
+  //         }
+  //       }
+  //       if(isDate){
+  //         /*check for date:*/
+  //         if(r.match(/^\d\d.\d\d.\d\d\d\d$/g)){
+  //           isDate=true;
+  //           if(isDateReversed===true){
+  //             isDate=false;
+  //           }else{
+  //             isDateReversed=false;
+  //           }
+  //         }else if(r.match(/^\d\d\d\d.\d\d.\d\d$/g)){
+  //           isDate=true;
+  //           if(isDateReversed===false){
+  //             isDate=false;
+  //           }else{
+  //             isDateReversed=true;
+  //           }
+  //         }else{
+  //           isDate=false;
+  //         }
+  //       }
+  //       if(!isNumber && !isDate){
+  //         break;
+  //       }
+  //     }
+  //     if(isNumber && isDate || !isNumber && !isDate){
+  //       a.type=Database.String;
+  //     }else if(isNumber){
+  //       a.type=Database.Number;
+  //     }else{
+  //       a.type=Database.Date;
+  //     }
+  //     if(a.type!==Database.String){
+  //       for(var j=0;j<this.records.length;j++){
+  //         var r=this.records[j];
+  //         var d=r.get(i);
+  //         if(d!==undefined){
+  //           if(a.type===Database.Number){
+  //             r.set(i,d.replace(/,/g,".")*1);
+  //           }else if(a.type===Database.Date){
+  //             if(isDateReversed){
+  //               var y=d.substring(0,4);
+  //               var month=d.substring(5,7);
+  //               var day=d.substring(8);
+  //             }else{
+  //               var day=d.substring(0,2);
+  //               var month=d.substring(3,5);
+  //               var y=d.substring(6);
+  //             }
+  //             /*d=new Date(y,month,day,0,0,0);
+  //             d.setUTCDate(day);
+  //             d.setUTCHours(0);*/
+  //             r.set(i,y+"."+month+"."+day);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
   removeAttribute(a){
     for(var i=0;i<this.attributes.length;i++){
       var a2=this.attributes[i];

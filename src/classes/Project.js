@@ -22,7 +22,7 @@ export class Project{
     let databaseCode="";
     let cmds=database.createInMemory(true);
     if(cmds && cmds.length>1){
-      databaseCode+=alasql_code+"\nalasql_code();\n";
+      databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
       databaseCode+="$clearAlaSQL();\n";
       for(var i=0;i<cmds.length;i++){
         databaseCode+="alasql("+JSON.stringify(cmds[i])+");\n";

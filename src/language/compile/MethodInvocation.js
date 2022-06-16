@@ -7,6 +7,7 @@ import { Identifier } from "./Identifier";
 import { Clazz } from "../../classes/Clazz";
 import { Java } from "../java";
 import { Type } from "../../classes/Type";
+import { ArrayAccess } from "./ArrayAccess";
 /**
  * 
  * @param {*} node 
@@ -41,6 +42,13 @@ export function MethodInvocation(node,source,scope){
       }
     }else if(node.name==="FieldAccess"){
       let fa=FieldAccess(node,source,scope);
+      code+=fa.code;
+      owner={
+        clazz: fa.type.baseType,
+        static: false
+      };
+    }else if(node.name==="ArrayAccess"){
+      let fa=ArrayAccess(node,source,scope);
       code+=fa.code;
       owner={
         clazz: fa.type.baseType,
