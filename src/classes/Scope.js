@@ -18,10 +18,11 @@ export class Scope{
     return (this.endPosition!==undefined && node.from>this.endPosition);
   }
 
-  addTypeAnnotation(pos,type,isStatic){
-    this.typeAnnotations[pos]={
+  addTypeAnnotation(node,type,isStatic){
+    this.typeAnnotations[node.to]={
       type,isStatic
     };
+    
   }
 
   pushLayer(){

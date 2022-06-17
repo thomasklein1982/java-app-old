@@ -18,6 +18,8 @@ export class Clazz{
     this.attributes={};
     this.methods={};
     this.constructor=null;
+    this.node=null;
+    this.references=[];
   }
   isNative(){
     return this.project===undefined;
@@ -185,6 +187,7 @@ export class Clazz{
     if(node.type.name!=="ClassDeclaration"){
       errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",node));
     }else{
+      this.node=node;
       node=node.firstChild;
       while(node.nextSibling && node.name!=="Definition"){
         node=node.nextSibling;
@@ -240,7 +243,7 @@ export class Clazz{
           errors=errors.concat(c.compileDeclaration(node,this.source));
           this.constructor=c;
         }
-      }else{
+      }else if(node.name!=="LineComment"){
         errors.push(this.source.createError("Attributs- oder Methoden- oder Konstruktordeklaration erwartet.",node));
       }
       node=node.nextSibling;

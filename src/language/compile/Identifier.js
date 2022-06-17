@@ -49,7 +49,7 @@ export function Identifier(node,source,scope,owner){
         throw source.createError(obj.error,node);
       }
       type=obj.type;
-      scope.addTypeAnnotation(node.to,type,false);
+      scope.addTypeAnnotation(node,type,false);
     }
   }else{
     //Top-Level
@@ -57,11 +57,11 @@ export function Identifier(node,source,scope,owner){
     if(!obj){
       obj=scope.getClazzByName(name);
       type=null;
-      scope.addTypeAnnotation(node.to,new Type(obj,0),true);
+      scope.addTypeAnnotation(node,new Type(obj,0),true);
     }else{
       local=true;
       type=obj.type;
-      scope.addTypeAnnotation(node.to,type,false);
+      scope.addTypeAnnotation(node,type,false);
     }
     if(!obj){
       obj=scope.getAttribute(name,false);
@@ -70,7 +70,7 @@ export function Identifier(node,source,scope,owner){
       }else{
         code="this."+code;
         type=obj.type;
-        scope.addTypeAnnotation(node.to,type,false);
+        scope.addTypeAnnotation(node,type,false);
       }
     }
     if(node.src){

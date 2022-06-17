@@ -370,11 +370,17 @@ export default {
     getLineByNumber: function(linenumber){
       return this.editor.state.doc.line(linenumber);
     },
+    setCursorToEnd(){
+      this.setCursor(this.size-1);
+    },
     setSelection(anchor,head){
-      this.editor.dispatch({
-        selection: {anchor, head},
-        scrollIntoView: true
-      })
+      this.setCursorToEnd();
+      nextTick(()=>{
+        this.editor.dispatch({
+          selection: {anchor, head},
+          scrollIntoView: true
+        });
+      });
     },
     focus(){
       this.editor.focus();

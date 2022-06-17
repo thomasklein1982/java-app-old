@@ -8,7 +8,9 @@ export class Attribute{
     this.clazz=clazz;
     this.type=null;
     this.name=null;
+    this.attributes=null;
     this.modifiers=null;
+    this.node=null;
   }
 
   getJavaScriptCode(){
@@ -32,6 +34,7 @@ export class Attribute{
   }
 
   getSingleAttributes(){
+    return this.attributes;
     let array=[];
     for(let i=0;i<this.name.length;i++){
       let n=this.name[i];
@@ -46,6 +49,7 @@ export class Attribute{
 
   compile(node,source){
     var errors=[];
+    this.node=node;
     node=node.firstChild;
     var m=new Modifiers();
     this.modifiers=m;
@@ -58,14 +62,18 @@ export class Attribute{
       node=node.nextSibling;
     }
     /**beliebig viele Variablennamen, mit Komma getrennt */
-    var names=[];
+    this.attributes=[];
     while(true){
       if(node.name==="VariableDeclarator"){
         var name=source.getText(node);
-        names.push(name);
+        let a=new Attribute(this.clazz);
+        a.type=this.type;
+        a.name=name;
+        a.modifiers=this.modifiers;
+        a.node=node;
+        this.attributes.push(a);
         node=node.nextSibling;
         if(node.name===","){
-          this.multiple=true;
           node=node.nextSibling;
           if(node.isError){
             errors.push(source.createError("Attributsname erwartet",node));
@@ -84,7 +92,6 @@ export class Attribute{
         errors.push(source.createError("';' erwartet",node));
       }
     }
-    this.name=names;
     return errors;
   }
 }

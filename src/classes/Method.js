@@ -19,6 +19,7 @@ export class Method{
     this.comment=null;
     this.typeAnnotations={};
     this.jsName=null;
+    this.node=null;
   }
   createParamsString(){
     
@@ -84,6 +85,7 @@ export class Method{
       errors.push(source.createError("Name erwartet",node));
       return errors;
     }
+    this.node=node;
     node=node.nextSibling;
 
     if(node.name==='FormalParameters'){

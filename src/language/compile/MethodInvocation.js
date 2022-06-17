@@ -54,6 +54,13 @@ export function MethodInvocation(node,source,scope){
         clazz: fa.type.baseType,
         static: false
       };
+    }else if(node.name==="MethodInvocation"){
+      let fa=MethodInvocation(node,source,scope);
+      code+=fa.code;
+      owner={
+        clazz: fa.type.baseType,
+        static: false
+      };
     }
     node=node.nextSibling;
     if(node.name==="."){
@@ -89,6 +96,10 @@ export function MethodInvocation(node,source,scope){
     code+=al.code;
   }
   code="await "+code;
+  if(method.type){
+    console.log("methoden typ",method.type);
+    scope.addTypeAnnotation(node,method.type,false);
+  }
   return {
     method,arguments: al, code, type: method.type? method.type: null
   }

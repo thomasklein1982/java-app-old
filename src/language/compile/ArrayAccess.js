@@ -37,7 +37,7 @@ export function ArrayAccess(node,source,scope){
   if(node.name!=="]"){
     throw source.createError("']' erwartet.",node);
   }
-  scope.addTypeAnnotation(node.to,type,false);
+  scope.addTypeAnnotation(node,type,false);
   return {
     code, codeSet,codeUpdate, type: type, codeUpdateAfter: ")"
   }

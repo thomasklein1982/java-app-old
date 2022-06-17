@@ -18,14 +18,11 @@ export function ObjectCreationExpression(node,source,scope){
     let c=source.src.charAt(root.to-1);
     if(c==="."){
       /**Seltsames Verhalten? Hier scheinen alle Ausdruecke zu landen, die mit einem . enden */
-      console.log(source.getText(root));
       let node=root.firstChild;
-      console.log("seltsam",node);
-      let f=CompileFunctions.get(node,source);
-      if(f){
-        return f(node,source,scope);
+      while(node && node.nextSibling && !node.nextSibling.type.isError){
+        node=node.nextSibling;
       }
-      throw source.createError("Seltsamer Fehler?", node);
+      throw source.createError("Syntax-Fehler: '.' macht hier keinen Sinn.", node);
       // let src=source.getText(root);
 
       // src=src.substring(0,src.length-1);

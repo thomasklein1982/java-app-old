@@ -6,6 +6,7 @@ import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { ArrayAccess } from "./ArrayAccess";
 import { Identifier } from "./Identifier";
+import { MethodInvocation } from "./MethodInvocation";
 import { ThisExpression } from "./ThisExpression";
 
 /**
@@ -29,6 +30,16 @@ export function FieldAccess(node,source,scope){
     };
   }else if(node.name==="ArrayAccess"){
     let fa=ArrayAccess(node,source,scope);
+    code+=fa.code;
+    if(fa.type.dimension>0){
+      throw source.createError("Ein Array hat keine Attribute.",node.node);
+    }
+    owner={
+      type: fa.type,
+      static: false
+    };
+  }else if(node.name==="MethodInvocation"){
+    let fa=MethodInvocation(node,source,scope);
     code+=fa.code;
     if(fa.type.dimension>0){
       throw source.createError("Ein Array hat keine Attribute.",node.node);
@@ -63,7 +74,7 @@ export function FieldAccess(node,source,scope){
   if(!type.baseType){
     type=new Type(type,0);
   }
-  scope.addTypeAnnotation(node.to,type,owner.static);
+  scope.addTypeAnnotation(node,type,owner.static);
   node=node.nextSibling;
   let object=null;
   if(node.name==="."){
@@ -76,7 +87,7 @@ export function FieldAccess(node,source,scope){
       if(!type.baseType){
         type=new Type(type,0);
       }
-      scope.addTypeAnnotation(node.to,type,false);
+      scope.addTypeAnnotation(node,type,false);
     }
   }else{
     let f=CompileFunctions.get(node,source);
