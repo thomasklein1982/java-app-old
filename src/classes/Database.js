@@ -2,6 +2,8 @@ import {Table} from "./Table";
 alasql_code();
 alasql.options.casesensitive=false;
 
+export const SQL_KEYWORDS=['alter','create','table','add','constraint','all','column','and','any','as','asc','backup','database','between','case','check','create','index','replace','default','delete','desc','distinct','drop','view','exec','exists','foreign','key','from','full','outer','join','group','by','having','in','inner','insert','into','select','null','not','left','right','like','limit','or','order','primary','procedure','rownum','top','set','truncate','union','all','unique','update','values','where'];
+
 export class Database{
 
   static String={name: "String", id: "STRING", value: "", icon: "pi pi-comment"};
@@ -79,7 +81,7 @@ export class Database{
       var r=alasql(sqlSource);
       return r;
     }catch(e){
-      throw e.message;
+      console.log(e.message);
     }
   }
   fromCSVString(s){

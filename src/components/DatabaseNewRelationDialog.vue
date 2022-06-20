@@ -1,23 +1,23 @@
 <template>
   <Dialog header="Neue Relation" modal v-model:visible="show">
-    <div class="field">
-      <label for="relationname">Name</label>
-      <InputText autofocus id="relationname" v-model="name" type="text" />
-      <small>Der Name der neuen Relation.</small>
-    </div>
+    <DatabaseNameInput help="Der Name der neuen Relation." v-model="name" label="Name"/>
     <template #footer>
-      <Button @click="clickOK()" label="OK"/>
+      <Button :disabled="!name.ok" @click="clickOK()" label="OK"/>
       <Button @click="setVisible(false)" class="p-button-outlined" label="Abbrechen"/>
     </template>
   </Dialog>
 </template>
 
 <script>
+import DatabaseNameInput from "./DatabaseNameInput.vue";
 export default {
   data(){
     return {
       show: false,
-      name: ""
+      name: {
+        name: "",
+        ok: true
+      }
     }
   },
   methods: {
@@ -26,8 +26,11 @@ export default {
     },
     clickOK(){
       this.setVisible(false);
-      this.$emit('confirm',this.name)
+      this.$emit('confirm',this.name.name)
     }
+  },
+  components: {
+    DatabaseNameInput
   }
 }
 </script>

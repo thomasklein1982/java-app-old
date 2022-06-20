@@ -20,14 +20,15 @@
     </SplitterPanel>
     <SplitterPanel style="overflow: auto;" :style="{display: 'flex', flexDirection: 'column'}">
       <div style="overflow:auto;" :style="{flex: 1}">
-        <div v-if="sqlExecution.result">
+        <div v-if="sqlExecution.result||sqlExecution.error">
           Die Anfrage
           <div style="font-family: monospace">
             {{sqlExecution.command}}
           </div>
           ergab:
           <div v-if="sqlExecution.error">
-            Fehler: {{sqlExecution.error}}
+            <div style="color: red; font-weight: bold">Fehler!</div>
+            <pre style="margin-top: 0.4rem; margin-bottom: 0.4rem">{{sqlExecution.error}}</pre>
           </div>
           <div v-else>
             <div v-if="sqlExecution.result.length>0">
@@ -95,14 +96,27 @@ export default {
       this.database.addTable(name);
     },
     executeSQL(){
+      this.sqlExecution.error=null;
+      this.sqlExecution.result=null;
       if(this.database.changed){
-        this.database.createInMemory();
+        try{
+          this.database.createInMemory();
+        }catch(e){
+          console.error(e);
+          this.sqlExecution.error=e.message;
+          return;  
+        }
+      }
+      if(this.sqlcommand.trim().length===0){
+        this.sqlExecution.error="keine Suchanfrage gestellt";
+        return;
       }
       this.sqlExecution.command=this.sqlcommand;
       try{
         this.sqlExecution.result=alasql(this.sqlcommand);
         this.sqlExecution.error=false;
       }catch(e){
+        console.error(e);
         this.sqlExecution.error=e.message;
       }
     }

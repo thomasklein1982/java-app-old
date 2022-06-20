@@ -23,10 +23,11 @@ export class Project{
     let cmds=database.createInMemory(true);
     if(cmds && cmds.length>1){
       databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
-      databaseCode+="$clearAlaSQL();\n";
+      databaseCode+="$clearAlaSQL();\ntry{";
       for(var i=0;i<cmds.length;i++){
         databaseCode+="alasql("+JSON.stringify(cmds[i])+");\n";
       }
+      databaseCode+="}catch(e){console.log('** Datenbank-Fehler: **');console.log(e);console.log('**************')}\n";
     }
     
     let js=this.getJavaScriptCode();

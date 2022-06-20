@@ -14,39 +14,29 @@
     </template>
   </Dialog>
   <Dialog header="Neues Attribut" v-model:visible="dialogs.newAttribute.show" :modal="true">
-    <div class="field">
-      <label for="relationname">Name</label>
-      <InputText autofocus id="relationname" v-model="dialogs.newAttribute.name" type="text" />
-    </div>
+    <DatabaseNameInput help="Der Name des neuen Attributs." v-model="dialogs.newAttribute.name" label="Name"/>
     <div class="field">
       <label for="datatype">Datentyp</label>
       <Dropdown id="datatype" optionLabel="name" v-model="dialogs.newAttribute.datatype" :options="datatypes" />
     </div>
     <template #footer>
-      <Button @click="confirmNewAttribute(dialogs.newAttribute.name,dialogs.newAttribute.datatype)" label="OK"/>
+      <Button :disabled="!dialogs.newAttribute.name.ok" @click="confirmNewAttribute(dialogs.newAttribute.name.name,dialogs.newAttribute.datatype)" label="OK"/>
       <Button @click="dialogs.newAttribute.show=false" class="p-button-outlined" label="Abbrechen"/>
     </template>
   </Dialog>
   <Dialog header="Attribut bearbeiten" v-model:visible="dialogs.editAttribute.show">
-    <div class="field">
-      <label for="relationname">Name</label>
-      <InputText id="relationname" v-model="dialogs.editAttribute.name" type="text" />
-    </div>
+    <DatabaseNameInput help="Der Name des Attributs." v-model="dialogs.editAttribute.name" label="Name"/>
     <div class="field">
       <label for="datatype">Datentyp</label>
       <Dropdown id="datatype" optionLabel="name" v-model="dialogs.editAttribute.datatype" :options="datatypes" />
     </div>
     <template #footer>
-      <Button @click="confirmEditAttribute(dialogs.editAttribute.name,dialogs.editAttribute.datatype)" label="OK"/>
+      <Button :disabled="!dialogs.editAttribute.name.ok" @click="confirmEditAttribute(dialogs.editAttribute.name.name,dialogs.editAttribute.datatype)" label="OK"/>
       <Button @click="dialogs.editAttribute.show=false" class="p-button-outlined" label="Abbrechen"/>
     </template>
   </Dialog>
   <Dialog @hide="applyChanges()" :header="'Relation '+relation.name+' bearbeiten'" v-model:visible="show">
-    <div>
-      <label style="margin-right: 0.5rem" for="relationname">Name</label>
-      <InputText id="relationname" v-model="name" type="text" />
-      <small style="display: block">{{errorMessage}}</small>
-    </div>
+    <DatabaseNameInput help="Der Name der Relation." v-model="name" label="Name" :additional-error="errorMessage"/>
     <table class="database-table">
       <ConfirmPopup/>
       <tr>
@@ -75,6 +65,7 @@
   import {Database} from "../classes/Database";
   import {Table} from "../classes/Table";
   import SplitButton from 'primevue/splitbutton';
+  import DatabaseNameInput from "./DatabaseNameInput.vue";
 
   export default {
     props: {
@@ -86,8 +77,8 @@
         return this.parseRelationFromText(this.dialogs.importRelation.text);
       },
       errorMessage(){
-        if(this.name!==this.relation.name){
-          let t=this.relation.database.getTableByName(this.name);
+        if(this.name.name!==this.relation.name){
+          let t=this.relation.database.getTableByName(this.name.name);
           if(t){
             return "Es gibt bereits eine Relation mit diesem Namen.";
           }
@@ -105,13 +96,19 @@
         dialogs: {
           newAttribute: {
             show: false,
-            name: "",
+            name: {
+              name: "",
+              ok: true
+            },
             datatype: Database.String,
             isPrimaryKey: false
           },
           editAttribute: {
             show: false,
-            name: "",
+            name: {
+              name: "",
+              ok: true
+            },
             datatype: Database.String,
             isPrimaryKey: false
           },
@@ -124,12 +121,15 @@
         currentAttribute: null,
         showTrash: false,
         show: false,
-        name: this.relation.name
+        name: {
+          name: this.relation.name,
+          ok: true
+        },
       }
     },
     methods: {
       parseRelationFromText(text){
-        var relation=new Table(this.relation.database,this.name);
+        var relation=new Table(this.relation.database,this.name.name);
         var ok=relation.fromCSVString("import\n"+text,"\t");
         if(ok){
           return relation;
@@ -152,7 +152,7 @@
             label: 'Bearbeiten',
             icon: 'pi pi-pencil',
             command: (event) => {
-              this.dialogs.editAttribute.name=a.name;
+              this.dialogs.editAttribute.name.name=a.name;
               this.dialogs.editAttribute.type=a.type;
               this.currentAttribute=a;
               this.dialogs.editAttribute.show=true;
@@ -178,7 +178,7 @@
       },
       applyChanges(){
         if(!this.errorMessage){
-          this.relation.name=this.name;
+          this.relation.name=this.name.name;
         }
       },
       confirmNewAttribute(name,datatype){
@@ -196,7 +196,7 @@
       }
     },
     components: {
-      SplitButton
+      SplitButton, DatabaseNameInput
     }
   }
 </script>

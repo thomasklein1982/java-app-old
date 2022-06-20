@@ -66,7 +66,15 @@ export class Table{
       }
       code+=")";
       if(!commandsOnly){
-        alasql(code);
+        if(window.$main){
+          try{
+            alasql(code);
+          }catch(e){
+            console.log(e);
+          }
+        }else{
+          alasql(code);
+        }
       }
       commands.push(code);
     }

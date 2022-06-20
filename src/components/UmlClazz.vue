@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import { b } from "../../dist/assets/vendor.156b4a66";
 import UmlMember from "./UmlMember.vue";
 
 export default {
