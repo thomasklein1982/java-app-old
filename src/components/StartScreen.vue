@@ -1,7 +1,7 @@
 <template>
   <div style="text-align: center; position: absolute; left: 0; top: 0; background-color: white; z-index: 2; width: 100%; height: 100%">
     <h1 style="margin-bottom: 0">Willkommen bei</h1>
-    <img src="../assets/logo.png" style="width: 3cm">
+    <img src="/Logo.png" style="width: 3cm">
     <p>Version {{$root.version}}</p>
     <p>Mit JavaApp kannst du Web-Apps mit Java programmieren, die auf allen Geräten laufen.</p>
     <p>Wähle eine der folgenden Möglichkeiten:</p>

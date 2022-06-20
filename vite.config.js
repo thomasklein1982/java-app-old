@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'icon-transparent.png','logo.png', 'additionalJSCode.js'],  
+      includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'icon-transparent.png','Logo.png', 'additionalJSCode.js','icon-transparent.png','assets/*.ttf'],  
       manifest: {
         name: 'JavaApp',
         description: 'Erstelle deine eigenen Apps mit Java',

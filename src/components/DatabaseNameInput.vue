@@ -2,7 +2,6 @@
   <div class="field">
     <label for="relationname">{{label}}</label>
     <InputText @input="updateValue" autofocus id="relationname" v-model="modelValue.name" type="text" />
-    {{modelValue.ok}}
     <small>{{help}}</small>
     <small v-if="error" style="color: red">{{error}}</small>
     <small v-if="additionalError" style="color: red">{{additionalError}}</small>
