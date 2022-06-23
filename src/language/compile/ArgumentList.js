@@ -1,6 +1,9 @@
 import { CompileFunctions } from "../CompileFunctions";
 
 export function ArgumentList(node,source,scope,parameters){
+  if(!node || !node.firstChild){
+    throw source.createError("'(' erwartet",node);
+  }
   node=node.firstChild;
   let list=[];
   let code="(";

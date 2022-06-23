@@ -32,7 +32,6 @@ export function ArrayAccess(node,source,scope){
   codeSet+=".checkBounds("+index.code+").set("+index.code+",";
   codeUpdate+=".set("+index.code+","+object.code+".get("+index.code+")";
   let type=new Type(object.type.baseType,object.type.dimension-indices.length);
-  console.log("array access",type);
   node=node.nextSibling;
   if(node.name!=="]"){
     throw source.createError("']' erwartet.",node);
