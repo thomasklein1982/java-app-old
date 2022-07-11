@@ -97,7 +97,6 @@ export function MethodInvocation(node,source,scope){
   }
   code="await "+code;
   if(method.type){
-    console.log("methoden typ",method.type);
     scope.addTypeAnnotation(node,method.type,false);
   }
   return {

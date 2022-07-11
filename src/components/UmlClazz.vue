@@ -1,6 +1,6 @@
 <template>
   <div class="umlclazz">
-    <div class="clazzname">
+    <div @click="click()" class="clazzname">
       {{clazz.name}}
     </div>
     <div class="attributes">
@@ -17,6 +17,7 @@
 
 <script>
 import UmlMember from "./UmlMember.vue";
+import { nextTick } from "vue";
 
 export default {
   props: {
@@ -49,13 +50,32 @@ export default {
       methods=methods.sort(function(a,b){
         if(a.isConstructor){
           return -1;
-        }else if(a.name.toLowerCase()<=b.name.toLowerCase()){
-          return -1;
         }else{
-          return 1;
+          if(!a.name || !b.name){
+            return 1;
+          } 
+          if(a.name.toLowerCase()<=b.name.toLowerCase()){
+            return -1;
+          }else{
+            return 1;
+          }
         }
       });
       return methods;
+    }
+  },
+  methods: {
+    click(){
+      let editor=this.$root.$refs.editor;
+      let index=editor.project.getClazzIndexByName(this.clazz.name);
+      editor.activeTab=index;
+      console.log(editor);
+      let cm=editor.$refs.editor[index];
+      cm.setSelection(this.clazz.node.from,this.clazz.node.to);
+      nextTick(()=>{
+          cm.focus()
+        }
+      );
     }
   },
   components: {
@@ -74,6 +94,7 @@ export default {
     border-bottom: 1pt solid black;
     text-align: center;
     font-weight: bold;
+    cursor: pointer;
   }
   .attributes{
     border-bottom: 1pt solid black;

@@ -66,6 +66,13 @@ export default {
           }
         },
         {
+          label: 'Umbenennen',
+          icon: 'pi pi-fw pi-pencil',
+          command: (ev)=>{
+            this.$emit("rename");
+          }
+        },
+        {
           label: 'Einstellungen',
           icon: 'pi pi-cog',
           command: (ev)=>{

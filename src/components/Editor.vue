@@ -7,6 +7,7 @@
       @upload="uploadProject"
       @new="$refs.dialogNewApp.setVisible(true)"
       @prettify="prettifyCode"
+      @rename="renameSelection"
       @undo="$refs.editor[activeTab].undo()"
       @redo="$refs.editor[activeTab].redo()"
       @search="$refs.editor[activeTab].openSearchPanel()"
@@ -142,6 +143,20 @@ export default {
     },1000);
   },
   methods: {
+    renameSelection(){
+      let cm=this.$refs.editor[this.activeTab];
+      let node=cm.getSelectedNode();
+      if(!node || !node.parent) return;
+      if(node.name==="VariableDeclarator"){
+
+      }else if(node.name==="Definition"){
+        if(node.parent.name==="ClassDeclaration"){
+          console.log("kalsse")
+        }else if(node.parent.name==="MethodDeclaration"){
+          console.log("methode")
+        }
+      }
+    },
     toggleRight(){
       if(!this.rightClosed){
         this.sizeCodeSaved=this.sizeCode;

@@ -325,7 +325,7 @@ export default {
       });
     },
     slice(from,to){
-      return this.state.doc.slice(from,to);
+      return this.editor.viewState.state.doc.slice(from,to).toString();
     },
     reset: function(sourceCode){
       this.runtimeError=[];
@@ -369,6 +369,33 @@ export default {
     },
     getLineByNumber: function(linenumber){
       return this.editor.state.doc.line(linenumber);
+    },
+    getSelectedText: function(){
+
+    },
+    getSelectedNode: function(){
+      let selection=this.editor.viewState.state.selection;
+      if(selection.ranges.length!==1) return null;
+      let range=selection.ranges[0];
+      if(range.from>=range.to) return;
+      let tree=this.editor.viewState.state.tree;
+      let node=tree.resolveInner(range.from, 0);
+      while(node.from<range.from || node.to>range.to){
+        if(node.to<=range.from){
+          if(node.nextSibling){
+            node=node.nextSibling;
+          }else{
+            return null;
+          }
+        }else{
+          if(node.firstChild){
+            node=node.firstChild;
+          }else{
+            return null;
+          }
+        }
+      }
+      return node;
     },
     setCursorToEnd(){
       this.setCursor(this.size-1);

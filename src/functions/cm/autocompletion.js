@@ -62,18 +62,21 @@ export function createAutocompletion(){
     let from;
     if(!method){
       if(clazz.hasStaticMainMethod()){
-        if(nodeBefore.name==="TypeName"){
-          from=nodeBefore.from;
-        }else{
-          from=pos;
-        }
+        console.log(nodeBefore.name);
+        if(nodeBefore.name==="{") return;
+        from=nodeBefore.from;
+        // if(nodeBefore.name==="void"){
+        //   from=nodeBefore.from;
+        // }else{
+        //   from=pos;
+        // }
         return {
           from,
           options: snippets.eventListeners,
           span: /^[\w$]*$/
         }
       }else{
-        if(nodeBefore.name==="TypeName"){
+        if(nodeBefore.name==="void"){
           from=nodeBefore.from;
         }else{
           from=pos;

@@ -187,12 +187,12 @@ export class Clazz{
     if(node.type.name!=="ClassDeclaration"){
       errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",node));
     }else{
-      this.node=node;
       node=node.firstChild;
       while(node.nextSibling && node.name!=="Definition"){
         node=node.nextSibling;
       }
       this.name=this.source.getText(node);
+      this.node=node;
       node=node.nextSibling;
       if(node.name!=="ClassBody"){
         errors.push(this.source.createError("'{' erwartet",node));
@@ -221,19 +221,27 @@ export class Clazz{
         let attr=a.getSingleAttributes();
         for(var i=0;i<attr.length;i++){
           let sa=attr[i];
-          if(this.attributes[sa.name]){
-            errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",node));
-          }else{
-            this.attributes[sa.name]=sa;
+          if(sa.name){
+            if(this.attributes[sa.name]){
+              errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
+            }else if(this.methods[sa.name]){
+              errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
+            }else{
+              this.attributes[sa.name]=sa;
+            }
           }
         }
       }else if(node.name==='MethodDeclaration'){
         let m=new Method(this,false);
         errors=errors.concat(m.compileDeclaration(node,this.source));
-        if(this.methods[m.name]){
-          errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",node));
-        }else{
-          this.methods[m.name]=m;
+        if(m.name){
+          if(this.methods[m.name]){
+            errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
+          }else if(this.attributes[m.name]){
+            errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
+          }else{
+            this.methods[m.name]=m;
+          }
         }
       }else if(node.name=="ConstructorDeclaration"){
         if(this.constructor){
