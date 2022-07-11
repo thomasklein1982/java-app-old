@@ -20,9 +20,17 @@ export function ObjectCreationExpression(node,source,scope){
       /**Seltsames Verhalten? Hier scheinen alle Ausdruecke zu landen, die mit einem . enden */
       let node=root.firstChild;
       while(node && node.nextSibling && !node.nextSibling.type.isError){
+        let f=CompileFunctions.get(node,source);
+        if(f){
+          try{
+            f(node,source,scope);
+          }catch(e){
+
+          }
+        }
         node=node.nextSibling;
       }
-      throw source.createError("Syntax-Fehler: '.' macht hier keinen Sinn.", node);
+      throw source.createError("Unerwartetes Ende der Anweisung: Attribut oder Methode erwartet.", node);
       // let src=source.getText(root);
 
       // src=src.substring(0,src.length-1);

@@ -2423,7 +2423,6 @@ window.appJScode=function(){
       this.type=type.name;
       if(Array.isArray(dim)){
         this.dim=dim;
-        console.log("new Array",type);
         this.values=$App.Array.createArrayValues(type,dim,0);
       }else{
         this.values=values;
@@ -2561,7 +2560,7 @@ window.appJScode=function(){
           this.saveHistory();
         }
         var w;
-        if($main){
+        if(window.$main){
           eval("with($main){w="+v+"}");
         }else{
           eval("w="+v);
@@ -4683,7 +4682,7 @@ window.appJScode=function(){
         info: 'Zeigt die Konsole an.'
       }, 
       {
-        name: 'hide()', 
+        name: 'hide', 
         returnType: null,
         info: 'Verbirgt die Konsole.'
       }
