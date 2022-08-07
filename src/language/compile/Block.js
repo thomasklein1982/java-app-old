@@ -18,6 +18,7 @@ function createUpdateLocalVariablesCode(scope){
 export function Block(node,source,scope){
   let code="";
   let errors=scope.method.clazz.errors;
+  let blockNode=node;
   node=node.firstChild;
   if(node.type.isError || node.name!=='{'){
     errors.push(source.createError("'{' erwartet.",node));
@@ -40,8 +41,7 @@ export function Block(node,source,scope){
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
         let line=source.state.doc.lineAt(node.from).number;
-        
-        code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+");"+res.code;
+        code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
         if(res.updateLocalVariablesAfter){
           let vnames=res.updateLocalVariablesAfter;
           code+="eval('";
@@ -59,6 +59,8 @@ export function Block(node,source,scope){
   if(open){
     errors.push(source.createError("'}' erwartet.",node));
   }
+  let line=source.state.doc.lineAt(blockNode.to).number;
+  code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
   scope.popLayer();
   code+=createUpdateLocalVariablesCode(scope);
   return {
