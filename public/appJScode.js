@@ -13,7 +13,7 @@ window.appJScode=function(){
     })
   
     window.$App={
-      version: 25,
+      version: 26,
       language: window.language? window.language:'js',
       setupData: null,
       debug: {
