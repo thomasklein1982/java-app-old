@@ -1,24 +1,24 @@
 export class Record{
 
   constructor(){
-    this.data=[];
+    this.$data=[];
   }
   add(value){
-    this.data.push(value);
+    this.$data.push(value);
   }
   set(index,value){
     if(value===undefined || value===null || value==="null" || value.length===0){
-      this.data[index]=undefined;
+      this.$data[index]=undefined;
     }else{
-      this.data[index]=value;
+      this.$data[index]=value;
     }
   }
   get(index){
-    return this.data[index];
+    return this.$data[index];
   }
   toCSVString(attributes,sep){
     var s="";
-    for(var i=0;i<this.data.length;i++){
+    for(var i=0;i<this.$data.length;i++){
       var d=this.get(i);
       if(d===undefined){
         /*nichts eintragen, feld bleibt leer*/

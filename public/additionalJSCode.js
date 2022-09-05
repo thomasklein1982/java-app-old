@@ -312,13 +312,13 @@ function additionalJSCode(){
     }
   }
 
-  class Datatable extends JComponent{
-    constructor(array,x,y,width,height){
+  class DataTable extends JComponent{
+    constructor(x,y,width,height){
       super(x,y,width,height);
-      this.$el=ui.datatable(array,x,y,width,height);
+      this.$el=ui.datatable(null,x,y,width,height);
       this.$el.component=this;
     }
-    setRecordArray(array){
+    setArray(array){
       this.$el.array=array;
     }
   }
@@ -372,18 +372,18 @@ function additionalJSCode(){
       for(var i=0;i<n1;i++){
         var r1=array1[i];
         var s1=0;
-        for(var a in r1.data){
+        for(var a in r1.$data){
           s1++;
         }
         var s2=0;
-        for(var a in r2.data){
+        for(var a in r2.$data){
           s2++;
         }
         if(s1!==s2) return false;
         var r2=array2[i];
-        for(var a in r1.data){
-          if(a in r2.data){
-            if(r1.data[a]!==r2.data[a]) return false;
+        for(var a in r1.$data){
+          if(a in r2.$data){
+            if(r1.$data[a]!==r2.$data[a]) return false;
           }else{
             return false;
           }
@@ -394,11 +394,11 @@ function additionalJSCode(){
   }
 
   class Record{
-    constructor(data){
-      this.data=data;
+    constructor($data){
+      this.$data=$data;
     }
     get(attribute){
-      return this.data[attribute];
+      return this.$data[attribute];
     }
   }
 

@@ -11,7 +11,7 @@ export function defineUIClazzes(Java){
   defineJTextField(Java.datatypes.JTextField,Java);
   defineJCheckBox(Java.datatypes.JCheckBox,Java);
   defineJComboBox(Java.datatypes.JComboBox,Java);
-  defineDatatable(Java.datatypes.Datatable,Java);
+  defineDataTable(Java.datatypes.DataTable,Java);
   defineJPanel(Java.datatypes.JPanel,Java);
 }
 
@@ -202,17 +202,28 @@ function defineJCheckBox(Clazz,Java){
   
 }
 
-function defineDatatable(Clazz,Java){
+function defineDataTable(Clazz,Java){
   createConstructor ({
     args: [
-      {type: {baseType: 'Object', dimension: 1}, name: 'array'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
   createMethod({
-    name: 'setRecordArray',
+    name: 'setArray',
     args: [
-      {name: 'recordArray', type: {baseType: 'Record', dimension: 1}}
+      {name: 'array', type: {baseType: 'Object', dimension: 1}}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getSelectedIndex',
+    args: [
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setSelectedIndex',
+    args: [
+      {name: 'index', type: 'int'}
     ]
   },Clazz,false,false,Java);
 }

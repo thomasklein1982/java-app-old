@@ -144,7 +144,7 @@ export class Clazz{
       }
     }
     if(type instanceof Clazz){
-      if(this.name===type.name){
+      if(type.name==="Object" || this.name===type.name){
         return true;
       }
       return (this.superClazz && this.superClazz.isSubtypeOf(type));

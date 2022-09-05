@@ -63,7 +63,7 @@ export function createAutocompletion(){
     if(!method){
       if(clazz.hasStaticMainMethod()){
         console.log(nodeBefore.name);
-        if(nodeBefore.name==="{") return;
+        //if(nodeBefore.name==="{") return;
         from=nodeBefore.from;
         // if(nodeBefore.name==="void"){
         //   from=nodeBefore.from;
@@ -132,7 +132,7 @@ export function createAutocompletion(){
         options,
         span: /^[\w$]*$/
       }
-    }else if(nodeBefore.name==="Block"||nodeBefore.name==="["){
+    }else if(nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"){
       from=context.pos;
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
     }else{
