@@ -21,6 +21,8 @@ function getRealNodeBefore(node,pos){
 export function createAutocompletion(){
   return (context)=>{
     let pos=context.pos;
+    let lastTypedCharacter=context.state.doc.sliceString(context.pos-1,context.pos);
+    if(["{","}",",",";","[","]","(",")"].indexOf(lastTypedCharacter)>=0) return;
     let nodeBefore = context.state.tree.resolveInner(pos, -1);
     nodeBefore=getRealNodeBefore(nodeBefore,pos);
     if(!nodeBefore) return;

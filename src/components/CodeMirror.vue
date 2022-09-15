@@ -9,7 +9,7 @@
 <script>
 import { EditorView, basicSetup, EditorState } from "@codemirror/basic-setup";
 import { java } from "@codemirror/lang-java";
-import { lintGutter, linter, openLintPanel } from "@codemirror/lint";
+import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
 import {indentWithTab} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
@@ -306,6 +306,21 @@ export default {
         this.closeSearchPanel();
       }else{
         this.openSearchPanel();
+      }
+    },
+    openLintPanel(){
+      openLintPanel(this.editor);
+      this.isLintPanelOpen=true;
+    },
+    closeLintPanel(){
+      closeLintPanel(this.editor);
+      this.isLintPanelOpen=false;
+    },
+    toggleLintPanel(){
+      if(this.isLintPanelOpen){
+        this.closeLintPanel();
+      }else{
+        this.openLintPanel();
       }
     },
     lineAt(pos){

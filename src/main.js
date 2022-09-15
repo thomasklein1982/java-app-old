@@ -124,3 +124,12 @@ window.onmessage=function(message){
     app.current={line: data.line, name: data.name};
   }
 }
+
+document.addEventListener("keydown", function(e) {
+  let platform=window.navigator.userAgentData.platform || window.navigator.platform;
+  let key=e.code||e.keyCode;
+  if ((platform.match("Mac") ? e.metaKey : e.ctrlKey)  && (key === 83 || key==="KeyS")) {
+    e.preventDefault();
+    window.app.$refs.editor.downloadProject();
+  }
+}, false);

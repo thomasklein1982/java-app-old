@@ -11,6 +11,7 @@
       @undo="$refs.editor[activeTab].undo()"
       @redo="$refs.editor[activeTab].redo()"
       @search="$refs.editor[activeTab].openSearchPanel()"
+      @lint="$refs.editor[activeTab].toggleLintPanel()"
       @toggleright="toggleRight()"
       @resources="$refs.dialogResources.setVisible(true)"
       @database="$refs.dialogDatabase.setVisible(true)"
@@ -215,7 +216,9 @@ export default {
       this.openProject(p);
     },
     downloadProject(){
-      download(this.project.getFullAppCode("",true),this.project.getName(),"text/html");
+      if(this.project){
+        download(this.project.getFullAppCode("",true),this.project.getName(),"text/html");
+      }
     },
     async uploadProject(){
       this.database.clear();

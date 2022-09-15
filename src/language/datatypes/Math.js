@@ -19,6 +19,30 @@ export function defineMath(MathClazz,Java){
     ],
   },MathClazz,true,false,Java);
   createMethod({
+    name: "round",
+    info: "Rundet kaufmaennisch.",
+    returnType: 'int',
+    args: [
+      {name: "number", type: "double", info: "Die Zahl, die gerundet werden soll."}
+    ],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "floor",
+    info: "Rundet ab.",
+    returnType: 'int',
+    args: [
+      {name: "number", type: "double", info: "Die Zahl, die gerundet werden soll."}
+    ],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "ceil",
+    info: "Rundet auf.",
+    returnType: 'int',
+    args: [
+      {name: "number", type: "double", info: "Die Zahl, die gerundet werden soll."}
+    ],
+  },MathClazz,true,false,Java);
+  createMethod({
     name: "abs",
     info: "Liefert den Betrag zurück.",
     returnType: 'double',
