@@ -6,6 +6,10 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  async function $asyncFunctionCallVariableObject(object,objectWithMethod,methodname,argumentsArray){
+    return await objectWithMethod[methodname].apply(object,argumentsArray);
+  };
+
   function $StringReplaceAll(string,s,r){
     var regexp=new RegExp(s,"g");
     return string.replace(regexp,r);

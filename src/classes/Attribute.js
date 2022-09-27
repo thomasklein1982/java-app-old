@@ -13,6 +13,10 @@ export class Attribute{
     this.node=null;
   }
 
+  isPrivate(){
+    return (this.modifiers && this.modifiers.visibility==="private");
+  }
+
   getJavaScriptCode(){
     let code="this."+this.name+"=";
     let v;

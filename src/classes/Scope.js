@@ -104,6 +104,11 @@ export class Scope{
     if(a.error){
       return a;
     }
+    if(a.isPrivate() && this.method.clazz!==clazz){
+      return {
+        error: "Das Attribut '"+name+"' ist private."
+      };
+    }
     if(a.isStatic()){
       if(!isStatic){
         return {
@@ -117,6 +122,7 @@ export class Scope{
         };
       }
     }
+    
     return a;
   }
   
@@ -133,6 +139,11 @@ export class Scope{
     let m=c.getMethod(name,isStatic);
     if(m.error){
       return m;
+    }
+    if(m.isPrivate() && this.method.clazz!==clazz){
+      return {
+        error: "Die Methode '"+name+"' ist private."
+      };
     }
     if(m.isStatic && m.isStatic() || m.static){
       if(!isStatic){

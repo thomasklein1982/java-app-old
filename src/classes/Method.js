@@ -41,6 +41,11 @@ export class Method{
   isStatic(){
     return (!this.modifiers || this.modifiers.isStatic);
   }
+
+  isPrivate(){
+    return (this.modifiers && this.modifiers.visibility==="private");
+  }
+
   matchesArgumentList(argumentList){
     return this.params.matchesArgumentList(argumentList);
   }

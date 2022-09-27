@@ -16,7 +16,7 @@ export function ArgumentList(node,source,scope,parameters){
   }
   while(node.nextSibling && node.nextSibling.name!==")"){
     if(!parameters || i>=pcount){
-      throw source.createError("Nur "+parameters.count+" Argumente erwartet. Zu viele Argumente!",node);
+      throw source.createError("Nur "+pcount+" Argumente erwartet. Zu viele Argumente!",node);
     }
     let p=parameters.parameters[i];
     

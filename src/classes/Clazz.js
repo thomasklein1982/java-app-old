@@ -31,6 +31,9 @@ export class Clazz{
     }
     code+="{";
     code+="\nconstructor(){";
+    if(this.superClazz){
+      code+="super();";
+    }
     if(this.hasStaticMainMethod()){
       code+="if(!window.$main){window.$main=this;}";
     }
@@ -51,6 +54,17 @@ export class Clazz{
     }
     code+="\n}";
     return code;
+  }
+
+  getAllAttributeNames(names){
+    if(!names) names={};
+    for(let a in this.attributes){
+      names[this.attributes[a].name]=true;
+    }
+    if(this.superClazz){
+      return this.superClazz.getAllAttributeNames(names);
+    }
+    return names;
   }
 
   /**
@@ -194,6 +208,16 @@ export class Clazz{
       this.name=this.source.getText(node);
       this.node=node;
       node=node.nextSibling;
+      if(node.name==="Superclass"){
+        let subnode=node.firstChild;
+        if(subnode.name!=="extends"){
+          errors.push(this.source.createError("'extends' erwartet",node));
+        }else{
+          subnode=subnode.nextSibling;
+          this.superClazz=this.source.getText(subnode);
+        }
+        node=node.nextSibling;
+      }
       if(node.name!=="ClassBody"){
         errors.push(this.source.createError("'{' erwartet",node));
       }else{
@@ -203,11 +227,21 @@ export class Clazz{
     return errors;
   }
 
+  resolveSuperClazz(project){
+    if(this.superClazz){
+      let c=project.getClazzByName(this.superClazz);
+      if(c){
+        this.superClazz=c;
+      }
+    }
+  }
+
   /**
    * Kompiliert alle Member-Deklarationen
    */
   compileMemberDeclarations(){
     this.attributes={};
+    this.methods={};
     this.constructor=null;
     let errors=this.errors;
     var node=this.clazzBody;

@@ -150,7 +150,8 @@ export default {
       type: Number,
       default: 4
     },
-    current: Object
+    current: Object,
+    project: Object
   },
   watch: {
     clazz(nv){
@@ -177,7 +178,8 @@ export default {
     return {
       runtimeError: [],
       errorID: 1,
-      size: 0
+      size: 0,
+      triggerRecompilation: true
     };
   },
   mounted(){
@@ -216,6 +218,7 @@ export default {
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
+            if(!v.docChanged) return;
             let updateImmediately=false;
             if(!changed){
               changed=v.docChanged;
@@ -238,19 +241,13 @@ export default {
             if(timer) clearTimeout(timer);
             if(updateImmediately){
               this.update(v);
-              let lintPlugin=this.editor.plugins[12];
-              if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
-                lintPlugin.value.run()
-              }
+              this.updateLinter();
               changed=false;
             }else{
               timer = setTimeout(() => {
                 if (changed) {
                   this.update(v);
-                  let lintPlugin=this.editor.plugins[12];
-                  if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
-                    lintPlugin.value.run()
-                  }
+                  this.updateLinter();
                   //lint.value.source(this.editor);
                   changed=false;
                 }
@@ -265,14 +262,26 @@ export default {
     this.emptyTransaction();
   },
   methods: {
+    updateLinter(){
+      let lintPlugin=this.editor.plugins[12];
+      if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
+        lintPlugin.value.run()
+      }
+    },
     async update(viewUpdate){
       var state=viewUpdate.state;
       var src=state.doc.toString();
       this.clazz.setSrcTreeAndState(src,state);
-      let t1=new Date();
-      await this.clazz.compile(this.project);
-      let t2=new Date();
-      console.log("update parsing done in "+(t2-t1)+"ms");
+      if(this.triggerRecompilation){
+        this.project.compile();
+        //this.$emit("recompile");
+      }else{
+          let t1=new Date();
+        await this.clazz.compile(this.project);
+        let t2=new Date();
+        console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
+      }
+      this.triggerRecompilation=true;
       //this.updateErrors(viewUpdate.view);
     },
     emptyTransaction(){
@@ -284,6 +293,7 @@ export default {
     //   this.emptyTransaction();
     // },
     setCode(code){
+      this.triggerRecompilation=false;
       this.size=code.length;
       var old=this.editor.state.doc.toString();
       this.editor.dispatch({

@@ -30,6 +30,7 @@
             </template>
             <CodeMirror
               :clazz="c"
+              :project="project"
               :font-size="fontSize"
               :current="paused ? current : null"
               ref="editor"
@@ -110,6 +111,12 @@ export default {
     };
   },
   watch: {
+    activeTab(nv,ov){
+      if(nv<this.$refs.editor.length){
+        let ed=this.$refs.editor[nv];
+        ed.updateLinter();
+      }
+    },
     sizeCode(nv,ov){
       if(nv!==ov){
         this.setSplitterSizes(nv);
@@ -144,6 +151,18 @@ export default {
     },1000);
   },
   methods: {
+    recompileOtherClazzes(index){
+      console.log("recompile all but "+index);
+      let t1=Date.now();
+      for(let i=0;i<this.project.clazzes.length;i++){
+        if(i!==index){
+          let c=this.project.clazzes[i];
+          c.compile(this.project);
+        }
+      }
+      let t2=Date.now();
+      console.log("other clazzes recompiled in "+(t2-t1)+"ms");
+    },
     renameSelection(){
       let cm=this.$refs.editor[this.activeTab];
       let node=cm.getSelectedNode();

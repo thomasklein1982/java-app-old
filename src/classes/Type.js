@@ -75,24 +75,24 @@ export class Type{
   
   isNumeric(){
     if(this.dimension>0) return false;
-    return this.baseType.isNumeric===true;
+    return this.baseType?.isNumeric===true;
   }
   isString(){
     if(this.dimension>0) return false;
     //console.log(this.baseType.name,this.baseType===Java.datatypes.String,this.baseType===window.dString,window.dString===Java.datatypes.String,Java.datatypes.String===Java.clazzes.String);
-    return this.baseType.name==="String";
+    return this.baseType?.name==="String";
   }
   isInt(){
     if(this.dimension>0) return false;
-    return this.baseType.name==="int";
+    return this.baseType?.name==="int";
   }
   isDouble(){
     if(this.dimension>0) return false;
-    return this.baseType.name==="double";
+    return this.baseType?.name==="double";
   }
   isBoolean(){
     if(this.dimension>0) return false;
-    return this.baseType.name==="boolean";
+    return this.baseType?.name==="boolean";
   }
   isPrimitive(){
     return this.dimension===0 && (this.baseType instanceof PrimitiveType);

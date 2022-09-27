@@ -59,13 +59,31 @@ export class Project{
   getJavaScriptCode(){
     let code="";
     let mainClazz=null;
+    let finished={};
+    let remaining=[];
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       if(!mainClazz && c.hasStaticMainMethod()){
         mainClazz=c;
       }
-      code+="\n"+c.getJavaScriptCode();
+      remaining.push(c);
     }
+    while(remaining.length>0){
+      let c=remaining.pop();
+      let finish=true;
+      if(c.superClazz){
+        /**ist die Oberklasse schon abgehandelt? wenn nein, wieder in die queue! */
+        if(remaining.length>0 && !finished[c.superClazz.name]){
+          remaining.splice(0,0,c);
+          finish=false;
+        }
+      }
+      if(finish){
+        code+="\n"+c.getJavaScriptCode();
+        finished[c.name]=true;
+      }
+    }
+
     if(mainClazz){
       code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n\n(async function(){await "+mainClazz.name+".main([]);})()";
     }
@@ -107,7 +125,7 @@ export class Project{
      * 3. Alle Methoden parsen
      */
     /**Klassen-Deklarationen: */
-    let start=new Date();
+    let start=Date.now();
     let toCompile=[];
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
@@ -121,7 +139,7 @@ export class Project{
       c.compileDeclaration();
       if(c.superClazz){
         /**ist die Oberklasse schon deklariert? wenn nein, wieder in die queue! */
-        if(toCompile.length>0 && !this.getClazzNyName(c.superClazz)){
+        if(toCompile.length>0 && !this.getClazzByName(c.superClazz)){
           toCompile.splice(0,0,c);
         }
       }
@@ -131,6 +149,7 @@ export class Project{
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       c.compileMemberDeclarations(this);
+      c.resolveSuperClazz(this);
     }
 
     /**Methoden: */
@@ -138,7 +157,7 @@ export class Project{
       let c=this.clazzes[i];
       c.compileMethods(this);
     }
-    let end=new Date();
+    let end=Date.now();
     console.log("parsing done in "+(end-start)+"ms");
   }
   deleteClazzes(){
@@ -148,11 +167,13 @@ export class Project{
     let index=this.clazzes.indexOf(c);
     if(index<=0) return false;
     this.clazzes.splice(index,1);
+    this.compile();
     return true;
   }
   async addClazz(c){
     await c.compile(true);
     this.clazzes.push(c);
+    this.compile();
   }
   getName(){
     return this.clazzes[0].name;

@@ -189,8 +189,9 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
     }
     let clazz=type.baseType;
     while(clazz){
-      for (let name in clazz.attributes) {
-        let a=clazz.attributes[name];
+      let attributeNames=clazz.getAllAttributeNames();
+      for (let name in attributeNames) {
+        let a=clazz.getAttribute(name);
         if(a.isStatic()===isStatic){
           options.push({
             label: name,
