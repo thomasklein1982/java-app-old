@@ -138,6 +138,9 @@ function additionalJSCode(){
     this.B=keycode;
   }
   App.gamepad.setX=function(keycode){
+    this.X=keycode;
+  }
+  App.gamepad.setY=function(keycode){
     this.Y=keycode;
   }
   App.gamepad.setE=function(keycode){
@@ -219,7 +222,7 @@ function additionalJSCode(){
     setHeight(v){
       this.$el.height=v;
     }
-    getX(){
+    getHeight(){
       return this.$el.height;
     }
     getStyle(name){
