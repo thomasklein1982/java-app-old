@@ -27,9 +27,7 @@ import { nextTick } from '@vue/runtime-core';
 // import {markerrors, errorPlugin } from '../functions/cm/markerror';
 import {createAutocompletion } from '../functions/cm/autocompletion';
 
-const completePropertyAfter = ["PropertyName", ".", "?."]
-const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
-                        "VariableDefinition", "PropertyDefinition"]
+
 
 
 

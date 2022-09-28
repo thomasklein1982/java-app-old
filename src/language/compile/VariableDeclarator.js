@@ -14,7 +14,7 @@ export function VariableDeclarator(node,source,scope,vType){
     let f=CompileFunctions.get(node,source);
     let val=f(node,source,scope);
     if(!val.type){
-      throw source.createError("Es existiert kein Wert, der zugewiesen werden könnte (ich verstehe es selbst nicht ganz...).",node);
+      throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
     }
     vType.autoCastValue(val);
     if(!val.type.isSubtypeOf(vType)){

@@ -15,7 +15,7 @@ export function AssignmentExpression(node,source,scope){
   node=node.nextSibling;
   let val=CompileFunctions.get(node,source)(node,source,scope);
   if(!val.type){
-    throw source.createError("Es existiert kein Wert, der zugewiesen werden könnte (ich verstehe es selbst nicht ganz...).",node);
+    throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
   }
   v.type.autoCastValue(val);
   if(!val.type.isSubtypeOf(v.type)){

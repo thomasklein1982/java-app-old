@@ -1,7 +1,6 @@
 import { ArgumentList } from "./ArgumentList";
 
 export function ExplicitConstructorInvocation(node,source,scope){
-  console.log(node);
   node=node.firstChild;
   if(node.name!=="super"){
     throw source.createError("'super' erwartet",node);

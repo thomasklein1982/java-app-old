@@ -5,6 +5,9 @@ import {createParamsString,snippets} from '../snippets'
 import {Java} from '../../language/java';
 import {getClazzFromState} from './getClazzFromState';
 
+const completePropertyAfter = ["PropertyName", ".", "?."]
+const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
+                        "VariableDefinition", "PropertyDefinition"]
 
 function getRealNodeBefore(node,pos){
   if(node && node.firstChild && !node.firstChild.type.isError && node.firstChild.to<pos){
@@ -26,6 +29,10 @@ export function createAutocompletion(){
     let nodeBefore = context.state.tree.resolveInner(pos, -1);
     nodeBefore=getRealNodeBefore(nodeBefore,pos);
     if(!nodeBefore) return;
+    if(dontCompleteIn.includes(nodeBefore.name)) {
+      console.log("dont autocomplete",nodeBefore.name);
+      return;
+    }
     if(nodeBefore.name===";"){
       return;
     }
@@ -34,6 +41,7 @@ export function createAutocompletion(){
     let clazz=getClazzFromState(context.state);
     if(!clazz) return;
     let n=nodeBefore.parent.parent;
+    if(n.type.name==="FormalParameters") return;
     while(n){
       if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
         if(n.name==="ConstructorDeclaration"){
@@ -134,7 +142,7 @@ export function createAutocompletion(){
         options,
         span: /^[\w$]*$/
       }
-    }else if(nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"){
+    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"){
       from=context.pos;
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
     }else{
@@ -191,7 +199,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
     while(clazz){
       let attributeNames=clazz.getAllAttributeNames();
       for (let name in attributeNames) {
-        let a=clazz.getAttribute(name);
+        let a=clazz.getAttribute(name,isStatic);
         if(a.isStatic()===isStatic){
           options.push({
             label: name,
