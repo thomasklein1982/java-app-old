@@ -16,8 +16,11 @@ export class Clazz{
     this.clazzBody=null;
     this.attributes={};
     this.methods={};
+    this.constructor=null;
   }
-
+  isNative(){
+    return this.project===undefined;
+  }
   getJavaScriptCode(){
     let code="class "+this.name;
     if(this.superClazz){
@@ -30,6 +33,12 @@ export class Clazz{
       code+="\n"+a.getJavaScriptCode();
     }
     code+="\n}";
+    if(this.constructor){
+      let c=this.constructor;
+      code+="\n"+c.getJavaScriptCode();
+    }else{
+      code+="\n$constructor(){}";
+    }
     for(let i in this.methods){
       let m=this.methods[i];
       code+="\n"+m.getJavaScriptCode();
@@ -118,30 +127,6 @@ export class Clazz{
     }
   }
 
-  define(superClazz,description,members,cannotBeInstantiated){
-    this.cannotBeInstantiated=cannotBeInstantiated===true;
-    this.superClazz=superClazz;
-    this.description=description;
-    if(members.a){
-      this.attributes=members.a;
-      for(var i in this.attributes){
-        this.attributes[i].name=i;
-      }
-    }
-    if(members.c){
-      this.constructors=members.c;
-    }
-    if(members.m){
-      this.methods={};
-      for(var i in members.m){
-        let m=members.m[i];
-        let method=new Method(this);
-        method.define(i,m);
-        this.methods[i]=method;
-      }
-    }
-  }
-
   isSubtypeOf(type){
     if(!type) return true;
     if(type instanceof Type){
@@ -174,7 +159,7 @@ export class Clazz{
     this.name=null;
     this.superClazz=null;
     this.attributes={};
-    this.constructors=[];
+    this.constructor=null;
     this.methods={};
     this.source=new Source(src,state);
   }
@@ -215,6 +200,7 @@ export class Clazz{
    */
   compileMemberDeclarations(){
     this.attributes={};
+    this.constructor=null;
     let errors=this.errors;
     var node=this.clazzBody;
     if(!node) return;
@@ -234,15 +220,23 @@ export class Clazz{
           }
         }
       }else if(node.name==='MethodDeclaration'){
-        let m=new Method(this);
+        let m=new Method(this,false);
         errors=errors.concat(m.compileDeclaration(node,this.source));
         if(this.methods[m.name]){
           errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",node));
         }else{
           this.methods[m.name]=m;
         }
+      }else if(node.name=="ConstructorDeclaration"){
+        if(this.constructor){
+          errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
+        }else{
+          let c=new Method(this,true);
+          errors=errors.concat(c.compileDeclaration(node,this.source));
+          this.constructor=c;
+        }
       }else{
-        errors.push(this.source.createError("Attributs- oder Methodendeklaration erwartet.",node));
+        errors.push(this.source.createError("Attributs- oder Methoden- oder Konstruktordeklaration erwartet.",node));
       }
       node=node.nextSibling;
     }
@@ -262,15 +256,18 @@ export class Clazz{
   }
 
   /**
-   * Kompiliert alle Methoden der Klasse
+   * Kompiliert alle Methoden (inklusive Konstruktoren) der Klasse
    */
-   compileMethods(){
+  compileMethods(){
     let errors=[];
     for(let mi in this.methods){
       let m=this.methods[mi];
       errors=errors.concat(m.compileBody(this.source).errors);
     }
-    
+    if(this.constructor){
+      let c=this.constructor;
+      errors=errors.concat(c.compileBody(this.source).errors);
+    }
     this.errors=this.errors.concat(errors);
     return errors;
   }

@@ -56,7 +56,6 @@ export function MethodInvocation(node,source,scope){
     code+=mn;
     node=node.nextSibling;
   }
-  console.log(node);
   if(node.name!=="ArgumentList"){
   }
   al=ArgumentList(node,source,scope);

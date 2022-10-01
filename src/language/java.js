@@ -29,8 +29,13 @@ let datatypes={
   boolean, double, int, char, Object, String, rawint, App
 };
 
+let clazzes={
+  Object, String, App
+}
+
 export const Java={
-  datatypes
+  datatypes,
+  clazzes
 };
 
 defineApp(App,Java);

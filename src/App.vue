@@ -22,7 +22,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 1,
+      version: 2,
       project: null
     }
   },

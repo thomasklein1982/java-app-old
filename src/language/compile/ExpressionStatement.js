@@ -7,5 +7,6 @@ export function ExpressionStatement(node,source,scope){
   if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
     throw (source.createError("';' erwartet.",node));
   }
+  a.code+=";";
   return a;
 }

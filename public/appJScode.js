@@ -140,6 +140,11 @@ window.appJScode=function(){
     
   };
   
+  $App.asyncFunctionCall=async function(object,methodname,argumentsArray){
+    await object[methodname].call(object,argumentsArray);
+    return object;
+  };
+
   $App.handleError=function(errorData){
     if(window.parent!==window){
       window.parent.postMessage({type: "error", data: errorData});
@@ -1891,6 +1896,9 @@ window.appJScode=function(){
       for(let a in window){
         if(!(a in $App.systemVariables)){
           let obj=window[a];
+          if(obj.$hideFromConsole){
+            continue;
+          }
           if(typeof obj==="function"){
             continue;
           }

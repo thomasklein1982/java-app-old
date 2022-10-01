@@ -2,71 +2,7 @@ import  * as autocomplete  from "@codemirror/autocomplete";
 import {syntaxTree} from "@codemirror/language"
 import { Clazz } from "../classes/Clazz";
 
-const completePropertyAfter = ["PropertyName", ".", "?."]
-const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
-                        "VariableDefinition", "PropertyDefinition"]
 
-export function createAutocompletion(additional){
-  return (context)=>{
-    let nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
-    //innerhalb einer funktion?
-    let inFunction=false;
-    let n=nodeBefore;
-    while(n){
-      if(n.type.name==="FunctionDeclaration"){
-        inFunction=true;
-        break;
-      }
-      n=n.parent;
-    }
-    let options=snippets.everywhere;
-    if(inFunction){
-      options=options.concat(snippets.inFunction);
-    }else{
-      options=options.concat(snippets.topLevel);
-    }
-    options=options.concat(additional);
-    let from=nodeBefore.from;
-    return {
-      from,
-      options,
-      span: /^[\w$]*$/
-    }
-    if (completePropertyAfter.includes(nodeBefore.name) &&
-        nodeBefore.parent?.name == "MemberExpression") {
-      let object = nodeBefore.parent.getChild("Expression");
-      if (object?.name == "VariableName") {
-        let from = /\./.test(nodeBefore.name) ? nodeBefore.to : nodeBefore.from;
-        let variableName = context.state.sliceDoc(object.from, object.to);
-        if (typeof window[variableName] == "object"){
-          return completeProperties(from, window[variableName]);
-        }
-      }
-    } else if (nodeBefore.name == "VariableName") {
-      console.log('variable name')
-      return completeProperties(nodeBefore.from, window)
-    } else if (context.explicit && !dontCompleteIn.includes(nodeBefore.name)) {
-      console.log("nichts")
-      return completeProperties(context.pos, window)
-    }
-    return null
-  };
-}
-
-function completeProperties(from, object) {
-  let options = []
-  for (let name in object) {
-    options.push({
-      label: name,
-      type: typeof object[name] == "function" ? "function" : "variable"
-    })
-  }
-  return {
-    from,
-    options,
-    span: /^[\w$]*$/
-  }
-}
 
 function replaceHTML(html){
   let t=html;
@@ -78,6 +14,9 @@ function replaceHTML(html){
 export function createParamsString(params,useArgs){
   let t=[];
   if(params){
+    if(params.params){
+      params=params.params.parameters;
+    }
     for(let i=0;i<params.length;i++){
       let p=params[i];
       let text;
@@ -97,31 +36,30 @@ export function createParamsString(params,useArgs){
 
 function createSnippets(data){
   let snippets={
-    everywhere: [],
-    topLevel: [],
-    inFunction: []
+    eventListeners: [],
+    inMethod: [],
+    App: {}
   }
   for(let ev in data.eventHandlers){
     ev=data.eventHandlers[ev];
-    snippets.topLevel.push(autocomplete.snippetCompletion("void "+ev.name+createParamsString(ev.args)+"{\n\t${}\n}", {
+    snippets.eventListeners.push(autocomplete.snippetCompletion("void "+ev.name+createParamsString(ev.args)+"{\n\t${}\n}", {
       label: "void "+ev.name,
       info: replaceHTML(ev.info),
-      type: "method"
+      type: "function"
     }));
   }
   
 
   for(let ev in data.functions){
     ev=data.functions[ev];
-    let array = ev.level==="everywhere"? snippets.everywhere : (ev.level==="topLevel"? snippets.topLevel : snippets.inFunction);
-    array.push(autocomplete.snippetCompletion(ev.name+createParamsString(ev.args,true), {
+    snippets.App[ev.name]=autocomplete.snippetCompletion(ev.name+createParamsString(ev.args,true), {
       label: ev.name+createParamsString(ev.args),
       info: replaceHTML(ev.info),
       type: "function"
-    }));
+    });
   }
 
-  for(let o in data.objects){
+  /*for(let o in data.objects){
     o=data.objects[o];
     let array = o.level==="everywhere"? snippets.everywhere : (o.level==="topLevel"? snippets.topLevel : snippets.inFunction);
     array.push({
@@ -226,7 +164,7 @@ function createSnippets(data){
     info: "Die ersten Anweisungen werden nur dann ausgeführt, wenn die Bedingung erfüllt ist, ansonsten die zweiten.",
     type: "keyword"
   }));
-
+*/
   return snippets;
 }
 

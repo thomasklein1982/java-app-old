@@ -8,7 +8,15 @@ export class Scope{
     this.project=project;
     this.method=method;
     this.stack=[];
-    this.indent="    ";
+    this.typeAnnotations={};
+    this.pushLayer();
+    this.pushParameterList(method.params);
+  }
+
+  addTypeAnnotation(pos,type,isStatic){
+    this.typeAnnotations[pos]={
+      type,isStatic
+    };
   }
 
   pushLayer(){
@@ -17,6 +25,13 @@ export class Scope{
 
   popLayer(){
     this.stack.pop();
+  }
+
+  pushParameterList(plist){
+    for(let i=0;i<plist.parameters.length;i++){
+      let p=plist.parameters[i];
+      this.pushLocalVariable(p.name,p.type);
+    }
   }
 
   pushLocalVariable(name,type){
@@ -60,14 +75,14 @@ export class Scope{
     if(a.error){
       return a;
     }
-    if(a.isStatic && a.isStatic()||a.static){
+    if(a.isStatic()){
       if(!isStatic){
         return {
           error: "Das Attribut '"+name+"' ist statisch. Schreibe stattdessen '"+c.name+"."+name+"'."
         };  
       }
     }else{
-      if(this.method.isStatic()){
+      if(!clazz && !isStatic && this.method.isStatic()){
         return {
           error: "Innerhalb einer statischen Methode kannst du nicht auf das dynamische Attribut '"+name+"' zugreifen."
         };

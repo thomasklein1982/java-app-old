@@ -82,7 +82,7 @@ let text=(appJScode+"");
 let pos=text.indexOf("{");
 let pos2=text.lastIndexOf("}");
 text=text.substring(pos+1,pos2);
-text+="\nApp={};";
+text+="\nApp={$hideFromConsole: true};";
 
 for(let i=0;i<appjsdata.functions.length;i++){
   let f=appjsdata.functions[i];
@@ -91,7 +91,11 @@ for(let i=0;i<appjsdata.functions.length;i++){
   }else{
     text+="\nApp."+f.name+"="+f.name+";";
   }
-  
+}
+
+for(let i=0;i<appjsdata.objects.length;i++){
+  let o=appjsdata.objects[i];
+  text+="\nApp."+o.name+"="+o.name+";";
 }
 
 window.appJScode=text;

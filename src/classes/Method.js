@@ -1,3 +1,4 @@
+import { createParamsString } from "../functions/snippets";
 import { Block } from "../language/compile/Block";
 import { Modifiers } from "./Modifiers";
 import { ParameterList } from "./Parameters";
@@ -5,7 +6,8 @@ import { Scope } from "./Scope";
 import { Type } from "./Type";
 
 export class Method{
-  constructor(clazz){
+  constructor(clazz,isConstructor){
+    this.isConstructor=isConstructor;
     this.clazz=clazz;
     this.name=null;
     this.params=null;
@@ -15,27 +17,25 @@ export class Method{
     this.block=null;
     this.errors=[];
     this.comment=null;
+    this.typeAnnotations={};
+  }
+  createParamsString(){
+    
   }
   getJavaScriptCode(){
-    let code=this.modifiers.getJavaScriptCode()+" "+this.name+this.params.getJavaScriptCode()+"{";
+    let code;
+    if(this.isConstructor){
+      code="async $constructor";
+    }else{
+      code=this.modifiers.getJavaScriptCode()+" async "+this.name;
+    }
+    code+=this.params.getJavaScriptCode()+"{";
     if(this.block){
       code+="\n"+this.block.code;
     }
     code+="\n}";
     return code;
   }
-  define(name,data){
-    this.name=name;
-    this.comment=data.info;
-    this.type=new Type(data.type);
-    this.type=data.type;
-    this.params=new ParameterList(this);
-    this.params.define(data.params);
-    this.modifiers=new Modifiers();
-    this.modifiers.isStatic=data.static===true;
-    this.bodyNode=null;
-  }
-
   isStatic(){
     return (!this.modifiers || this.modifiers.isStatic);
   }
@@ -63,16 +63,17 @@ export class Method{
       errors=errors.concat(m.compile(node,source));
       node=node.nextSibling;
     }
-    if(node.name.indexOf("Type")>=0){
-      this.type=Type.compile(node,source,this.clazz.project,errors);
-    }else if(node.name==='void'){
-      this.type=null;
+    if(!this.isConstructor){
+      if(node.name.indexOf("Type")>=0){
+        this.type=Type.compile(node,source,this.clazz.project,errors);
+      }else if(node.name==='void'){
+        this.type=null;
+      }
+      if(this.type && !this.type.baseType){
+        return errors;
+      }
+      node=node.nextSibling;
     }
-    if(this.type && !this.type.baseType){
-      return errors;
-    }
-    node=node.nextSibling;
-    
     if(node.name==='Definition'){
       this.name=source.getText(node);
     }else{
@@ -93,7 +94,7 @@ export class Method{
       }
     }
     node=node.nextSibling;
-    if(!node || node.name!=="Block"){
+    if(!node || node.name!=="Block" && node.name!=="ConstructorBody"){
       errors.push(source.createError("'{' erwartet.",node));
     }else{
       this.bodyNode=node;
@@ -111,6 +112,8 @@ export class Method{
     }
     let scope=new Scope(this.clazz.project,this);
     this.block=Block(this.bodyNode,source,scope);
+    this.typeAnnotations=scope.typeAnnotations;
+    console.log("method",this.name,"compiled");
     return this.block;
   }
 }

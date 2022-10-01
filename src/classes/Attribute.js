@@ -22,14 +22,7 @@ export class Attribute{
     code+=v+";";
     return code;
   }
-
-  define(name,data){
-    this.name=name;
-    this.type=data.type;
-    this.modifiers=new Modifiers();
-    this.modifiers.isStatic=data.static===true;
-  }
-
+  
   isStatic(){
     return !this.modifiers || this.modifiers.isStatic;
   }

@@ -10,6 +10,7 @@ export function defineApp(App,Java){
     let m=new Method(App);
     App.methods[f.name]=m;
     m.name=f.name;
+    m.comment=f.info;
     m.params=new ParameterList(m);
     for(let j=0;j<f.args.length;j++){
       let a=f.args[j];

@@ -1,4 +1,5 @@
 import { PrimitiveType } from "./PrimitiveType";
+import {Clazz} from "./Clazz";
 
 export class Type{
   constructor(baseType,dimension){
