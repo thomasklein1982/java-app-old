@@ -69,6 +69,9 @@ export class Attribute{
     this.attributes=[];
     while(true){
       if(node.name==="VariableDeclarator"){
+        if(node.firstChild && node.firstChild.nextSibling){
+          errors.push(source.createError("Attributen kann aktuell nicht direkt ein Startwert zugeordnet werden. Weise den Wert im Konstruktor zu.",node));
+        }
         var name=source.getText(node);
         let a=new Attribute(this.clazz);
         a.type=this.type;

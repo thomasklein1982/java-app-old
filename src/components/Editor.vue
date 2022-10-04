@@ -32,7 +32,7 @@
               :clazz="c"
               :project="project"
               :font-size="fontSize"
-              :current="paused ? current : null"
+              :current="paused && i===activeTab ? current : null"
               ref="editor"
             />
           </TabPanel>

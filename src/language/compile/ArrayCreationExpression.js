@@ -4,7 +4,7 @@ import { ArrayInitializer } from "./ArrayInitializer";
 import { Dimension } from "./Dimension";
 import { TypeName } from "./TypeName";
 
-export function ArrayCreationExpression(node,source,scope,errors){
+export function ArrayCreationExpression(node,source,scope){
   node=node.firstChild;
   let code;
   if(node.name!=="new"){
@@ -20,13 +20,14 @@ export function ArrayCreationExpression(node,source,scope,errors){
   node=node.nextSibling;
   let dimensions=[];
   let specified=null;
+  let dimensionNode=null;
   while(node && node.name==="Dimension"){
     let dim=Dimension(node,source,scope);
     if(specified===null){
       specified=dim.specified;
     }
-    if(!dim.specified && specified){
-      throw source.createError("int erwartet",node);
+    if(!dim.specified){
+      dimensionNode=node;
     }
     dimensions.push(dim.code);
     node=node.nextSibling;
@@ -40,6 +41,10 @@ export function ArrayCreationExpression(node,source,scope,errors){
   if(node && node.name==="ArrayInitializer"){
     let ai=ArrayInitializer(node,source,scope,arraytype);
     code+=","+ai.code;
+  }else{
+    if(dimensionNode){
+      throw source.createError("Länge des Arrays erwartet",dimensionNode);
+    }
   }
   code+=")";
   return {

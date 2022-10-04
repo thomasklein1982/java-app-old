@@ -22,7 +22,9 @@ function additionalJSCode(){
 
   function $StringSplit(string,regexp,limit){
     var r=new RegExp(regexp);
-    return string.split(r,limit);
+    var s=string.split(r,limit);
+    var a=new $App.Array("String",s.length,s);
+    return a;
   }
 
   function $StringContains(string,string2){
