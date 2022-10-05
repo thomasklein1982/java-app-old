@@ -33,7 +33,6 @@ export default {
   cursor: pointer;
 }
 .umlmember-signature{
-  max-width: 15rem;
   display: inline-block;
   flex: 1;
   font-family: monospace;
