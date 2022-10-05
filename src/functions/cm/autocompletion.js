@@ -142,7 +142,7 @@ export function createAutocompletion(){
         options,
         span: /^[\w$]*$/
       }
-    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"){
+    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<"){
       from=context.pos;
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
     }else{
