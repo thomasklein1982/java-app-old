@@ -2,6 +2,7 @@ import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { ArgumentList } from "./ArgumentList";
 import { Identifier } from "./Identifier";
+import { PrimitiveType } from "../../classes/PrimitiveType";
 import { TypeName } from "./TypeName";
 
 /**
@@ -47,11 +48,14 @@ export function ObjectCreationExpression(node,source,scope){
   }
   
   let typename=TypeName(node,source,scope);
+  let clazz=typename.type.baseType;
+  if(clazz instanceof PrimitiveType){
+    throw source.createError("Zu dem primitiven Datentyp '"+clazz.name+"' kann kein Objekt erzeugt werden.",node);
+  }
   node=node.nextSibling;
   if(node.name!=='ArgumentList'){
     
   }
-  let clazz=typename.type.baseType;
   let al=ArgumentList(node,source,scope,clazz.getConstructorParameters());
   code="new "+typename.code;
   if(!clazz.isNative()){
