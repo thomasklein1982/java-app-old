@@ -18,6 +18,15 @@ body,html{
   opacity: 0;
 }
 
+.p-inputgroup-addon{
+  background: none;
+  border: none;
+}
+
+.p-inputgroup-addon:last-child {
+  border: none;
+}
+
 .editor-tabs{
   overflow: hidden;
 }

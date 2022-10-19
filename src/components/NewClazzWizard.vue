@@ -1,8 +1,17 @@
 <template>
   <h1>Neue Klasse hinzufügen</h1>
+  
   <InputText clazz="nameError?'':'p-invalid'" v-model.trim="name" placeholder="Name der neuen Klasse"/>
   <small v-if="nameError" class="p-error">{{nameError}}</small>
   <small v-else>Der Name geht in Ordnung.</small>
+  <div class="p-inputgroup">
+      <span class="p-inputgroup-addon">
+        <InputSwitch v-model="uiClazz"/>
+      </span>
+      <span class="p-inputgroup-addon" :style="{color: uiClazz? '':'lightgray'}">
+        UI-Klasse (klappt noch nicht)
+      </span>
+  </div>
   <Button label="Hinzufügen" :disabled="disableConfirm" icon="pi pi-check" @click="confirm()"/>
 </template>
 
@@ -16,7 +25,8 @@ export default {
   ],
   data: function(){
     return {
-      name: ''
+      name: '',
+      uiClazz: false
     };
   },
   computed: {
@@ -52,7 +62,7 @@ export default {
   },
   methods: {
     confirm(){
-      this.$emit("confirm",{name: this.realName});
+      this.$emit("confirm",{name: this.realName, ui: this.uiClazz});
     }
   }
 }

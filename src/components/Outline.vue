@@ -1,10 +1,11 @@
 <template>
   <div id="root">
-    <UmlClazz v-for="(c,i) in project.clazzes" :key="'clazz'+i" :clazz="c"></UmlClazz>
+    <UmlClazz v-for="(c,i) in clazzes" :key="'clazz'+i" :clazz="c"></UmlClazz>
   </div>
 </template>
 
 <script>
+import { UIClazz } from "../classes/UIClazz";
 import UmlClazz from "./UmlClazz.vue";
 
 export default {
@@ -12,7 +13,9 @@ export default {
     project: Object
   },
   computed: {
-    
+    clazzes(){
+      return this.project.clazzes.filter(c=>!(c instanceof UIClazz));
+    }
   },
   data(){
     return {

@@ -28,7 +28,11 @@
             <template #header>
               {{c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
             </template>
+            <div v-if="isUIClazz(c)">
+              UI
+            </div>
             <CodeMirror
+              v-else
               :clazz="c"
               :project="project"
               :font-size="fontSize"
@@ -48,10 +52,14 @@
       <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
         <Splitter layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel style="overflow: hidden;">
-            <AppPreview :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
+            <AppPreview v-if="!showUIEditor" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
           </SplitterPanel>
           <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
-            <Outline 
+            <div v-if="showUIEditor">
+              UI
+            </div>
+            <Outline
+              v-else
               @click="outlineClick"
               :style="{flex: 1}" 
               ref="outline"
@@ -75,6 +83,7 @@
 <script>
 import { Project } from "../classes/Project.js";
 import { Clazz } from "../classes/Clazz.js";
+import { UIClazz } from "../classes/UIClazz.js";
 import EditorMenubar from "./EditorMenubar.vue";
 import CodeMirror from "./CodeMirror.vue";
 import BlockEditor from "./BlockEditor.vue";
@@ -88,7 +97,7 @@ import { uploadProject } from "../functions/uploadProject.js";
 import LinksDialog from "./LinksDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
 import DatabaseDialog from "./DatabaseDialog.vue";
-import {database} from "../classes/Database.js"
+import {database} from "../classes/Database.js";
 
 export default {
   props: {
@@ -112,7 +121,7 @@ export default {
   },
   watch: {
     activeTab(nv,ov){
-      if(nv<this.$refs.editor.length){
+      if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         ed.updateLinter();
       }
@@ -142,6 +151,9 @@ export default {
         return null;
       }
       return this.project.clazzes[this.activeTab];
+    },
+    showUIEditor(){
+      return (this.currentClazz && this.currentClazz instanceof UIClazz);
     }
   },
   mounted(){
@@ -280,7 +292,11 @@ export default {
       this.$root.resetCurrent();
     },
     addNewClazz(clazzData){
-      var c=new Clazz(clazzData.name,this.project);
+      if(clazzData.ui){
+        var c=new UIClazz(clazzData.name,this.project);
+      }else{
+        var c=new Clazz(clazzData.name,this.project);
+      }
       this.project.addClazz(c);
     },
     trashCurrentClazz(){
@@ -291,6 +307,9 @@ export default {
     },
     outlineClick(){
 
+    },
+    isUIClazz(c){
+      return (c instanceof UIClazz);
     }
   },
   components: {

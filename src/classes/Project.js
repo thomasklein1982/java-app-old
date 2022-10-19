@@ -1,6 +1,7 @@
 import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
 import {database} from "./Database";
+import { UIClazz } from "./UIClazz.js";
 
 let start="Project Code Start";
 let stop="Project Code Stop";
@@ -129,10 +130,14 @@ export class Project{
     let toCompile=[];
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      if(fromSource){
-        await c.generateTreeAndState(c.src);
+      if(c instanceof UIClazz){
+
+      }else{
+        if(fromSource){
+          await c.generateTreeAndState(c.src);
+        }
+        toCompile.push(c);
       }
-      toCompile.push(c);
     }
     while(toCompile.length>0){
       let c=toCompile.pop();
@@ -182,7 +187,11 @@ export class Project{
     var t=[];
     for(var i=0;i<this.clazzes.length;i++){
       var c=this.clazzes[i];
-      t.push(c.src);
+      if(c instanceof UIClazz){
+
+      }else{
+        t.push(c.src);
+      }
     }
     let db=database.toCSVString();
     return start+JSON.stringify({

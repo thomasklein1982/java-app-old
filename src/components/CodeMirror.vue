@@ -181,6 +181,7 @@ export default {
     };
   },
   mounted(){
+    if(!this.clazz || this.clazz.src===undefined) return;
     let changed=true;
     let timer;
     this.size=this.clazz.src.length;
