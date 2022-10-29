@@ -3,7 +3,7 @@
     <table style="width: 100%">
       <tr>
         <td>Name:</td>
-        <td><InputText v-model="component.name" style="width: 95%"/></td>
+        <td><InputText v-model="component.name" @change="emitChange()" style="width: 95%"/></td>
       </tr>
       <tr v-if="component.inputType!==undefined">
         <td>Eingabetyp:</td>
@@ -46,6 +46,8 @@
 </template>
 
 <script>
+  let timer;
+  let oldName=null;
   export default{
     props: {
       component: Object
@@ -56,7 +58,10 @@
       }
     },
     methods: {
-      
+      emitChange(){
+        console.log("ui comp editor emit change");
+        this.$emit("change");  
+      }
     },
     components: {
     }

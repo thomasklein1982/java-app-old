@@ -1,3 +1,6 @@
+import { createAttribute } from "../language/helper/createAttribute";
+import { Java } from "../language/java";
+
 /**
  * UIClazz ist eine Klasse, die von JPanel erbt
  */
@@ -30,6 +33,8 @@ export class UIClazz {
     this.width=100;
     this.height=100;
     this.cssCode="";
+    this.superClazz=Java.clazzes.JPanel;
+    this.attributes={};
     /**Komponente:
      * type
      * name
@@ -41,19 +46,90 @@ export class UIClazz {
      */
   }
 
+  
+
+  getAttribute(name,staticAccess){
+    if(staticAccess){
+      return {
+        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
+      };
+    } 
+    let a=this.attributes[name];
+    if(!a && this.superClazz){
+      a=this.superClazz.getAttribute(name,staticAccess);
+      if(a && a.error){
+        a=null;
+      }
+    }
+    if(!a){
+      return {
+        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
+      };
+    }
+    return a;
+  }
+
+  getMethod(name,staticAccess){
+    if(staticAccess){
+      return {
+        error: "Die Klasse '"+this.name+"' hat keine "+(staticAccess? "statische ":"")+"Methode namens '"+name+"'."
+      };
+    }
+    let m=this.superClazz.getMethod(name,staticAccess);
+    if(m && m.error){
+      m=null;
+    }
+    if(!m){
+      return {
+        error: "Die Klasse '"+this.name+"' hat keine "+(staticAccess? "statische ":"")+"Methode namens '"+name+"'."
+      };
+    }
+    return m;
+  }
+
+  static getAllAttributesFromComponent(component,names,standardValue){
+    for(let i=0;i<component.components.length;i++){
+      let c=component.components[i];
+      if(c.name){
+        if(standardValue!==undefined){
+          names[c.name]=standardValue;
+        }else{
+          names[c.name]=c;
+        }
+      }
+      if(c.components){
+        UIClazz.getAllAttributesFromComponent(c,names,standardValue);
+      }
+    }
+    return names;
+  }
+
+  getAllAttributeNames(names){
+    if(!names) names={};
+    UIClazz.getAllAttributesFromComponent(this,names,true);
+    if(this.superClazz){
+      return this.superClazz.getAllAttributeNames(names);
+    }
+    return names;
+  }
+
+
   isNative(){
     return false;
   }
 
   isSubtypeOf(clazz){
-    return true;
+    if(!clazz || clazz===this || this.superClazz.isSubtypeOf(clazz)){
+      return true;
+    }
+    return false;
   }
 
   getJavaScriptCode(){
     let code="class "+this.name+" extends JPanel";
     code+="{";
     code+="\nconstructor(){";
-      code+="super("+this.template+","+this.x+","+this.y+","+this.width+","+this.height+");";
+      code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
     for(let i in this.attributes){
       let a=this.attributes[i];
       code+="\n"+a.getJavaScriptCode();
@@ -117,8 +193,20 @@ export class UIClazz {
   }
 
   compile(){
-
+    this.attributes={};
+    let namedComponents=UIClazz.getAllAttributesFromComponent(this,{});
+    console.log("compile ui clazz",namedComponents);
+    for(let name in namedComponents){
+      let c=namedComponents[name];
+      let a=createAttribute({
+        name,
+        type: c.type
+      },this,false);
+      this.attributes[name]=a;
+    }
   }
+
+  
 
   compileMemberDeclarations(){
 

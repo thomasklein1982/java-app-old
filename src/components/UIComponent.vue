@@ -22,7 +22,6 @@
             v-model="component.components"
             item-key="id"
             :disabled="!isEditable"
-            :removeOnSpill="true"
             :removeCloneOnHide="false"
             :group="{
               name: 'components',
@@ -34,7 +33,7 @@
             @end="endDrag"
           >
             <template #item="{element}">
-              <UIComponent :component="element" is-editable @clickcomponent="forwardClick" :selected-component="selectedComponent"/>
+              <UIComponent @recompile="$emit('recompile')" :component="element" is-editable @clickcomponent="forwardClick" :selected-component="selectedComponent"/>
             </template>
           </draggable>
         </div>
@@ -93,18 +92,35 @@ import { UIClazz } from "../classes/UIClazz";
     },
     methods: {
       handleClick(){
-        console.log("handle click",this.component);
         this.$emit('clickcomponent',this.component);
       },
       forwardClick(c){
-        console.log("forward click",c);
         this.$emit('clickcomponent',c);
       },
       endDrag(ev){
-        // if(ev.from===ev.to) return;
-        // let index=ev.newIndex;
-        // console.log("end drag",ev);
-        // ev.to.removeChild(ev.item);
+        window.drag=ev;
+        let from=ev.from;
+        while(from && from.className!=="ui-clazz"){
+          from=from.parentElement;
+        }
+        let remove=false;
+        if(from){
+          let rect=from.getBoundingClientRect();
+          let x=ev.originalEvent.clientX;
+          let y=ev.originalEvent.clientY;
+          if(x<rect.x || x>rect.x+rect.width || y<rect.y || y>rect.y+rect.height){
+            remove=true;
+          }
+        }else{
+          remove=true;
+        }
+        if(remove){
+          let list=ev.from.__draggable_component__.realList;
+          if(list){
+            list.splice(ev.oldIndex,1);
+            this.$emit("recompile");
+          }
+        }
       }
     },
     components: {

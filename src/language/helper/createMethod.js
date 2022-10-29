@@ -2,13 +2,11 @@ import { Method } from "../../classes/Method";
 import { Modifiers } from "../../classes/Modifiers";
 import { Parameter, ParameterList } from "../../classes/Parameters";
 import { Type } from "../../classes/Type";
+import { Java } from "../java";
 
-export function createMethod(data,clazz,isStatic,isConstructor,Java){
+export function createMethod(data,clazz,isStatic,isConstructor){
   let m=new Method(clazz,isConstructor);
   m.name=data.name;
-  if(m.name==="getValue"){
-    window.dString=Java.datatypes.String;
-  }
   if(isConstructor){
     clazz.constructor=m;
   }else{

@@ -9,8 +9,8 @@
         put: false
       }"
       ghost-class="drag-ghost"
-      @start="startDrag"
-      @end="endDrag"
+      @drop="handleDrop"
+      @add="handleAdd"
       :clone="cloneItem"
       :sort="false"
       :style="{display: 'flex', 'flex-direction': 'column', 'align-items': 'stretch'}"
@@ -20,9 +20,9 @@
         <UIComponent :component="element"/>
       </template>
     </draggable>
-    <div :style="{flex: 1}" style="overflow: auto">
+    <div class="ui-clazz" :style="{flex: 1}" style="overflow: auto">
       <div>UI-Klasse {{clazz.name}}</div>
-      <UIComponent :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent"/>
+      <UIComponent :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="$emit('recompile')"/>
     </div>
   </div>
 </template>
@@ -43,16 +43,11 @@
       };
     },
     methods: {
-      startDrag(ev){
-        console.log(ev);
-        let component=ev.item.__draggable_context.element;
-        console.log(component.type);
+      handleDrop(ev){
+        console.log("dropped",ev);
       },
-      endDrag(ev){
-        console.log("end",ev);
-        let component=ev.item.__draggable_context.element;
-        
-
+      handleAdd(ev){
+        console.log("add",ev);
       },
       cloneItem(item){
         

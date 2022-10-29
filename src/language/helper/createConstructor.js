@@ -4,7 +4,8 @@ import { Parameter, ParameterList } from "../../classes/Parameters";
 import { Type } from "../../classes/Type";
 import { createMethod } from "./createMethod";
 
-export function createConstructor(data,clazz,Java){
-  let m=createMethod(data,clazz,false,true,Java);
+
+export function createConstructor(data,clazz){
+  let m=createMethod(data,clazz,false,true);
   return m;
 }

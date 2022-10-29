@@ -275,7 +275,7 @@ export default {
         this.project.compile();
         //this.$emit("recompile");
       }else{
-          let t1=new Date();
+        let t1=new Date();
         await this.clazz.compile(this.project);
         let t2=new Date();
         console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");

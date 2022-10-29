@@ -131,7 +131,7 @@ export class Project{
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       if(c instanceof UIClazz){
-
+        c.compile();
       }else{
         if(fromSource){
           await c.generateTreeAndState(c.src);

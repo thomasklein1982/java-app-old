@@ -1,8 +1,9 @@
 import { Attribute } from "../../classes/Attribute";
 import { Modifiers } from "../../classes/Modifiers";
 import { Type } from "../../classes/Type";
+import { Java } from "../java";
 
-export function createAttribute(data,clazz,isStatic,Java){
+export function createAttribute(data,clazz,isStatic){
   let a=new Attribute(clazz);
   a.name=data.name;
   clazz.attributes[a.name]=a;

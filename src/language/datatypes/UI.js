@@ -226,6 +226,7 @@ function defineDataTable(Clazz,Java){
       {name: 'index', type: 'int'}
     ]
   },Clazz,false,false,Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
 }
 
 function defineJPanel(Clazz,Java){
@@ -247,4 +248,5 @@ function defineJPanel(Clazz,Java){
       {name: 'component', type: 'JComponent'}
     ]
   },Clazz,false,false,Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
 }
