@@ -188,7 +188,7 @@ export class Project{
     for(var i=0;i<this.clazzes.length;i++){
       var c=this.clazzes[i];
       if(c instanceof UIClazz){
-
+        t.push(c.getSaveObject())
       }else{
         t.push(c.src);
       }
@@ -220,8 +220,13 @@ export class Project{
     this.deleteClazzes();
     for(var i=0;i<o.clazzesSourceCode.length;i++){
       var src=o.clazzesSourceCode[i];
-      var c=new Clazz(null,this);
-      c.src=src;
+      if(src.components){
+        var c=new UIClazz();
+        c.restoreFromSaveObject(src);
+      }else{
+        var c=new Clazz(null,this);
+        c.src=src;
+      }
       this.clazzes.push(c);
     }
     await this.compile(true);

@@ -28,9 +28,12 @@
             <template #header>
               {{c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
             </template>
-            <div v-if="isUIClazz(c)">
-              UI
-            </div>
+            <UIEditor 
+              v-if="isUIClazz(c)" 
+              :clazz="c"
+              @select="updateSelectedUIComponent"
+            >
+            </UIEditor>
             <CodeMirror
               v-else
               :clazz="c"
@@ -55,9 +58,7 @@
             <AppPreview v-if="!showUIEditor" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
           </SplitterPanel>
           <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
-            <div v-if="showUIEditor">
-              UI
-            </div>
+            <UIComponentEditor v-if="showUIEditor && selectedUIComponent" :component="selectedUIComponent"/>
             <Outline
               v-else
               @click="outlineClick"
@@ -89,6 +90,8 @@ import CodeMirror from "./CodeMirror.vue";
 import BlockEditor from "./BlockEditor.vue";
 import ProjectExplorer from './ProjectExplorer.vue';
 import AppPreview from './AppPreview.vue';
+import UIEditor from './UIEditor.vue';
+import UIComponentEditor from "./UIComponentEditor.vue";
 import NewClazzWizard from './NewClazzWizard.vue';
 import Outline from './Outline.vue';
 import { download, saveLocally, upload } from '../functions/helper.js';
@@ -116,7 +119,8 @@ export default {
       rightClosed: false,
       sizeCodeSaved: 60,
       closeRightAfterStopping: false,
-      database: database
+      database: database,
+      selectedUIComponent: null
     };
   },
   watch: {
@@ -163,6 +167,9 @@ export default {
     },1000);
   },
   methods: {
+    updateSelectedUIComponent(c){
+      this.selectedUIComponent=c;
+    },
     recompileOtherClazzes(index){
       console.log("recompile all but "+index);
       let t1=Date.now();
@@ -322,7 +329,9 @@ export default {
     NewClazzWizard,
     LinksDialog,
     NewAppDialog,
-    DatabaseDialog
+    DatabaseDialog,
+    UIEditor,
+    UIComponentEditor
   }
 }
 </script>
