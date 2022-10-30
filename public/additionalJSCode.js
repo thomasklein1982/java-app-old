@@ -10,6 +10,14 @@ function additionalJSCode(){
     return await objectWithMethod[methodname].apply(object,argumentsArray);
   };
 
+  function $toRadians(obj,x){
+    return x*Math.PI/180;
+  }
+
+  function $toDegrees(obj,x){
+    return x*180/Math.PI;
+  }
+
   function $StringReplaceAll(string,s,r){
     var regexp=new RegExp(s,"g");
     return string.replace(regexp,r);
