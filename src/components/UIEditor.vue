@@ -21,8 +21,7 @@
       </template>
     </draggable>
     <div class="ui-clazz" :style="{flex: 1}" style="overflow: auto">
-      <div>UI-Klasse {{clazz.name}}</div>
-      <UIComponent :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="$emit('recompile')"/>
+      <UIComponent :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="$emit('recompile')" @isolatedupdate="$emit('isolatedupdate')"/>
     </div>
   </div>
 </template>

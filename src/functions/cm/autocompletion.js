@@ -200,7 +200,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
       let attributeNames=clazz.getAllAttributeNames();
       for (let name in attributeNames) {
         let a=clazz.getAttribute(name,isStatic);
-        if(a.isStatic()===isStatic){
+        if(a && !a.error && a.isStatic()===isStatic){
           options.push({
             label: name,
             type: "variable",

@@ -4,6 +4,7 @@ import {Attribute} from "./Attribute"
 import { Method } from "./Method";
 import { Source } from "./Source";
 import { Type } from "./Type";
+import { UIClazz } from "./UIClazz";
 
 export class Clazz{
   constructor(name,project){
@@ -20,6 +21,7 @@ export class Clazz{
     this.constructor=null;
     this.node=null;
     this.references=[];
+    this._isBuiltIn=project===undefined;
   }
   isNative(){
     return this.project===undefined;
@@ -157,13 +159,17 @@ export class Clazz{
         return false;
       }
     }
-    if(type instanceof Clazz){
+    if(type instanceof Clazz || type instanceof UIClazz){
       if(type.name==="Object" || this.name===type.name){
         return true;
       }
       return (this.superClazz && this.superClazz.isSubtypeOf(type));
     }
     return false;
+  }
+
+  isBuiltIn(){
+    return this._isBuiltIn;
   }
 
   toString(){

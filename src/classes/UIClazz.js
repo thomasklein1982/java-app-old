@@ -17,11 +17,18 @@ export class UIClazz {
     },
     JTextArea: {
       params: ["placeholder","x","y","width","height"]
+    },
+    DataTable: {
+      params: []
+    },
+    JPanel: {
+      params: ["template","x","y","width","height"]
     }
   };
 
-  constructor(name){
+  constructor(name,project){
     this.name=name;
+    this.project=project;
     this.errors=[];
     this.props=[];
     this.variables=[];
@@ -125,6 +132,15 @@ export class UIClazz {
     return false;
   }
 
+  isBuiltIn(){
+    return false;
+  }
+
+  getUIPreviewCode(){
+    let code=this.project.getFullAppCode("\nconsole.hide();\nasync function onStart(){\n\n(new "+this.name+"("+")).$constructor();}");
+    return code;
+  }
+
   getJavaScriptCode(){
     let code="class "+this.name+" extends JPanel";
     code+="{";
@@ -137,10 +153,22 @@ export class UIClazz {
     code+="\n}";
     code+="\n$constructor(){";
     code+="this.components=[]";
-    for(let i=0;i<this.components.length;i++){
-      let c=this.components[i];
-      code+="\n this.components["+i+"]=";
-      code+="new "+c.type+"(";
+    let codeObject={code: ""};
+    this.appendJavaScriptCodeForComponent(this,0,codeObject,"this");
+    code+=codeObject.code;
+    code+="\nreturn this;"
+    code+="\n}";
+    code+="\n}";
+    return code;
+  }
+
+  appendJavaScriptCodeForComponent(comp,startIndex,codeObject,containerString){
+    let index=startIndex;
+    for(let i=0;i<comp.components.length;i++){
+      let c=comp.components[i];
+      let name="this.components["+index+"]";
+      codeObject.code+="\n "+name+"=";
+      codeObject.code+="new "+c.type+"(";
       let clazz=UIClazz.UIClazzes[c.type];
       let args=[];
       for(let j=0;j<clazz.params.length;j++){
@@ -151,17 +179,18 @@ export class UIClazz {
           args.push(JSON.stringify(c[p]));
         }
       }
-      code+=args.join(",");
-      code+=");";
-      code+="\nthis.add(this.components["+i+"]);";
+      codeObject.code+=args.join(",");
+      codeObject.code+=");";
+      codeObject.code+="\n"+containerString+".add("+name+");";
       if(c.name){
-        code+="\nthis."+c.name+"= this.components["+i+"];";
+        codeObject.code+="\nthis."+c.name+"= "+name+";";
+      }
+      index++;
+      if(c.components){
+        index=this.appendJavaScriptCodeForComponent(c,index,codeObject,name);
       }
     }
-    code+="\nreturn this;"
-    code+="\n}";
-    code+="\n}";
-    return code;
+    return index;
   }
 
   getConstructorParameters(){

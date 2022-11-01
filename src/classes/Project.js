@@ -46,9 +46,9 @@ export class Project{
         ${window.appJScode}
         ${includeSave? 'console.hide()':''}
         ${window.additionalJSCode}
-        ${additionalCode}
         ${databaseCode}
         ${js}
+        ${additionalCode}
       </script>
     </head>
     <body>
@@ -72,7 +72,7 @@ export class Project{
     while(remaining.length>0){
       let c=remaining.pop();
       let finish=true;
-      if(c.superClazz){
+      if(c.superClazz && !c.superClazz.isBuiltIn()){
         /**ist die Oberklasse schon abgehandelt? wenn nein, wieder in die queue! */
         if(remaining.length>0 && !finished[c.superClazz.name]){
           remaining.splice(0,0,c);
@@ -114,9 +114,12 @@ export class Project{
     return -1;
   }
   getTypeByName(name){
-    let t=Java.datatypes[name];
+    // let t=Java.datatypes[name];
+    // if(t) return t;
+    // return this.getClazzByName(name); 
+    let t=this.getClazzByName(name);
     if(t) return t;
-    return this.getClazzByName(name);
+    return Java.datatypes[name]; 
   }
   /**Kompiliert das gesamte Projekt */
   async compile(fromSource){
@@ -221,7 +224,7 @@ export class Project{
     for(var i=0;i<o.clazzesSourceCode.length;i++){
       var src=o.clazzesSourceCode[i];
       if(src.components){
-        var c=new UIClazz();
+        var c=new UIClazz(null,this);
         c.restoreFromSaveObject(src);
       }else{
         var c=new Clazz(null,this);

@@ -1,4 +1,3 @@
-
 function additionalJSCode(){
   function $u(v){if(v===undefined){throw {message: "Undefinierter Wert."}} return v;}
   function $v(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{return v*1;}}
@@ -430,6 +429,156 @@ function additionalJSCode(){
           console.log(e);
         }
       }
+    }
+  }
+
+  class Exception{
+    constructor(text){
+      this.text=text;
+    }
+  }
+
+  class Pattern{
+    static CASE_INSENSITIVITY=1;
+    static MULTI_LINE=2;
+    static DOT_ALL=4;
+    constructor(regex, flags){
+      if(!flags){
+        flags=0;
+      }
+      this._regex=regex;
+      this._flags=flags;
+      let flagInfos=["i","m","s"];
+      let index=0;
+      this._jsFlags="";
+      while(flags>0 && index<flagInfos.length){
+        if(flags%2 === 1){
+          this._jsFlags+=flagInfos[index];
+          flags=(flags-1)/2;
+        }else{
+          flags=flags/2;
+        }
+        index++;
+      }
+      this._jsRegexp=new RegExp(regex,this._jsFlags);
+      this._jsRegexpGlobal=new RegExp(regex,this._jsFlags+"g");
+    }
+    static compile(regex, flags){
+      let p=new Pattern(regex, flags);
+      return p;
+    }
+    flags(){
+      return this._flags;
+    }
+    pattern(){
+      return this._regex;
+    }
+    split(input){
+      return input.split(this._jsRegexp);
+    }
+    matcher(input){
+      return new Matcher(this,input)
+    }
+  }
+
+  class Matcher{
+    constructor(pattern,input){
+      this.usePattern(pattern);
+      this.reset(input);
+    }
+    find(start){
+      let text=this._input;
+      if(start!==undefined){
+        this.reset(this._input);
+        text=text.substring(start);
+      }else{
+        start=0;
+      }
+      this._findOffset=start;
+      this._groups=this._regexpGlobal.exec(text);
+      return (this._groups!==null);
+    }
+    group(group){
+      if(!group) group=0;
+      if(group<0 || !this._groups || group>=this._groups.length){
+        throw new Exception("Index außerhalb der Array-Grenzen");
+      }
+      return this._groups[group];
+    }
+    groupCount(){
+      return this._groupCount;
+    }
+    hitEnd(){
+
+    }
+    matches(){
+      let lastIndex=this._regexpGlobal.lastIndex;
+      this._regexpGlobal.lastIndex=0;
+      let b=this.find();
+      this._regexpGlobal.lastIndex=lastIndex;
+      if(!b){
+        return false;
+      }
+      if(this._groups[0].length===this._input.length){
+        return true;
+      }else{
+        return false;
+      }
+    }
+    pattern(){
+      return this._pattern;
+    }
+    region(start,end){
+
+    }
+    regionStart(){
+
+    }
+    regionEnd(){
+
+    }
+    replaceAll(replacement){
+      return this._input.replace(this._pattern._jsRegexpGlobal,replacement);
+    }
+    replaceFirst(replacement){
+      return this._input.replace(this._pattern._jsRegexp,replacement);
+    }
+    requiresEnd(){
+
+    }
+    reset(input){
+      this._input=input;
+      this._regionStart=-1;
+      this._regionEnd=-1;
+      this._findOffset=0;
+      this._regexp.lastIndex=0;
+      this._regexpGlobal.lastIndex=0;
+    }
+    _bounds(group){
+      if(!group){
+        group=0;
+      }
+      if(!this._groups || group>=this._groups.length){
+        throw new Exception("Diese Gruppe gibt es nicht.");
+      }
+      group=this._groups[group];
+      let all=this._groups[0];
+      let pos=all.indexOf(group);
+      let start=this._groups.index+pos+this._findOffset;
+      let end=start+group.length;
+      return [start,end];
+    }
+    start(group){
+      return this._bounds(group)[0];
+    }
+    end(group){
+      return this._bounds(group)[1];
+    }
+    usePattern(pattern){
+      this._pattern=pattern;
+      this._regexp=new RegExp(pattern._regex,pattern._jsFlags);
+      this._regexpGlobal=new RegExp(pattern._regex,pattern._jsFlags+"g");
+      this._groupCount=(new RegExp(pattern._regex+"|")).exec('').length-1;
     }
   }
 }

@@ -32,7 +32,8 @@
               v-if="isUIClazz(c)" 
               :clazz="c"
               @select="updateSelectedUIComponent"
-              @recompile="compileProject()"
+              @recompile="compileProjectAndUpdateUIPreview()"
+              @isolatedupdate="updateUIPreview()"
             >
             </UIEditor>
             <CodeMirror
@@ -56,12 +57,14 @@
       <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
         <Splitter layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel style="overflow: hidden;">
-            <AppPreview :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
+            <UIPreview ref="uipreview" v-if="isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
+            <AppPreview v-else :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
           </SplitterPanel>
           <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
             <UIComponentEditor 
               v-if="showUIEditor && selectedUIComponent" :component="selectedUIComponent"
-              @change="compileProject()"
+              @recompile="compileProjectAndUpdateUIPreview()"
+              @update="updateUIPreview()"
             />
             <Outline
               v-else
@@ -76,7 +79,7 @@
     </Splitter>
     <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
       <Button v-if="currentClazz && activeTab>0" icon="pi pi-trash" @click="trashCurrentClazz()" style="margin-right: 0.5rem"/>
-      <span class="p-buttonset">
+      <span class="p-buttonset" v-if="!isCurrentClazzUIClazz">
         <Button :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
         <Button v-if="paused" @click="step()" icon="pi pi-arrow-right" />
         <Button v-if="running" @click="stop()" icon="pi pi-times" />
@@ -105,6 +108,9 @@ import LinksDialog from "./LinksDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
 import DatabaseDialog from "./DatabaseDialog.vue";
 import {database} from "../classes/Database.js";
+import UIPreview from "./UIPreview.vue";
+import { nextTick } from "vue";
+
 
 export default {
   props: {
@@ -132,6 +138,11 @@ export default {
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         ed.updateLinter();
+      }else{
+        nextTick(()=>{
+          this.updateUIPreview();
+        });
+        
       }
     },
     sizeCode(nv,ov){
@@ -160,6 +171,9 @@ export default {
       }
       return this.project.clazzes[this.activeTab];
     },
+    isCurrentClazzUIClazz(){
+      return this.isUIClazz(this.currentClazz);
+    },
     showUIEditor(){
       return (this.currentClazz && this.currentClazz instanceof UIClazz);
     }
@@ -171,6 +185,13 @@ export default {
     },1000);
   },
   methods: {
+    compileProjectAndUpdateUIPreview(){
+      this.compileProject();
+      this.updateUIPreview();
+    },
+    updateUIPreview(){
+      this.$refs.uipreview.reload();
+    },
     compileProject(){
       this.project.compile();
     },
@@ -338,7 +359,8 @@ export default {
     NewAppDialog,
     DatabaseDialog,
     UIEditor,
-    UIComponentEditor
+    UIComponentEditor,
+    UIPreview
   }
 }
 </script>

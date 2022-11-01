@@ -7,6 +7,8 @@ import { defineString } from "./datatypes/string";
 import { defineUIClazzes } from "./datatypes/UI";
 import { defineMath } from "./datatypes/Math";
 import {defineDatabaseClazzes} from "./datatypes/Database";
+import {definePattern} from "./datatypes/pattern";
+import { defineMatcher } from "./datatypes/matcher";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -50,22 +52,17 @@ let Database=new Clazz("Database");
 let Record=new Clazz("Record");
 Record.cannotBeInstantiated=true;
 
-//let Record=new Clazz("Record");
-//let Matrix=new Clazz("Matrix");
-//let Sound=new Clazz("Sound");
-//let Image=new Clazz("Image");
-//let System=new Clazz("System");
-//let PrintStream=new Clazz("PrintStream");
-/*typ für int-literale:*/
-//let rawint=new PrimitiveType("rawint");
-
+let Pattern=new Clazz("Pattern");
+Pattern.cannotBeInstantiated=true;
+let Matcher=new Clazz("Matcher");
+Matcher.cannotBeInstantiated=true;
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher
 }
 
 export const Java={
@@ -85,3 +82,5 @@ defineGenericClazz(Mouse,appjsdata.objects.mouse,Java);
 defineApp(App,Java);
 defineUIClazzes(Java);
 defineDatabaseClazzes(Java);
+definePattern(Pattern,Java);
+defineMatcher(Matcher,Java);

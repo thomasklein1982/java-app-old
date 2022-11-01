@@ -15,9 +15,10 @@
     </template>
     <template v-if="isContainer">
       <div>
-        <div @click="handleClick" class="jpanel-top">JPanel</div>
+        <div v-if="isUIClazz" class="ui-clazz-top" @click="handleClick">UIKlasse {{component.name}}</div>
+        <div v-else @click="handleClick" class="jpanel-top">JPanel</div>
         <div style="width: 100%" :style="{display: 'flex', 'flex-direction': 'row'}">
-          <div @click="handleClick" style="background-color: blue">&nbsp;</div>
+          <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
           <draggable
             v-model="component.components"
             item-key="id"
@@ -31,13 +32,15 @@
             :style="{flex: 1}"
             style="padding-bottom: 1rem"
             @end="endDrag"
+            @add="emitIsolatedUpdate()"
+            @sort="emitIsolatedUpdate()"
           >
             <template #item="{element}">
-              <UIComponent @recompile="$emit('recompile')" :component="element" is-editable @clickcomponent="forwardClick" :selected-component="selectedComponent"/>
+              <UIComponent @recompile="$emit('recompile')" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" :selected-component="selectedComponent"/>
             </template>
           </draggable>
         </div>
-        <div @click="handleClick" class="jpanel-bottom">&nbsp;</div>
+        <div v-if="!isUIClazz" @click="handleClick" class="jpanel-bottom">&nbsp;</div>
       </div>
     </template>
     <template v-if="type==='DataTable'">
@@ -76,6 +79,9 @@ import { UIClazz } from "../classes/UIClazz";
         }
         return true;
       },
+      isUIClazz(){
+        return this.component instanceof UIClazz;
+      },
       type(){
         return this.component.type;
       },
@@ -96,6 +102,12 @@ import { UIClazz } from "../classes/UIClazz";
       },
       forwardClick(c){
         this.$emit('clickcomponent',c);
+      },
+      handleAdd(ev){
+        this.emitIsolatedUpdate();
+      },
+      emitIsolatedUpdate(){
+        this.$emit('isolatedupdate');
       },
       endDrag(ev){
         window.drag=ev;
@@ -134,6 +146,9 @@ import { UIClazz } from "../classes/UIClazz";
     width: 100%;
     height: 1cm;
   }
+  .ui-class-top{
+    height: 1cm;
+  }
   .jlabel{
     border: 1pt dotted black;
   }
@@ -146,7 +161,15 @@ import { UIClazz } from "../classes/UIClazz";
   }
   .jpanel-top,.jpanel-bottom{
     width: 100%;
-    background-color: red;
+    min-height: 0.8cm;
+    line-height: 0.8cm;
+  }
+  .jpanel-left,.jpanel-top,.jpanel-bottom{
+    background-color: #DDD;
+    cursor: pointer;
+  }
+  .jpanel-left{
+    width: 0.3cm;
   }
   .datatable{
     width: 100%;
