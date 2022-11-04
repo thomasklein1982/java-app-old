@@ -9,6 +9,7 @@ let stop="Project Code Stop";
 export class Project{
   constructor(name,code){
     this.clazzes=[];
+    this.css="";
     if(!name){
       name="MyApp";
       code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
@@ -50,6 +51,9 @@ export class Project{
         ${js}
         ${additionalCode}
       </script>
+      <style>
+        ${this.css}
+      </style>
     </head>
     <body>
       ${body}
@@ -199,7 +203,8 @@ export class Project{
     let db=database.toCSVString();
     return start+JSON.stringify({
       clazzesSourceCode: t,
-      database: db
+      database: db,
+      css: this.css
     })+stop;
   }
   async fromSaveString(appcode){
@@ -216,6 +221,9 @@ export class Project{
       var o=JSON.parse(saveString);
       if(o.database){
         database.fromCSVString(o.database);
+      }
+      if(o.css){
+        this.css=o.css;
       }
     }catch(e){
       return;

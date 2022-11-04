@@ -23,8 +23,8 @@ let Math=new Clazz("Math");
 Math.cannotBeInstantiated=true;
 let Gamepad=new Clazz("Gamepad");
 Gamepad.cannotBeInstantiated=true;
-let UI=new Clazz("UI");
-UI.cannotBeInstantiated=true;
+// let UI=new Clazz("UI");
+// UI.cannotBeInstantiated=true;
 let Path=new Clazz("Path");
 Path.cannotBeInstantiated=true;
 let Mouse=new Clazz("Mouse");
@@ -58,11 +58,11 @@ let Matcher=new Clazz("Matcher");
 Matcher.cannotBeInstantiated=true;
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, UI, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher
 }
 
 export const Java={

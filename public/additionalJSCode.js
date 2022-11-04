@@ -244,6 +244,12 @@ function additionalJSCode(){
     setStyle(name, value){
       this.$el.style[name]=value;
     }
+    setCSSClass(className){
+      this.$el.className=className;
+    }
+    getCSSClass(){
+      return this.$el.className;
+    }
     setAlign(a){
       this.$el.align=a;
     }

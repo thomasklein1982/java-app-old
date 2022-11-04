@@ -15,12 +15,14 @@
       @toggleright="toggleRight()"
       @resources="$refs.dialogResources.setVisible(true)"
       @database="$refs.dialogDatabase.setVisible(true)"
+      @css="$refs.dialogCSS.setVisible(true)"
     />
     <LinksDialog
       ref="dialogResources"
     />
     <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
     <DatabaseDialog :database="database" ref="dialogDatabase"/>
+    <CSSDialog :project="project" ref="dialogCSS"/>
     <Splitter ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
       <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
         <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
@@ -57,8 +59,8 @@
       <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
         <Splitter layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel style="overflow: hidden;">
-            <UIPreview ref="uipreview" v-if="isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
-            <AppPreview v-else :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
+            <UIPreview ref="uipreview" v-show="isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
+            <AppPreview v-show="!isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
           </SplitterPanel>
           <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
             <UIComponentEditor 
@@ -107,9 +109,11 @@ import { uploadProject } from "../functions/uploadProject.js";
 import LinksDialog from "./LinksDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
 import DatabaseDialog from "./DatabaseDialog.vue";
+import CSSDialog from "./CSSDialog.vue";
 import {database} from "../classes/Database.js";
 import UIPreview from "./UIPreview.vue";
 import { nextTick } from "vue";
+import CSSDialogVue from "./CSSDialog.vue";
 
 
 export default {
@@ -135,14 +139,10 @@ export default {
   },
   watch: {
     activeTab(nv,ov){
+      console.log("change tab",nv,ov);
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         ed.updateLinter();
-      }else{
-        nextTick(()=>{
-          this.updateUIPreview();
-        });
-        
       }
     },
     sizeCode(nv,ov){
@@ -172,6 +172,9 @@ export default {
       return this.project.clazzes[this.activeTab];
     },
     isCurrentClazzUIClazz(){
+      nextTick(()=>{
+        this.updateUIPreview();
+      });
       return this.isUIClazz(this.currentClazz);
     },
     showUIEditor(){
@@ -360,7 +363,8 @@ export default {
     DatabaseDialog,
     UIEditor,
     UIComponentEditor,
-    UIPreview
+    UIPreview,
+    CSSDialog
   }
 }
 </script>

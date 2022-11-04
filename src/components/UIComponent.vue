@@ -1,22 +1,40 @@
 <template>
-  <div style="position: relative; padding: 0.1rem" :style="{border: selectedComponent===component? '2pt solid gold':'2pt solid transparent'}" >
-    <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
-    <template v-if="type==='JButton'">
-      <button class="component jbutton">{{component.value}}</button>
-    </template>
-    <template v-if="type==='JLabel'">
-      <div class="component jlabel">{{component.value}}</div>
-    </template>
-    <template v-if="type==='JTextField'">
-      <input type="text" class="component jtextfield" :value="component.value" :placeholder="component.placeholder"/>
-    </template>
-    <template v-if="type==='JTextArea'">
-      <textarea type="text" class="component jtextarea" :value="component.value" :placeholder="component.placeholder"/>
-    </template>
-    <template v-if="isContainer">
+  <div style="position: relative; padding: 0.1rem" :style="{'user-select': 'none',border: selectedComponent===component? '2pt solid gold':'2pt solid transparent'}" >
+    <div v-if="!isContainer" :style="{display: 'flex'}">
+      <span class="pi handle pi-arrows-alt"/>
+      <div style="position: relative" :style="{flex: 1}">
+        <template v-if="type==='JButton'">
+          <button class="component jbutton">{{component.value}}</button>
+        </template>
+        <template v-if="type==='JLabel'">
+          <div class="component jlabel">{{component.value}}</div>
+        </template>
+        <template v-if="type==='JTextField'">
+          <input type="text" class="component jtextfield" :value="component.value" :placeholder="component.placeholder"/>
+        </template>
+        <template v-if="type==='JTextArea'">
+          <textarea type="text" class="component jtextarea" :value="component.value" :placeholder="component.placeholder"/>
+        </template>
+        <template v-if="type==='DataTable'">
+          <table class="datatable">
+            <tr>
+              <th colSpan="3">DataTable</th>
+            </tr>
+            <tr style="background-color: lightgray">
+              <td v-for="j in 3">&nbsp;</td>
+            </tr>
+          </table>
+        </template>
+        <div @click="handleClick" style="cursor: pointer; position: absolute; left: 0; right: 0; top: 0; bottom: 0"></div>
+      </div>
+    </div>
+    <template v-else>
       <div>
         <div v-if="isUIClazz" class="ui-clazz-top" @click="handleClick">UIKlasse {{component.name}}</div>
-        <div v-else @click="handleClick" class="jpanel-top">JPanel</div>
+        <div v-else class="jpanel-color" :style="{display: 'flex'}">
+          <span class="pi handle" :class="isEditable? 'pi-arrows-v' :'pi-arrows-h'"/>
+          <div :style="{flex: 1}" @click="handleClick" class="jpanel-top">JPanel</div>
+        </div>
         <div style="width: 100%" :style="{display: 'flex', 'flex-direction': 'row'}">
           <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
           <draggable
@@ -28,6 +46,7 @@
               name: 'components',
               put: true
             }"
+            handle=".handle"
             ghost-class="drag-ghost-component"
             :style="{flex: 1}"
             style="padding-bottom: 1rem"
@@ -43,17 +62,7 @@
         <div v-if="!isUIClazz" @click="handleClick" class="jpanel-bottom">&nbsp;</div>
       </div>
     </template>
-    <template v-if="type==='DataTable'">
-      <table class="datatable">
-        <tr>
-          <th colSpan="3">DataTable</th>
-        </tr>
-        <tr style="background-color: lightgray">
-          <td v-for="j in 3">&nbsp;</td>
-        </tr>
-      </table>
-    </template>
-    <div v-if="!isContainer" @click="handleClick" style="cursor: pointer; position: absolute; left: 0; right: 0; top: 0; bottom: 0"></div>
+    <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
   </div>
 </template>
 
@@ -163,8 +172,9 @@ import { UIClazz } from "../classes/UIClazz";
     width: 100%;
     min-height: 0.8cm;
     line-height: 0.8cm;
+    padding: 0.2rem;
   }
-  .jpanel-left,.jpanel-top,.jpanel-bottom{
+  .jpanel-color,.jpanel-left,.jpanel-top,.jpanel-bottom{
     background-color: #DDD;
     cursor: pointer;
   }
@@ -174,8 +184,14 @@ import { UIClazz } from "../classes/UIClazz";
   .datatable{
     width: 100%;
   }
-  .drag-handle{
+  .handle{
     cursor: pointer;
+    width: 1cm;
+    height: 1cm;
+    display: inline-block;
+    line-height: 1cm;
+    text-align: center;
+    background-color: rgba(0,0,0,0);
   }
   .drag-ghost-component{
     opacity: 0.4;

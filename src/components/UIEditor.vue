@@ -8,6 +8,7 @@
         pull: 'clone',
         put: false
       }"
+      handle=".handle"
       ghost-class="drag-ghost"
       @drop="handleDrop"
       @add="handleAdd"

@@ -4,6 +4,7 @@
   </div>
 </template>
 <script>
+import { UIClazz } from '../classes/UIClazz';
   export default {
     props: {
       uiClazz: Object
@@ -20,6 +21,7 @@
         }
       },
       reload(){
+        if(!(this.uiClazz instanceof UIClazz)) return;
         let frame=document.createElement('iframe');
         frame.style="width: 100%; height: 100%;";
         if(this.$refs.wrapper.firstChild){

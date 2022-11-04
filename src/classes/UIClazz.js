@@ -185,6 +185,7 @@ export class UIClazz {
       if(c.name){
         codeObject.code+="\nthis."+c.name+"= "+name+";";
       }
+      codeObject.code+="\n"+name+".setCSSClass("+JSON.stringify(c.cssClass)+");";
       index++;
       if(c.components){
         index=this.appendJavaScriptCodeForComponent(c,index,codeObject,name);

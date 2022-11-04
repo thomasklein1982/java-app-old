@@ -51,6 +51,13 @@ export default {
               separator:true
             },
             {
+              label: 'CSS',
+              icon: 'pi pi-palette',
+              command: (ev)=>{
+                this.$emit('css');
+              }
+            },
+            {
               label: 'Datenbank',
               icon: 'pi pi-database',
               command: (ev)=>{
