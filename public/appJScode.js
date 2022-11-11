@@ -2591,8 +2591,7 @@ window.appJScode=function(){
     $App.Toast.prototype={
       show: function(text,pos,duration){
         let element=document.createElement("span");
-        element.style="color: white; background-color: #121212; transition: opacity 1s; padding: 0.5rem; border-radius: 10px";
-        element.style.opacity="0";
+        element.style="color: white; background-color: #121212; transition: opacity 1s; padding: 0.5rem; border-radius: 10px; opacity: 0; text-align: center; z-index: 1000;";
         if(!duration){
           duration=Math.min(Math.max(1500,text.length*200),15000);
         }
@@ -3886,7 +3885,7 @@ window.appJScode=function(){
       {
         name: 'download',
         returnType: null,
-        args: [{name: 'text', type: 'String', info: 'Inhalt der Datei, die heruntergeladen werden soll.'},{name: 'filename', type: 'String', info: 'Name der Datei, die heruntergeladen werden soll.'}],
+        args: [{name: 'text', type: 'String', info: 'Inhalt der Datei, die heruntergeladen werden soll.'}, {name: 'filename', type: 'String', info: 'Name der Datei, die heruntergeladen werden soll.'}],
         info: 'Erzeugt eine Datei, die der User auf seinem:ihrem Gerät speichern kann.'
       },
       {
