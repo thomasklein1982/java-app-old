@@ -32,7 +32,7 @@
       <div>
         <div v-if="isUIClazz" class="ui-clazz-top" @click="handleClick">UIKlasse {{component.name}}</div>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">
-          <span class="pi handle" :class="isEditable? 'pi-arrows-v' :'pi-arrows-h'"/>
+          <span class="pi handle pi-arrows-alt"/>
           <div :style="{flex: 1}" @click="handleClick" class="jpanel-top">JPanel</div>
         </div>
         <div style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
