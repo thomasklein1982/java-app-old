@@ -3886,7 +3886,7 @@ window.appJScode=function(){
       {
         name: 'download',
         returnType: null,
-        args: [{name: 'filename', type: 'String', info: 'Name der Datei, die heruntergeladen werden soll.'},{name: 'text', type: 'String', info: 'Inhalt der Datei, die heruntergeladen werden soll.'}],
+        args: [{name: 'text', type: 'String', info: 'Inhalt der Datei, die heruntergeladen werden soll.'},{name: 'filename', type: 'String', info: 'Name der Datei, die heruntergeladen werden soll.'}],
         info: 'Erzeugt eine Datei, die der User auf seinem:ihrem Gerät speichern kann.'
       },
       {

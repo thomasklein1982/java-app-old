@@ -91,7 +91,11 @@ export function MethodInvocation(node,source,scope){
   }
   al=ArgumentList(node,source,scope,method.params);
   if(method.isExtraFunction){
-    code=method.jsName+"("+code+","+al.code.substring(1);
+    if(al.list.length===0){
+      code=method.jsName+"("+code+")";
+    }else{
+      code=method.jsName+"("+code+","+al.code.substring(1);
+    }
   }else{
     code+=al.code;
   }

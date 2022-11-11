@@ -132,12 +132,16 @@ export class UIClazz {
     return false;
   }
 
+  hasStaticMainMethod(){
+    return false;
+  }
+
   isBuiltIn(){
     return false;
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\nconsole.hide();\nasync function onStart(){\n\n(new "+this.name+"("+")).$constructor();}");
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nasync function onStart(){\n\n(new "+this.name+"("+")).$constructor();}");
     return code;
   }
 

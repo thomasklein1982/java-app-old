@@ -9,7 +9,7 @@
         <InputSwitch v-model="uiClazz"/>
       </span>
       <span class="p-inputgroup-addon" :style="{color: uiClazz? '':'lightgray'}">
-        UI-Klasse (klappt noch nicht)
+        UI-Klasse
       </span>
   </div>
   <Button label="Hinzufügen" :disabled="disableConfirm" icon="pi pi-check" @click="confirm()"/>

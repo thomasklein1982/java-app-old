@@ -9,6 +9,9 @@ import { defineMath } from "./datatypes/Math";
 import {defineDatabaseClazzes} from "./datatypes/Database";
 import {definePattern} from "./datatypes/pattern";
 import { defineMatcher } from "./datatypes/matcher";
+import { defineFile } from "./datatypes/file";
+import { defineStorage } from "./datatypes/storage";
+
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -57,12 +60,17 @@ Pattern.cannotBeInstantiated=true;
 let Matcher=new Clazz("Matcher");
 Matcher.cannotBeInstantiated=true;
 
+let File=new Clazz("File");
+File.cannotBeInstantiated=true;
+let Storage=new Clazz("Storage");
+Storage.cannotBeInstantiated=true;
+
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage
 }
 
 export const Java={
@@ -79,8 +87,11 @@ defineGenericClazz(Path,appjsdata.objects.path,Java);
 defineGenericClazz(World,appjsdata.objects.world,Java);
 defineGenericClazz(Time,appjsdata.objects.time,Java);
 defineGenericClazz(Mouse,appjsdata.objects.mouse,Java);
+defineGenericClazz(Storage,appjsdata.objects.storage,Java);
+defineStorage(Storage);
 defineApp(App,Java);
 defineUIClazzes(Java);
 defineDatabaseClazzes(Java);
 definePattern(Pattern,Java);
 defineMatcher(Matcher,Java);
+defineFile(File);

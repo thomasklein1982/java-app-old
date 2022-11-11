@@ -35,7 +35,7 @@
           <span class="pi handle" :class="isEditable? 'pi-arrows-v' :'pi-arrows-h'"/>
           <div :style="{flex: 1}" @click="handleClick" class="jpanel-top">JPanel</div>
         </div>
-        <div style="width: 100%" :style="{display: 'flex', 'flex-direction': 'row'}">
+        <div style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
           <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
           <draggable
             v-model="component.components"
@@ -48,8 +48,7 @@
             }"
             handle=".handle"
             ghost-class="drag-ghost-component"
-            :style="{flex: 1}"
-            style="padding-bottom: 1rem"
+            :style="{flex: 1,'padding-bottom': isUIClazz? '100%':'2rem'}"
             @end="endDrag"
             @add="emitIsolatedUpdate()"
             @sort="emitIsolatedUpdate()"

@@ -9,6 +9,14 @@ function additionalJSCode(){
     return await objectWithMethod[methodname].apply(object,argumentsArray);
   };
 
+  function $getFileName(obj){
+    return obj.fileName;
+  }
+
+  function $getFileContentAsString(obj){
+    return obj.data;
+  }
+
   function $toRadians(obj,x){
     return x*Math.PI/180;
   }
@@ -87,12 +95,14 @@ function additionalJSCode(){
   }
 
   function onAction(element){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onAction){
       $main.onAction(element.component);
     }
   }
 
   function onNextFrame(){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onNextFrame){
       $main.onNextFrame();
     }else{
@@ -101,36 +111,42 @@ function additionalJSCode(){
   }
 
   function onMouseDown(){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onMouseDown){
       $main.onMouseDown();
     }
   }
 
   function onMouseUp(){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onMouseUp){
       $main.onMouseUp();
     }
   }
 
   function onMouseMove(){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onMouseMove){
       $main.onMouseMove();
     }
   }
 
   function onTimeout(name){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onTimeout){
       $main.onTimeout(name);
     }
   }
   
   function onGamepadDown(button){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onGamepadDown){
       $main.onGamepadDown(button);
     }
   }
 
   function onGamepadUp(){
+    if(window.$uiPreviewMode===true) return;
     if($main && $main.onGamepadUp){
       $main.onGamepadUp();
     }
