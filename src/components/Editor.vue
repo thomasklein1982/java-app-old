@@ -23,7 +23,7 @@
     <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
     <DatabaseDialog :database="database" ref="dialogDatabase"/>
     <CSSDialog :project="project" ref="dialogCSS"/>
-    <Splitter ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
+    <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
       <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
         <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
           <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+c.name">
@@ -57,7 +57,7 @@
         
       </SplitterPanel>
       <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
-        <Splitter layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
+        <Splitter :gutter-size="splitterSize" layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel style="overflow: hidden;">
             <UIPreview ref="uipreview" v-show="isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
             <AppPreview v-show="!isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
@@ -165,6 +165,9 @@ export default {
 
   },
   computed: {
+    splitterSize(){
+      return 8;
+    },
     currentClazz(){
       if(this.project.clazzes.length===0 || this.activeTab>=this.project.clazzes.length){
         return null;
