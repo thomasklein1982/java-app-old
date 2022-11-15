@@ -25,15 +25,20 @@
             </tr>
           </table>
         </template>
+        <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
         <div @click="handleClick" style="cursor: pointer; position: absolute; left: 0; right: 0; top: 0; bottom: 0"></div>
       </div>
+      <Button icon="pi pi-trash" @click="clickRemove($event)" v-show="selectedComponent===component"/>
     </div>
     <template v-else>
       <div>
         <div v-if="isUIClazz" class="ui-clazz-top" @click="handleClick">UIKlasse {{component.name}}</div>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">
           <span class="pi handle pi-arrows-alt"/>
-          <div :style="{flex: 1}" @click="handleClick" class="jpanel-top">JPanel</div>
+          <div :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">JPanel
+            <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
+          </div>
+          <Button icon="pi pi-trash" @click="clickRemove($event)" v-show="selectedComponent===component"/>
         </div>
         <div style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
           <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
@@ -54,15 +59,19 @@
             @sort="emitIsolatedUpdate()"
           >
             <template #item="{element}">
-              <UIComponent @recompile="$emit('recompile')" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" :selected-component="selectedComponent"/>
+              <div>
+                <UIComponent @removethis="removeChildComponent(element)" @recompile="$emit('recompile')" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" :selected-component="selectedComponent"/>
+                <ConfirmPopup></ConfirmPopup>
+              </div>
             </template>
           </draggable>
         </div>
         <div v-if="!isUIClazz" @click="handleClick" class="jpanel-bottom">&nbsp;</div>
       </div>
     </template>
-    <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
+    
   </div>
+  
 </template>
 
 <script>
@@ -105,6 +114,16 @@ import { UIClazz } from "../classes/UIClazz";
       }
     },
     methods: {
+      removeChildComponent(comp){
+        for(let i=0;i<this.component.components.length;i++){
+          let c=this.component.components[i];
+          if(c===comp){
+            this.component.components.splice(i,1);
+            return true;
+          }
+        }
+        return false;
+      },
       handleClick(){
         this.$emit('clickcomponent',this.component);
       },
@@ -116,6 +135,19 @@ import { UIClazz } from "../classes/UIClazz";
       },
       emitIsolatedUpdate(){
         this.$emit('isolatedupdate');
+      },
+      clickRemove(event) {
+        this.$confirm.require({
+          target: event.currentTarget,
+          message: 'Diese UI-Komponente löschen?',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            this.$emit("removethis");
+          },
+          reject: () => {
+              //callback to execute when user rejects the action
+          }
+        });
       },
       endDrag(ev){
         window.drag=ev;
