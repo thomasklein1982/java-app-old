@@ -208,7 +208,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
           });
         }
       }
-      clazz=clazz.superClazz;
+      clazz=clazz.getRealSuperClazz();
     }
     clazz=type.baseType;
     while(clazz){
@@ -222,7 +222,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
           }));
         }
       }
-      clazz=clazz.superClazz;
+      clazz=clazz.getRealSuperClazz();
     }
     if(includeClasses){
       if(method){

@@ -240,7 +240,13 @@ export class UIClazz {
     }
   }
 
+  getRealSuperClazz(){
+    return this.superClazz;
+  }
   
+  getRuntimeInfos(){
+    
+  }
 
   compileMemberDeclarations(){
 

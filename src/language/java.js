@@ -11,6 +11,7 @@ import {definePattern} from "./datatypes/pattern";
 import { defineMatcher } from "./datatypes/matcher";
 import { defineFile } from "./datatypes/file";
 import { defineStorage } from "./datatypes/storage";
+import { defineObject } from "./datatypes/object";
 
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
@@ -18,7 +19,7 @@ let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheit
 let double=new PrimitiveType("double",null,0.0,"Ein 'double' ist eine Kommazahl.");
 let int=new PrimitiveType("int",double,0,"Ein 'Integer' ist eine ganze Zahl.");
 let char=new PrimitiveType("char",int,32,"Ein 'Character' (dt: 'Zeichen') ist ein einzelnes Zeichen (z. B. Buchstabe, Ziffer, Leerzeichen usw.).");
-let Object=new Clazz("Object");
+let Object=new Clazz("Object",undefined,true);
 Object.cannotBeInstantiated=true;
 const String=new Clazz("String");
 String.cannotBeInstantiated=true;
@@ -65,12 +66,15 @@ File.cannotBeInstantiated=true;
 let Storage=new Clazz("Storage");
 Storage.cannotBeInstantiated=true;
 
+let Session=new Clazz("Session");
+Session.cannotBeInstantiated=true;
+
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage, Session
 }
 
 export const Java={
@@ -78,7 +82,7 @@ export const Java={
   clazzes
 };
 
-
+defineObject(Object);
 defineString(String,Java);
 defineMath(Math,Java);
 defineGenericClazz(Gamepad,appjsdata.objects.gamepad,Java);
@@ -88,6 +92,7 @@ defineGenericClazz(World,appjsdata.objects.world,Java);
 defineGenericClazz(Time,appjsdata.objects.time,Java);
 defineGenericClazz(Mouse,appjsdata.objects.mouse,Java);
 defineGenericClazz(Storage,appjsdata.objects.storage,Java);
+defineGenericClazz(Session,appjsdata.objects.session,Java);
 defineStorage(Storage);
 defineApp(App,Java);
 defineUIClazzes(Java);

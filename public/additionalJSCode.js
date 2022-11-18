@@ -5,6 +5,68 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  function $castObject(object,destTypeName,destDimension){
+    if(object===null) return object;
+    let m="Objekt kann nicht gecastet werden";
+    //console.log("caste",object,"nach",destTypeName,destDimension,$clazzRuntimeInfos);
+    if(destDimension>0){
+      let dim=[];
+      let v=object;
+      for(let i=0;i<destDimension;i++){
+        dim.push(v.values.length);
+        v=v.values[0];
+      }
+      let array=new $App.Array({name: destTypeName},dim);
+      for(let i=0;i<object.values.length;i++){
+        let v=object.values[i];
+        array.values[i]=$castObject(v,destTypeName,destDimension-1);
+      }
+      return array;
+    }
+    var dest;
+    var destRuntimeInfos=$clazzRuntimeInfos[destTypeName];
+    if(destRuntimeInfos){
+      eval("dest=new "+destTypeName+"();");
+      for(let a in destRuntimeInfos.attributes){
+        let at=destRuntimeInfos.attributes[a];
+        if(!(a in object)){
+          m+=". Attribut '"+a+"' nicht vorhanden.";
+          App.console.log(m);
+          throw m;
+        }
+        dest[a]=$castObject(object[a],at.baseType,at.dimension);
+      }
+    }else{
+      return object;
+    }
+    return dest;
+  }
+
+  function $object_toString(obj){
+    return obj.toString();
+  }
+
+  function $object_serialize(obj){
+    try{
+      return JSON.stringify(obj);
+    }catch(e){
+      throw {
+        message: e.message
+      };
+    }
+  }
+
+  function $object_deserialize(obj,s){
+    try{
+      let data=JSON.parse(s);
+      return data;
+    }catch(e){
+      throw {
+        message: "String konnte nicht deserialisiert werden"
+      }
+    }
+  }
+
   async function $asyncFunctionCallVariableObject(object,objectWithMethod,methodname,argumentsArray){
     return await objectWithMethod[methodname].apply(object,argumentsArray);
   };

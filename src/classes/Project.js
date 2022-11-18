@@ -92,6 +92,13 @@ export class Project{
     if(mainClazz){
       code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n\n(async function(){await "+mainClazz.name+".main([]);})()";
     }
+    let clazzInfos={};
+    /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      clazzInfos[c.name]=c.getRuntimeInfos();
+    }
+    code+="\n/***Klassen-Runtime-Informationen:**/\n$clazzRuntimeInfos="+JSON.stringify(clazzInfos)+";";
     return code;
   }
   async initialize(){

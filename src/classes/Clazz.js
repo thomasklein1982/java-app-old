@@ -69,6 +69,35 @@ export class Clazz{
     return names;
   }
 
+  getAllDynamicAttributeNamesAndTypes(names){
+    if(!names) names={};
+    for(let a in this.attributes){
+      let at=this.attributes[a];
+      if(at.isStatic()) continue;
+      names[at.name]={
+        baseType: at.type.baseType.name,
+        dimension: at.type.dimension
+      };
+    }
+    if(this.superClazz){
+      return this.superClazz.getAllAttributeNames(names);
+    }
+    return names;
+  }
+
+  getRealSuperClazz(){
+    if(this.superClazz){
+      return this.superClazz;
+    }
+    /**einfaches ==, weil der Proxy dazwischenfunkt */
+    let c=this;
+    if(c.name===Java.clazzes.Object.name){
+      return null;
+    }else{
+      return Java.clazzes.Object;
+    }
+  }
+
   /**
    * 
    * @param {String} name 
@@ -77,10 +106,13 @@ export class Clazz{
    */
    getAttribute(name,staticAccess){
     let a=this.attributes[name];
-    if(!a && this.superClazz){
-      a=this.superClazz.getAttribute(name,staticAccess);
-      if(a && a.error){
-        a=null;
+    if(!a){
+      let sc=this.getRealSuperClazz();
+      if(sc){
+        a=sc.getAttribute(name,staticAccess);
+        if(a && a.error){
+          a=null;
+        }
       }
     }
     if(!a){
@@ -119,10 +151,13 @@ export class Clazz{
 
   getMethod(name,staticAccess){
     let m=this.methods[name];
-    if(!m && this.superClazz){
-      m=this.superClazz.getMethod(name,staticAccess);
-      if(m && m.error){
-        m=null;
+    if(!m){
+      let sc=this.getRealSuperClazz();
+      if(sc){
+        m=sc.getMethod(name,staticAccess);
+        if(m && m.error){
+          m=null;
+        }
       }
     }
     if(!m){
@@ -150,7 +185,7 @@ export class Clazz{
   }
 
   isSubtypeOf(type){
-    if(!type || type === Java.datatypes.Object) return true;
+    if(!type || type.name === Java.datatypes.Object.name) return true;
 
     if(type instanceof Type){
       if(type.dimension===0){
@@ -166,6 +201,16 @@ export class Clazz{
       return (this.superClazz && this.superClazz.isSubtypeOf(type));
     }
     return false;
+  }
+
+  getRuntimeInfos(){
+    let superClazz=this.getRealSuperClazz();
+    let infos={
+      attributes: this.getAllDynamicAttributeNamesAndTypes(),
+      name: this.name,
+      superClazzName: superClazz? superClazz.name : null
+    };
+    return infos;
   }
 
   isBuiltIn(){

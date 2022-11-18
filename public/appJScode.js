@@ -25,13 +25,14 @@ window.appJScode=function(){
         startSession: function(asServer, debugMode){
           var sessionID=document.getElementById('appjs-in-session-id').value.trim();
           var clientID=document.getElementById('appjs-in-client-id').value.trim();
-          if(sessionID.length===0 || clientID.length===0) return;
+          if(sessionID.length===0 || clientID.length===0) return false;
           localStorage.setItem("appjs-session-data",JSON.stringify({sessionID,clientID}));
           session.start(sessionID, clientID, asServer, debugMode);
           this.root.style.display="none";
+          return true;
         },
-        showStartSession: function(){
-          this.content.innerHTML="<div style='text-align: center;padding: 0.3rem; font-weight: bold'>Netzwerk-Session</div><div><div style='padding: 0.3rem'><input id='appjs-in-session-id' style='width: 100%; min-height: 1cm;' type='text' placeholder='Session-ID'></div><div style='padding: 0.3rem'><input id='appjs-in-client-id' style='width: 100%;min-height: 1cm;' type='text' placeholder='Deine ID'></div></div><div><button style='min-height: 1cm' onclick='$App.dialog.startSession(true)'>Starte als Server</button><button style='min-height: 1cm' onclick='$App.dialog.startSession(false)'>Verbinde als Client</button></div>";
+        showStartSession: async function(){
+          this.content.innerHTML="<div style='text-align: center;padding: 0.3rem; font-weight: bold'>Netzwerk-Session</div><div><div style='padding: 0.3rem'><input id='appjs-in-session-id' style='width: 100%; min-height: 1cm;' type='text' placeholder='Session-ID'></div><div style='padding: 0.3rem'><input id='appjs-in-client-id' style='width: 100%;min-height: 1cm;' type='text' placeholder='Deine ID'></div></div><div><button style='min-height: 1cm' onclick='$App.dialog._startSession(true)'>Starte als Server</button><button style='min-height: 1cm' onclick='$App.dialog._startSession(false)'>Verbinde als Client</button></div>";
           this.root.style.display="";
           var data=localStorage.getItem("appjs-session-data");
           if(data){
@@ -45,6 +46,16 @@ window.appJScode=function(){
 
             }
           }
+          let p=new Promise((resolve,reject)=>{
+            this._startSession=(asServer)=>{
+              let a=this.startSession(asServer);
+              if(a){
+                resolve();
+              }
+            };
+          });
+          let q=await p;
+          return q;
         }
       },
       debug: {
@@ -3704,8 +3715,8 @@ window.appJScode=function(){
       start: function(sessionID, clientID, isHost, debug){
         this.session=new Session(sessionID,clientID,isHost,debug);
       },
-      showStartDialog: function(){
-        $App.dialog.showStartSession();
+      showStartDialog: async function(){
+        await $App.dialog.showStartSession();
       },
       sendMessage: function(message){
         this.session.sendMessage(message);
