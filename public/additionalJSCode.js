@@ -222,6 +222,14 @@ function additionalJSCode(){
     }
   }
 
+  window.onMessage=function onMessage(sender,message){
+    if($main && $main.onMessage){
+      $main.onMessage(sender,message);
+    }else{
+      delete window.onMessage;
+    }
+  }
+
   App.gamepad.setA=function(keycode){
     this.A=keycode;
   }

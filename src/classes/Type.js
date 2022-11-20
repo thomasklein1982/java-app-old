@@ -130,7 +130,7 @@ export class Type{
     return this.isNumeric() || this.isString();
   }
   isSubtypeOf(type){
-    if(!type || type.dimension===0 && type.baseType.name===Java.clazzes.Object.name){
+    if(!type){
       return true;
     }
     if(type instanceof PrimitiveType || type instanceof Clazz){
@@ -139,7 +139,10 @@ export class Type{
         dimension: 0
       };
     }
-    if("baseType" in type){
+    if(type.baseType){
+      if(type.dimension===0 && type.baseType.name===Java.clazzes.Object.name){
+        return true;
+      }
       if(this.baseType===Java.datatypes.nullType){
         return !type.isPrimitive();
       }

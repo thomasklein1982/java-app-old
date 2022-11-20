@@ -3372,7 +3372,7 @@ window.appJScode=function(){
     $App.addEventHandler("onAction",[{name: 'trigger', type: 'JComponent', info: 'Das Element, das das Ereignis ausgeloest hat.'}],'Wird ausgefuehrt, wenn der User mit einem UI-Element interagiert (z. B. auf einen Button klickt).','');
     $App.addEventHandler("onSessionStart",[{name: 'isServer', type: 'boolean', info: 'true, wenn die Session als Server gestartet wurde, ansonsten false.'}],'Wird ausgefuehrt, wenn eine Netzwerk-Session gestartet wird - egal ob als Server oder als Client.','');
     $App.addEventHandler("onNewConnection",[{name: 'id', type: 'String', info: 'Die ID der neuen Verbindung.'}],'Wird ausgefuehrt, wenn eine neue Verbindung über das Netzwerk hergestellt wird.','');
-    $App.addEventHandler("onMessage",[{name: 'senderID', type: "String", info: 'ID des Senders'}, {name: 'message', type: "JSON", info: 'Nachricht, die empfangen wird'}],'Wird ausgefuehrt, wenn die App eine Nachricht von einem anderen Client oder dem Server erhaelt.','');
+    $App.addEventHandler("onMessage",[{name: 'senderID', type: "String", info: 'ID des Senders'}, {name: 'message', type: "String", info: 'Nachricht, die empfangen wird'}],'Wird ausgefuehrt, wenn die App eine Nachricht von einem anderen Client oder dem Server erhaelt.','');
     $App.addEventHandler("onSessionError",[{name: 'error', type: "JSON", info: 'Informationen zum Fehler, der aufgetreten ist'}],'Wird ausgefuehrt, wenn ein Netzwerk-Fehler auftritt, also wenn z. B. die Verbindung unterbrochen wird.','');
 
     $App.addFunction(function setupApp(title,favicon,width,height,backgroundColor){
@@ -3741,7 +3741,7 @@ window.appJScode=function(){
       {
         name: 'sendMessage',
         returnType: null,
-        args: [{name: 'message', type: 'SessionMessage', info: 'Nachricht, die versendet wird.'}],
+        args: [{name: 'message', type: 'String', info: 'Nachricht, die versendet wird.'}],
         info: 'Sendet eine Nachricht an alle Teilnehmer der Netzwerksession.'
       }
     ]);
