@@ -177,10 +177,12 @@ export default {
       runtimeError: [],
       errorID: 1,
       size: 0,
-      triggerRecompilation: true
+      triggerRecompilation: true,
+      editor: null
     };
   },
   mounted(){
+    if(this.editor) return;
     if(!this.clazz || this.clazz.src===undefined) return;
     let changed=true;
     let timer;
@@ -204,7 +206,7 @@ export default {
     });
     this.editor=new EditorView({
       state: EditorState.create({
-        doc: this.clazz.src,
+        doc: "",
         extensions: [
           basicSetup,
           //highlightActiveLine(),
@@ -258,7 +260,8 @@ export default {
       parent: this.$refs.editor
     });
     this.editor.component=this;
-    this.emptyTransaction();
+    this.setCode(this.clazz.src);
+    // this.emptyTransaction();
   },
   methods: {
     updateLinter(){
@@ -276,7 +279,7 @@ export default {
         //this.$emit("recompile");
       }else{
         let t1=new Date();
-        await this.clazz.compile(this.project);
+        await this.clazz.compile();
         let t2=new Date();
         console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
       }

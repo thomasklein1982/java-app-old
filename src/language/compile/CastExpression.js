@@ -3,7 +3,6 @@ import { CompileFunctions } from "../CompileFunctions";
 import { Java } from "../java";
 
 export function CastExpression(node,source,scope){
-  console.log(node);
   node=node.firstChild;
   node=node.nextSibling;
   let func=CompileFunctions.get(node,source);
@@ -13,7 +12,6 @@ export function CastExpression(node,source,scope){
   }
   let destType=func(node,source,scope);
   destType=destType.type;
-  console.log(node,destType);
   node=node.nextSibling.nextSibling;
   func=CompileFunctions.get(node,source);
   if(!func){

@@ -277,6 +277,7 @@ export default {
     },
     openProject(p){
       this.project=p;
+      p.compile();
     },
     getProject(){
       return this.project;
