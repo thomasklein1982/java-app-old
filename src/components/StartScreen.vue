@@ -30,7 +30,6 @@ export default {
   mounted(){
     loadLocally(STORAGE_PROJECT).then((p)=>{
       this.lastProject=p;
-      console.log('letzte daten geladen',p);
     });
   },
   methods: {

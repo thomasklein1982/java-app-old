@@ -8,10 +8,10 @@
       @new="$refs.dialogNewApp.setVisible(true)"
       @prettify="prettifyCode"
       @rename="renameSelection"
-      @undo="$refs.editor[activeTab].undo()"
-      @redo="$refs.editor[activeTab].redo()"
-      @search="$refs.editor[activeTab].openSearchPanel()"
-      @lint="$refs.editor[activeTab].toggleLintPanel()"
+      @undo="currentEditor.undo()"
+      @redo="currentEditor.redo()"
+      @search="currentEditor.openSearchPanel()"
+      @lint="currentEditor.toggleLintPanel()"
       @toggleright="toggleRight()"
       @resources="$refs.dialogResources.setVisible(true)"
       @database="$refs.dialogDatabase.setVisible(true)"
@@ -165,6 +165,21 @@ export default {
 
   },
   computed: {
+    currentEditor(){
+      if(this.isCurrentClazzUIClazz) return null;
+      let index=-1;
+      for(let i=0;i<=this.activeTab;i++){
+        let c=this.project.clazzes[i];
+        if(!(c instanceof UIClazz)){
+          index++;
+        }
+      }
+      if(index>=0){
+        return this.$refs.editor[index];
+      }else{
+        return null;
+      }
+    },
     splitterSize(){
       return 8;
     },
@@ -300,7 +315,9 @@ export default {
       this.openProject(p,this.useBlockEditor);
     },
     prettifyCode(){
-      this.$refs.editor[this.activeTab].prettifyCode();
+      if(this.currentEditor){
+        this.currentEditor.prettifyCode();
+      }
     },
     resume(){
       if(this.rightClosed){

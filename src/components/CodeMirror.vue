@@ -329,6 +329,7 @@ export default {
       this.isLintPanelOpen=false;
     },
     toggleLintPanel(){
+      this.project.compile(true);
       if(this.isLintPanelOpen){
         this.closeLintPanel();
       }else{

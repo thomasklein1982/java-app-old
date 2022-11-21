@@ -14,9 +14,25 @@ export class Project{
       name="MyApp";
       code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
     }
-    var c=new Clazz(name,this);
-    c.src=code;
-    this.clazzes.push(c);
+    if(code && code.splice){
+      for(let i=0;i<code.length;i++){
+        let c;
+        if(code[i].type==="UI"){
+          c=new UIClazz("T",this);
+          let obj=JSON.parse(code[i].code);
+          console.log("restore",obj);
+          c.restoreFromSaveObject(obj);
+        }else{
+          c=new Clazz("T",this);
+          c.src=code[i];
+        }
+        this.clazzes.push(c);
+      }
+    }else{
+      var c=new Clazz(name,this);
+      c.src=code;
+      this.clazzes.push(c);
+    }
   }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
@@ -102,10 +118,17 @@ export class Project{
     return code;
   }
   async initialize(){
-    var c=this.clazzes[0];
-    await c.generateTreeAndState(c.src);
-    c.compileDeclaration();
-    c.compileMemberDeclarations();
+    //this.compile(true);
+    for(var i=0;i<this.clazzes.length;i++){
+      var c=this.clazzes[i];
+      if(c instanceof UIClazz){
+        c.compile();
+      }else{
+        await c.generateTreeAndState(c.src);
+        c.compileDeclaration();
+        c.compileMemberDeclarations();
+      }
+    }
   }
   getClazzByName(name){
     let i=this.getClazzIndexByName(name);
