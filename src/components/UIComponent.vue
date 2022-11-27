@@ -22,7 +22,7 @@
           <textarea type="text" class="component jtextarea" :value="component.value" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JComboBox'">
-          <select>
+          <select class="component jcombobox">
             <option>{{component.value}}</option>
           </select>
         </template>

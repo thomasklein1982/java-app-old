@@ -68,6 +68,9 @@ export class Project{
         ${additionalCode}
       </script>
       <style>
+        .jimage{
+          justify-self: stretch;
+        }
         ${this.css}
       </style>
     </head>

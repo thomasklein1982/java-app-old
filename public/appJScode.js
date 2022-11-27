@@ -4479,8 +4479,13 @@ window.appJScode=function(){
             }
           },
           set: function(v){
-            var valueProp=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value");
-            var v=valueProp.set.call(b,v);
+            if(b.type==="checkbox"){
+              var valueProp=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"checked");
+              valueProp.set.call(b.box,v);
+            }else{
+              var valueProp=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value");
+              valueProp.set.call(b,v);
+            }
           }
         });
         b.placeholder=placeholdertext;
