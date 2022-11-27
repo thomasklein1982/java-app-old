@@ -7,22 +7,52 @@ import { Java } from "../language/java";
 export class UIClazz {
   static UIClazzes={
     JButton: {
-      params: ["value","x","y","width","height"]
+      params: ["value","x","y","width","height"],
+      labels: {
+        value: "Der angezeigte Text des Buttons."
+      }
     },
     JTextField: {
-      params: ["inputType","placeholder","x","y","width","height"]
+      params: ["inputType","placeholder","x","y","width","height"],
+      labels: {
+        value: "Der eingegebene Wert des Textfelds."
+      }
     },
     JLabel: {
-      params: ["value","x","y","width","height"]
+      params: ["value","x","y","width","height"],
+      labels: {
+        value: "Der angezeigte Text."
+      }
+    },
+    JImage: {
+      params: ["value","x","y","width","height"],
+      labels: {
+        value: "Die URL zur Bilddatei."
+      }
     },
     JTextArea: {
-      params: ["placeholder","x","y","width","height"]
+      params: ["placeholder","x","y","width","height"],
+      labels: {
+        value: "Der eingebene Text der TextArea."
+      }
     },
     DataTable: {
       params: []
     },
     JPanel: {
-      params: ["template","x","y","width","height"]
+      params: ["template","x","y","width","height"],
+    },
+    JCheckBox: {
+      params: ["label","x","y","width","height"],
+      labels: {
+        value: "Ist die Checkbox markiert oder nicht."
+      }
+    },
+    JComboBox: {
+      params: ["options","x","y","width","height"],
+      labels: {
+        value: "Die aktuell ausgewählte Option."
+      }
     }
   };
 
@@ -35,6 +65,7 @@ export class UIClazz {
     this.components=[];
     this.cssClass="";
     this.template="1";
+    this.forceAbsolute=false;
     this.x=50;
     this.y=50;
     this.width=100;
@@ -149,7 +180,7 @@ export class UIClazz {
     let code="class "+this.name+" extends JPanel";
     code+="{";
     code+="\nconstructor(){";
-      code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
+    code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
     for(let i in this.attributes){
       let a=this.attributes[i];
       code+="\n"+a.getJavaScriptCode();
@@ -179,6 +210,13 @@ export class UIClazz {
         let p=clazz.params[j];
         if(p==="x" || p==="y" || p==="width" || p==="height"){
           args.push(c[p]);
+        }else if(p==="options"){
+          try{
+            let array=JSON.parse(c[p]);
+            args.push("new $App.Array('String',"+array.length+","+JSON.stringify(array)+")");
+          }catch(e){
+
+          }
         }else{
           args.push(JSON.stringify(c[p]));
         }
@@ -189,7 +227,24 @@ export class UIClazz {
       if(c.name){
         codeObject.code+="\nthis."+c.name+"= "+name+";";
       }
-      codeObject.code+="\n"+name+".setCSSClass("+JSON.stringify(c.cssClass)+");";
+      if(c.cssClass){
+        codeObject.code+="\n"+name+".setCSSClass("+JSON.stringify(c.cssClass)+");";
+      }
+      if(c.forceAbsolute){
+        codeObject.code+="\n"+name+".setStyle('position','absolute');";
+        codeObject.code+="\n"+name+".$el.updatePosition();";
+      }
+      if(c.value!==null && c.value!==undefined){
+        let v;
+        if(c.value.slice){
+          v=JSON.stringify(c.value);
+        }else{
+          v=c.value;
+        }
+        console.log(c.value,v);
+        
+        codeObject.code+="\n"+name+".value="+v+";";
+      }
       index++;
       if(c.components){
         index=this.appendJavaScriptCodeForComponent(c,index,codeObject,name);

@@ -38,7 +38,7 @@
     },
     data: function(){
       return {
-        componentList: [{type: "JLabel", value: "JLabel"},{type: "JButton", value: "JButton"},{type: "JTextField", inputType: "text", value: "", placeholder: "JTextField"},{type: "JTextArea", value: "", placeholder: "JTextArea"},{type: "DataTable"},{type: "JPanel", components: [], template: "1"}],
+        componentList: [{type: "JPanel", components: [], template: "1"}, {type: "JLabel", value: "JLabel"},{type: "JButton", value: "JButton"},{type: "JTextField", inputType: "text", value: "", placeholder: "JTextField"},{type: "JTextArea", value: "", placeholder: "JTextArea"}, {type: "JCheckBox", value: false, label: "JCheckBox"}, {type: "JComboBox", value: "", options: '["Ja","Nein","Vielleicht"]'}, {type: "DataTable"}, {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png"}],
         selectedComponent: null
       };
     },

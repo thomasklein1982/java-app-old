@@ -364,7 +364,8 @@ export default {
       this.check();
     },
     undo(){
-      undo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
+      //undo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
+      undo(this.editor);
     },
     redo(){
       redo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});

@@ -28,6 +28,7 @@ import TabPanel from 'primevue/tabpanel';
 import Message from "primevue/message";
 import Listbox from 'primevue/listbox';
 import TextArea from 'primevue/textarea';
+import Tooltip from 'primevue/tooltip';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -57,6 +58,7 @@ app.use(router);
 app.use(PrimeVue.default);
 app.use(ConfirmationService);
 app.use(ToastService);
+app.directive('tooltip', Tooltip);
 app.component('Button',Button);
 app.component('Dialog',Dialog.default);
 app.component('Checkbox',Checkbox);
@@ -82,6 +84,8 @@ app.component('TabView',TabView);
 app.component('Message',Message);
 app.component('Listbox',Listbox);
 app.component('TextArea',TextArea);
+
+
 
 window.app=app.mount('#app');
 

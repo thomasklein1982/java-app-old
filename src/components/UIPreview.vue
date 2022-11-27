@@ -29,7 +29,6 @@ import { UIClazz } from '../classes/UIClazz';
         }
         this.$refs.wrapper.appendChild(frame);
         let code=this.uiClazz.getUIPreviewCode();
-        console.log("uipreview",code);
         let doc=frame.contentWindow.document;
         doc.open();
         doc.write(code);

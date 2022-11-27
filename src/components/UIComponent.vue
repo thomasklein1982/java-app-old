@@ -12,8 +12,19 @@
         <template v-if="type==='JTextField'">
           <input type="text" class="component jtextfield" :value="component.value" :placeholder="component.placeholder"/>
         </template>
+        <template v-if="type==='JImage'">
+          <img class="jimage" :src="component.value"/>
+        </template>
+        <template v-if="type==='JCheckBox'">
+          <input type="checkbox" checked/> {{component.label}}
+        </template>
         <template v-if="type==='JTextArea'">
           <textarea type="text" class="component jtextarea" :value="component.value" :placeholder="component.placeholder"/>
+        </template>
+        <template v-if="type==='JComboBox'">
+          <select>
+            <option>{{component.value}}</option>
+          </select>
         </template>
         <template v-if="type==='DataTable'">
           <table class="datatable">
@@ -76,7 +87,7 @@
 
 <script>
   import draggable from "vuedraggable";
-import { UIClazz } from "../classes/UIClazz";
+  import { UIClazz } from "../classes/UIClazz";
   export default{
     props: {
       component: Object,
@@ -184,6 +195,9 @@ import { UIClazz } from "../classes/UIClazz";
 <style scoped>
   .component{
     width: 100%;
+    height: 1cm;
+  }
+  .jimage{
     height: 1cm;
   }
   .ui-class-top{
