@@ -372,6 +372,12 @@ function additionalJSCode(){
     remove(comp){
       this.$el.remove(comp.$el);
     }
+    getChild(index){
+      
+    }
+    getChildAtPos(row,col){
+
+    }
   }
 
   class JLabel extends JComponent{
