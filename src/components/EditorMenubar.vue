@@ -84,7 +84,7 @@ export default {
           label: 'Einstellungen',
           icon: 'pi pi-cog',
           command: (ev)=>{
-            
+            this.$emit("settings");
           }
         }
       ]

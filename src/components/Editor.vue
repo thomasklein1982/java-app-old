@@ -16,9 +16,15 @@
       @resources="$refs.dialogResources.setVisible(true)"
       @database="$refs.dialogDatabase.setVisible(true)"
       @css="$refs.dialogCSS.setVisible(true)"
+      @settings="$refs.dialogSettings.setVisible(true)"
     />
     <LinksDialog
       ref="dialogResources"
+    />
+    <SettingsDialog
+      ref="dialogSettings"
+      :font-size="fontSize"
+      @changefontsize="changeFontSize"
     />
     <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
     <DatabaseDialog :database="database" ref="dialogDatabase"/>
@@ -112,6 +118,7 @@ import DatabaseDialog from "./DatabaseDialog.vue";
 import CSSDialog from "./CSSDialog.vue";
 import {database} from "../classes/Database.js";
 import UIPreview from "./UIPreview.vue";
+import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
 import CSSDialogVue from "./CSSDialog.vue";
 
@@ -206,6 +213,9 @@ export default {
     },1000);
   },
   methods: {
+    changeFontSize(newFontsize){
+      this.fontSize=newFontsize;
+    },
     compileProjectAndUpdateUIPreview(){
       this.compileProject();
       this.updateUIPreview();
@@ -385,7 +395,8 @@ export default {
     UIEditor,
     UIComponentEditor,
     UIPreview,
-    CSSDialog
+    CSSDialog,
+    SettingsDialog
   }
 }
 </script>

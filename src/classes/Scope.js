@@ -108,7 +108,7 @@ export class Scope{
     if(a.error){
       return a;
     }
-    if(a.isPrivate() && this.method.clazz!==clazz){
+    if(a.isPrivate() && this.method.clazz.name!==clazz.name){
       return {
         error: "Das Attribut '"+name+"' ist private."
       };
