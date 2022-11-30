@@ -342,6 +342,38 @@ function additionalJSCode(){
     setAlignContent(a){
       this.$el.alignContent=a;
     }
+    getPanel(){
+      let p=this.$el.parentNode;
+      if(p && p.component){
+        return p.component;
+      }else{
+        return null;
+      }
+    }
+    getIndex(){
+      let p=this.getPanel();
+      if(p && p.getIndexOf){
+        return p.getIndexOf(this);
+      }else{
+        return -1;
+      }
+    }
+    getRow(){
+      let p=this.getPanel();
+      if(p && p.getRowOf){
+        return p.getRowOf(this);
+      }else{
+        return -1;
+      }
+    }
+    getColumn(){
+      let p=this.getPanel();
+      if(p && p.getColumnOf){
+        return p.getColumnOf(this);
+      }else{
+        return -1;
+      }
+    }
   }
 
   class JButton extends JComponent{
@@ -363,6 +395,7 @@ function additionalJSCode(){
   class JPanel extends JComponent{
     constructor(template,x,y,width,height){
       super(x,y,width,height);
+      this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
     }
@@ -372,11 +405,77 @@ function additionalJSCode(){
     remove(comp){
       this.$el.remove(comp.$el);
     }
-    getChild(index){
-      
+    getChildCount(){
+      return this.$el.children.length;
     }
-    getChildAtPos(row,col){
-
+    getChild(index){
+      let el=this.$el.children[index];
+      if(el && el.component){
+        return el.component;
+      }else{
+        return null;
+      }
+    }
+    getChildInGrid(row,col,colCount){
+      if(row<0 || col<0) return null;
+      if(colCount===undefined){
+        colCount=this.getRowAndColumnCount().cols;
+      }
+      if(col>=colCount) return null;
+      return this.getChild(row*colCount+col);
+    }
+    _getPositionOf(child,rowAndColCount){
+      let rc=rowAndColCount? rowAndColCount : this.getRowAndColumnCount();
+      for(let i=0;i<rc.rows;i++){
+        for(let j=0;j<rc.cols;j++){
+          let c=this.getChildInGrid(i,j,rc.cols);
+          if(c===child){
+            return [i,j];
+          }
+        }
+      }
+      return null;
+    }
+    getIndexOf(child){
+      let n=this.getChildCount();
+      for(let i=0;i<n;i++){
+        let c=this.getChild(i);
+        if(c===child){
+          return i;
+        }
+      }
+      return -1;
+    }
+    getRowOf(child){
+      let rc=this.getRowAndColumnCount();
+      let p=this._getPositionOf(child,rc);
+      if(p){
+        return p[0];
+      }else{
+        return -1;
+      }
+    }
+    getColumnOf(child){
+      let rc=this.getRowAndColumnCount();
+      let p=this._getPositionOf(child,rc);
+      if(p){
+        return p[1];
+      }else{
+        return -1;
+      }
+    }
+    getRowAndColumnCount(){
+      let cs=getComputedStyle(this.$el);
+      return {
+        rows: cs.gridTemplateRows.split(" ").length,
+        cols: cs.gridTemplateColumns.split(" ").length
+      }
+    }
+    getRowCount(){
+      return this.getRowAndColumnCount().rows;
+    }
+    getColumnCount(){
+      return this.getRowAndColumnCount().cols;
     }
   }
 

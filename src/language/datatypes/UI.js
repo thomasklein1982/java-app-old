@@ -113,6 +113,26 @@ function defineJComponent(Clazz,Java){
     name: 'isEnabled',
     returnType: 'boolean'
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'getIndex',
+    info: 'Liefert den Index dieser Komponente innerhalb ihres Containers zurück. Der Index beginnt bei 0.',
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getRow',
+    info: 'Liefert den Zeilen-Index dieser Komponente innerhalb ihres Containers zurück. Der Index beginnt bei 0.',
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getColumn',
+    info: 'Liefert den Spalten-Index dieser Komponente innerhalb ihres Containers zurück. Der Index beginnt bei 0.',
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getPanel',
+    info: 'Liefert das Panel zurück, in dem sich diese Komponente befindet.',
+    returnType: 'JPanel'
+  },Clazz,false,false,Java);
   // createAttribute({
   //   name: "value",
   //   type: Java.datatypes.String,
@@ -239,14 +259,64 @@ function defineJPanel(Clazz,Java){
   createMethod({
     name: 'add',
     args: [
-      {name: 'component', type: 'JComponent'}
-    ]
+      {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}
+    ],
+    info: 'Fügt dem Panel eine (weitere) Komponente hinzu.'
   },Clazz,false,false,Java);
   createMethod({
     name: 'remove',
     args: [
-      {name: 'component', type: 'JComponent'}
-    ]
+      {name: 'component', type: 'JComponent', info: 'Die Komponente, die entfernt werden soll.'}
+    ],
+    info: 'Entfernt die Komponente aus dem Panel, falls möglich.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getChild',
+    args: [
+      {name: 'index', type: 'int', info: 'Der Index der gesuchten Kind-Komponente, beginnt bei 0.'}
+    ],
+    info: "Liefert die n-te Kind-Komponente des Panels zurück.",
+    returnType: 'JComponent'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getChildInGrid',
+    args: [
+      {name: 'rowIndex', type: 'int', info: 'Der Index der Zeile, in der sich die Kind-Komponente befindet. Beginnt bei 0.'},
+      {name: 'colIndex', type: 'int', info: 'Der Index der Spalte, in der sich die Kind-Komponente befindet. Beginnt bei 0.'}
+    ],
+    info: "Liefert die Kind-Komponente des Panels zurück, die sich in der angegebenen Zeile und Spalte (beide beginnen bei 0) befindet.",
+    returnType: 'JComponent'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getChildCount',
+    args: [
+    ],
+    info: "Liefert die Anzahl der Kind-Komponenten dieses Panels zurück.",
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getIndexOf',
+    args: [
+      {name: 'child', type: 'JComponent', info: 'Die Kind-Komponente, deren Index man abfragen möchte.'}
+    ],
+    info: "Liefert den Index der angegebenen Kind-Komponente innerhalb des Panels zurück. Der Index beginnt bei 0.",
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getRowOf',
+    args: [
+      {name: 'child', type: 'JComponent', info: 'Die Kind-Komponente, deren Zeilen-Index man abfragen möchte.'}
+    ],
+    info: "Liefert den Index der Zeile der angegebenen Kind-Komponente innerhalb des Panels zurück. Der Index beginnt bei 0.",
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getColumnOf',
+    args: [
+      {name: 'child', type: 'JComponent', info: 'Die Kind-Komponente, deren Spalten-Index man abfragen möchte.'}
+    ],
+    info: "Liefert den Index der Spalte der angegebenen Kind-Komponente innerhalb des Panels zurück. Der Index beginnt bei 0.",
+    returnType: 'int'
   },Clazz,false,false,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
 }

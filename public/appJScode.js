@@ -2624,7 +2624,7 @@ window.appJScode=function(){
       this.outputDiv.style="height: calc(30% - 0.4cm); overflow: auto";
       this.element.appendChild(this.outputDiv);
       this.input=document.createElement("input");
-      this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white";
+      this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
       this.input.currentPosition=-1;
       this.input.placeholder="gib einen Befehl ein..."
       this.input.onchange=()=>{
@@ -4357,6 +4357,7 @@ window.appJScode=function(){
             var t=teile[i].trim();
             if(/^\d+$/.test(t)){
               teile[i]="repeat("+t+",minmax(0,1fr))";
+              
             }
           }
           if(teile.length===2){
@@ -4369,6 +4370,10 @@ window.appJScode=function(){
           b.style.display="grid"; 
           b.style.alignItems="stretch";
           b.style.justifyContent="stretch";
+          b.style.gridColumnGap=0;
+          b.style.gridRowGap=0;
+          b.style.columnGap=0;
+          b.style.rowGap=0;
         }
         b.add=function(c){
           if(!this.noAbsolutePosition){
@@ -4392,6 +4397,8 @@ window.appJScode=function(){
       button: function (text,cx,cy,width,height){
         var b=$App.createElement("button");
         b.value=text;
+        b.style.padding=0;
+        b.style.margin=0;
         $App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },

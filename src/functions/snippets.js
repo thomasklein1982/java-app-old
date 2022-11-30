@@ -19,6 +19,9 @@ export function createParamsString(params,useArgs){
     }
     for(let i=0;i<params.length;i++){
       let p=params[i];
+      if(p===undefined || p===null){
+        console.log("createParamsString","Parameter ist undefiniert",params,useArgs);
+      }
       let text;
       if(p.substring){
         text=p;

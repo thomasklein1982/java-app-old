@@ -4,6 +4,7 @@ import {Type} from "../../classes/Type";
 import {createParamsString,snippets} from '../snippets'
 import {Java} from '../../language/java';
 import {getClazzFromState} from './getClazzFromState';
+import { PrimitiveType } from "../../classes/PrimitiveType";
 
 const completePropertyAfter = ["PropertyName", ".", "?."]
 const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
@@ -144,7 +145,8 @@ export function createAutocompletion(){
       }
     }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<"){
       from=context.pos;
-      annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true};
+      let scope=method.getScopeAtPosition(from);
+      annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true, scope};
     }else{
       from=nodeBefore.from;
       if((nodeBefore.name==="Identifier" || nodeBefore.name==="TypeName") && nodeBefore.prevSibling && nodeBefore.prevSibling.name==="."){
@@ -196,33 +198,35 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
       }
     }
     let clazz=type.baseType;
-    while(clazz){
-      let attributeNames=clazz.getAllAttributeNames();
-      for (let name in attributeNames) {
-        let a=clazz.getAttribute(name,isStatic);
-        if(a && !a.error && a.isStatic()===isStatic){
-          options.push({
-            label: name,
-            type: "variable",
-            info: a.comment
-          });
+    if(!(clazz instanceof PrimitiveType)){
+      while(clazz){
+        let attributeNames=clazz.getAllAttributeNames();
+        for (let name in attributeNames) {
+          let a=clazz.getAttribute(name,isStatic);
+          if(a && !a.error && a.isStatic()===isStatic){
+            options.push({
+              label: name,
+              type: "variable",
+              info: a.comment
+            });
+          }
         }
+        clazz=clazz.getRealSuperClazz();
       }
-      clazz=clazz.getRealSuperClazz();
-    }
-    clazz=type.baseType;
-    while(clazz){
-      for (let name in clazz.methods) {
-        let m=clazz.methods[name];
-        if(m.isStatic()===isStatic){
-          options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
-            label: name+"(...)",
-            type: "function",
-            info: m.comment
-          }));
+      clazz=type.baseType;
+      while(clazz){
+        for (let name in clazz.methods) {
+          let m=clazz.methods[name];
+          if(m.isStatic()===isStatic){
+            options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
+              label: name+"(...)",
+              type: "function",
+              info: m.comment
+            }));
+          }
         }
+        clazz=clazz.getRealSuperClazz();
       }
-      clazz=clazz.getRealSuperClazz();
     }
     if(includeClasses){
       if(method){
