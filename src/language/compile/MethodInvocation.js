@@ -23,8 +23,11 @@ export function MethodInvocation(node,source,scope){
     clazz: null,
     static: false
   };
-  if(node.name==="MethodName"){
+  if(node.name==="MethodName"||node.name==="this"){
     code+="this";
+    if(node.name==="this"){
+      node=node.nextSibling.nextSibling;
+    }
   }else{
     if(node.name==="Identifier"){
       let id=Identifier(node,source,scope);
