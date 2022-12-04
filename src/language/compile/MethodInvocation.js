@@ -8,6 +8,7 @@ import { Clazz } from "../../classes/Clazz";
 import { Java } from "../java";
 import { Type } from "../../classes/Type";
 import { ArrayAccess } from "./ArrayAccess";
+import { CompileFunctions } from "../CompileFunctions";
 /**
  * 
  * @param {*} node 
@@ -43,28 +44,38 @@ export function MethodInvocation(node,source,scope){
           static: false
         };
       }
-    }else if(node.name==="FieldAccess"){
-      let fa=FieldAccess(node,source,scope);
-      code+=fa.code;
-      owner={
-        clazz: fa.type.baseType,
-        static: false
-      };
-    }else if(node.name==="ArrayAccess"){
-      let fa=ArrayAccess(node,source,scope);
-      code+=fa.code;
-      owner={
-        clazz: fa.type.baseType,
-        static: false
-      };
-    }else if(node.name==="MethodInvocation"){
-      let fa=MethodInvocation(node,source,scope);
+    }else{
+      let f=CompileFunctions.get(node,source);
+      let fa=f(node,source,scope);
       code+=fa.code;
       owner={
         clazz: fa.type.baseType,
         static: false
       };
     }
+    
+    // else if(node.name==="FieldAccess"){
+    //   let fa=FieldAccess(node,source,scope);
+    //   code+=fa.code;
+    //   owner={
+    //     clazz: fa.type.baseType,
+    //     static: false
+    //   };
+    // }else if(node.name==="ArrayAccess"){
+    //   let fa=ArrayAccess(node,source,scope);
+    //   code+=fa.code;
+    //   owner={
+    //     clazz: fa.type.baseType,
+    //     static: false
+    //   };
+    // }else if(node.name==="MethodInvocation"){
+    //   let fa=MethodInvocation(node,source,scope);
+    //   code+=fa.code;
+    //   owner={
+    //     clazz: fa.type.baseType,
+    //     static: false
+    //   };
+    // }
     node=node.nextSibling;
     if(node.name==="."){
     }else{
@@ -76,6 +87,9 @@ export function MethodInvocation(node,source,scope){
   }
   mn=source.getText(node);
   let method=scope.getMethod(mn,owner.static,owner.clazz);
+  if(method.error){
+    throw (source.createError(method.error,node));
+  }
   if(method.isExtraFunction){
     
   }else{ 
@@ -87,9 +101,7 @@ export function MethodInvocation(node,source,scope){
     }
   }
   node=node.nextSibling;
-  if(method.error){
-    throw (source.createError(method.error,node));
-  }
+  
   if(node.name!=="ArgumentList"){
   }
   al=ArgumentList(node,source,scope,method.params);

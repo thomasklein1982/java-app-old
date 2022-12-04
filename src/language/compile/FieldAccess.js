@@ -21,6 +21,7 @@ export function FieldAccess(node,source,scope){
   node=node.firstChild;
   let code="";
   let owner;
+  //TODO: Verallgemeinern der owner-Suche
   if(node.name==="FieldAccess" || node.name==="ScopedTypeName"){
     let fa=FieldAccess(node,source,scope);
     code+=fa.code;
@@ -69,6 +70,9 @@ export function FieldAccess(node,source,scope){
         static: false
       };
     }
+  }
+  if(!owner){
+    throw source.createError("Dieses Attribut hat keinen Besitzer.",node);
   }
   let type=owner.type;
   if(!type.baseType){

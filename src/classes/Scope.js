@@ -104,6 +104,7 @@ export class Scope{
    */
   getAttribute(name,isStatic,clazz){
     let c=clazz? clazz : this.method.clazz;
+
     let a=c.getAttribute(name,isStatic);
     if(a.error){
       return a;
@@ -140,6 +141,12 @@ export class Scope{
    */
   getMethod(name,isStatic,clazz){
     let c=clazz? clazz : this.method.clazz;
+    console.log(c);
+    if(c.name==="null"){
+      return {
+        error: "Das null-Objekt kann keine Methode aufrufen."
+      };
+    }
     let m=c.getMethod(name,isStatic);
     if(m.error){
       return m;

@@ -8,9 +8,12 @@ export function ReturnStatement(node,source,scope){
 
   }
   let code="return ";
+  if(!node.nextSibling){
+    throw (source.createError("';' erwartet.",node));
+  }
   node=node.nextSibling;
   let returnType=scope.method.type;
-  if(node && !node.type.isError && node.name!==";"){
+  if(!node.type.isError && node.name!==";"){
     if(returnType){
       let f=CompileFunctions.get(node,source);
       let v=f(node,source,scope);
@@ -29,8 +32,8 @@ export function ReturnStatement(node,source,scope){
     }
     code+=";";
   }
-  if(!node || node.type.isError || node.name!==";"){
-    throw (source.createError("';' erwartet.",node.nextSibling));
+  if(node.type.isError || node.name!==";"){
+    throw (source.createError("';' erwartet.",node));
   }
   return {
     code: code,
