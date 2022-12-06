@@ -214,9 +214,9 @@ function additionalJSCode(){
     }
   }
 
-  window.onTileDraw=function onTileDraw(x,y,type){
+  window.onTileDraw=async function onTileDraw(x,y,type){
     if($main && $main.onTileDraw){
-      $main.onTileDraw(x,y,type);
+      await $main.onTileDraw(x,y,type);
     }else{
       delete window.onTileDraw;
     }
