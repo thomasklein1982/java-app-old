@@ -507,6 +507,10 @@ function additionalJSCode(){
     setSelectedIndex(index){
       this.$el.selectedIndex=index;
     }
+    setOptions(options){
+      console.log(options);
+      this.$el.options=options.values;
+    }
   }
 
   class JCheckBox extends JComponent{

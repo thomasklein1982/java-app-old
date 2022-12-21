@@ -210,6 +210,14 @@ function defineJComboBox(Clazz,Java){
       {name: 'index', type: 'int'}
     ]
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'setOptions',
+    args: [
+      {
+        name: 'optionArray', type: {baseType: 'String', dimension: 1}
+      }
+    ]
+  }, Clazz, false,false,Java);
 }
 
 function defineJCheckBox(Clazz,Java){

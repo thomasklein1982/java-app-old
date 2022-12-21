@@ -60,6 +60,7 @@ export class Project{
       <meta charset="utf-8">
       <script>
         window.language="java";
+        window.appJSdebugMode=true;
         ${window.appJScode}
         ${includeSave? 'console.hide()':''}
         ${window.additionalJSCode}

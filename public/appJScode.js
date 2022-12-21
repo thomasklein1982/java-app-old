@@ -4886,11 +4886,11 @@ window.appJScode=function(){
         $App.world.replaceTypes(oldType,newType);
       },
       draw: async function(cx,cy,width,height){
-        // if($App.debug.enabled){
+        if($App.debug.enabled){
           await $App.world.drawAsync(cx,cy,width,height);
-        // }else{
-        //   $App.world.draw(cx,cy,width,height);
-        // }
+        }else{
+          $App.world.draw(cx,cy,width,height);
+        }
       },
       scroll(cx,cy){
         $App.world.setCenter(cx,cy);
