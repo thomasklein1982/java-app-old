@@ -30,7 +30,7 @@ import Listbox from 'primevue/listbox';
 import TextArea from 'primevue/textarea';
 import Tooltip from 'primevue/tooltip';
 
-import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primevue/resources/themes/vela-orange/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import './style.css';

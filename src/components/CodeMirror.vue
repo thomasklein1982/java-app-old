@@ -15,10 +15,11 @@ import {indentWithTab,undo,redo} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
 import {autocompletion} from "@codemirror/autocomplete";
-import {StateField, StateEffect, EditorSelection,RangeSet,EditorState} from "@codemirror/state"
+import {Compartment,StateField, StateEffect, EditorSelection,RangeSet,EditorState} from "@codemirror/state"
 import {gutter, GutterMarker} from "@codemirror/view"
 import {Decoration,ViewPlugin} from "@codemirror/view"
 import {getClazzFromState} from '../functions/cm/getClazzFromState';
+import { oneDark } from '@codemirror/theme-one-dark';
 
 import {Type} from '../classes/Type'
 import { nextTick } from '@vue/runtime-core';
@@ -201,6 +202,7 @@ export default {
       }
       return errors;
     });
+    let editorTheme=new Compartment();
     this.editor=new EditorView({
       state: EditorState.create({
         doc: "",
@@ -211,6 +213,7 @@ export default {
           EditorView.lineWrapping,
           lint,
           lintGutter(),
+          editorTheme.of(oneDark),
           indentUnit.of("  "),
           java(),
           autocompletion({override: [createAutocompletion()]}),
