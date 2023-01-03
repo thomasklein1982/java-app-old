@@ -43,8 +43,8 @@ export default {
           EditorView.lineWrapping,
           lintGutter(),
           indentUnit.of("  "),
-          // css().language,
-          // autocompletion({override: [cssCompletionSource]}),
+          css().language,
+          autocompletion({override: [cssCompletionSource]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
             this.project.css=this.getCode();
