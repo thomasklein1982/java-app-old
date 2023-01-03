@@ -176,7 +176,6 @@ export default {
       errorID: 1,
       size: 0,
       triggerRecompilation: true,
-      editor: null
     };
   },
   mounted(){
@@ -370,7 +369,8 @@ export default {
     },
     undo(){
       //undo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
-      undo(this.editor);
+      let state=this.editor;
+      undo(state);
     },
     redo(){
       redo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
