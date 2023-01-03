@@ -40,7 +40,7 @@ export function Block(node,source,scope){
       try{
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
-        let line=source.state.doc.lineAt(node.from).number;
+        let line=source.getLineNumber(node.from);
         code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
         if(res.updateLocalVariablesAfter){
           let vnames=res.updateLocalVariablesAfter;
@@ -59,7 +59,8 @@ export function Block(node,source,scope){
   if(open){
     errors.push(source.createError("'}' erwartet.",node));
   }
-  let line=source.state.doc.lineAt(blockNode.to).number;
+  //let line=source.state.doc.lineAt(blockNode.to).number;
+  let line=source.getLineNumber(blockNode.to);
   code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
   scope.popLayer();
   code+=createUpdateLocalVariablesCode(scope);

@@ -24,7 +24,7 @@ import NewAppDialog from "./NewAppDialog.vue";
 export default {
   data(){
     return {
-      lastProject: null
+      lastProject: null,
     }
   },
   mounted(){

@@ -121,14 +121,14 @@ export class Project{
     code+="\n/***Klassen-Runtime-Informationen:**/\n$clazzRuntimeInfos="+JSON.stringify(clazzInfos)+";";
     return code;
   }
-  async initialize(){
+  initialize(){
     //this.compile(true);
     for(var i=0;i<this.clazzes.length;i++){
       var c=this.clazzes[i];
       if(c instanceof UIClazz){
         c.compile();
       }else{
-        await c.generateTreeAndState(c.src);
+        c.generateSrcAndTree(c.src);
         c.compileDeclaration();
         c.compileMemberDeclarations();
       }
@@ -175,7 +175,7 @@ export class Project{
         c.compile();
       }else{
         if(fromSource){
-          await c.generateTreeAndState(c.src);
+          c.generateSrcAndTree(c.src);
         }
         toCompile.push(c);
       }

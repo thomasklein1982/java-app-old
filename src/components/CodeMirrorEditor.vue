@@ -6,16 +6,16 @@
 </template>
 
 <script>
-import { EditorView, basicSetup, EditorState } from "@codemirror/basic-setup";
+import { EditorView, basicSetup } from "codemirror";
 import { css, cssCompletionSource } from "@codemirror/lang-css";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
-import {indentWithTab} from "@codemirror/commands";
+import {indentWithTab,redo,undo} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
-import {undo, redo} from '@codemirror/history';
+import {EditorState} from '@codemirror/state';
 import {autocompletion} from "@codemirror/autocomplete";
-import {gutter, GutterMarker} from "@codemirror/gutter"
+import {gutter, GutterMarker} from "@codemirror/view"
 import {Decoration,ViewPlugin} from "@codemirror/view"
 
 import { nextTick } from '@vue/runtime-core';

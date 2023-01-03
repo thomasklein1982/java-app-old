@@ -221,24 +221,24 @@ export class Clazz{
     return this.name;
   }
 
-  async generateTreeAndState(src){
-    var viewUpdate=await parseJava(src);
-    this.setSrcTreeAndState(src,viewUpdate.state);
+  generateSrcAndTree(src){
+    var tree=parseJava(src);
+    this.setSrcAndTree(src,tree);
   }
 
-  setSrcTreeAndState(src,state){
+  setSrcAndTree(src,tree){
     this.src=src;
     this.name=null;
     this.superClazz=null;
     this.attributes={};
     this.constructor=null;
     this.methods={};
-    this.source=new Source(src,state);
+    this.source=new Source(src,tree);
   }
 
-  async compile(fromSource){
+  compile(fromSource){
     if(fromSource){
-      await this.generateTreeAndState(this.src);
+      this.generateSrcAndTree(this.src);
     }
     this.compileDeclaration();
     this.compileMemberDeclarations();
@@ -248,7 +248,7 @@ export class Clazz{
   compileDeclaration(){
     var errors=[];
     this.errors=errors;
-    var node=this.source.state.tree.topNode.firstChild;
+    var node=this.source.tree.topNode.firstChild;
     if(node.type.name!=="ClassDeclaration"){
       errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",node));
     }else{

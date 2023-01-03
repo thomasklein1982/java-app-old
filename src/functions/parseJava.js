@@ -1,33 +1,52 @@
-import {EditorState, EditorView} from "@codemirror/basic-setup"
-import {java} from "@codemirror/lang-java"
+// import {EditorView} from "codemirror"
+// import { EditorState } from "@codemirror/state";
+// import {java} from "@codemirror/lang-java"
+import { javaLanguage } from "@codemirror/lang-java";
 
-const offscreenEditor=new EditorView({
-  state: EditorState.create({
-    doc: "",
-    extensions: [
-      EditorView.updateListener.of((viewUpdate) => {
-        parsingDone(viewUpdate);
-      }),
-      java()
-    ]
-  })
-});
-offscreenEditor.textLength=0;
-
-let parsingResolve;
-export async function parseJava(src){
-  var p=new Promise(function(resolve,reject){
-    parsingResolve=resolve;
-    offscreenEditor.dispatch({
-      changes: {from: 0, to: offscreenEditor.textLength, insert: src}
-    });
-  });
-  let viewUpdate=await p;
-  offscreenEditor.textLength=src.length;
-  return viewUpdate;
+export function parseJava(src){
+  let tree=javaLanguage.parser.parse(src);
+  return tree;
 }
 
-function parsingDone(viewUpdate){
-  if(!parsingResolve) return;
-  parsingResolve(viewUpdate);
-}
+// const offscreenEditor=new EditorView({
+//   state: EditorState.create({
+//     doc: "",
+//     extensions: [
+//       EditorView.updateListener.of((viewUpdate) => {
+//         parsingDone(viewUpdate);
+//       }),
+//       java()
+//     ]
+//   })
+// });
+
+// let parsingResolve;
+// export async function parseJava(src){
+//   var p=new Promise(function(resolve,reject){
+//     parsingResolve=null;
+//     let chunksize=1000;
+//     let remaining=src;
+//     offscreenEditor.dispatch({
+//       changes: {from: 0, to: offscreenEditor.viewState.state.doc.length, insert: src}
+//     });
+//     let offset=0;
+//     while(remaining.length>0){
+//       let part=remaining.substring(0,chunksize);
+//       remaining=remaining.substring(chunksize);
+//       if(remaining.length<=0){
+//         parsingResolve=resolve;
+//       }
+//       offscreenEditor.dispatch({
+//         changes: {from: offset, to: offset+part.length,insert: part}
+//       });
+//       offset+=chunksize;
+//     }
+//   });
+//   let viewUpdate=await p;
+//   return viewUpdate;
+// }
+
+// function parsingDone(viewUpdate){
+//   if(!parsingResolve) return;
+//   parsingResolve(viewUpdate);
+// }

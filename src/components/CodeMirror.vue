@@ -7,18 +7,16 @@
 </template>
 
 <script>
-import { EditorView, basicSetup, EditorState } from "@codemirror/basic-setup";
+import { EditorView, basicSetup } from "codemirror";
 import { java } from "@codemirror/lang-java";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
-import {indentWithTab} from "@codemirror/commands";
+import {indentWithTab,undo,redo} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
-import {undo, redo} from '@codemirror/history';
 import {autocompletion} from "@codemirror/autocomplete";
-import {StateField, StateEffect, EditorSelection} from "@codemirror/state"
-import {RangeSet} from "@codemirror/rangeset"
-import {gutter, GutterMarker} from "@codemirror/gutter"
+import {StateField, StateEffect, EditorSelection,RangeSet,EditorState} from "@codemirror/state"
+import {gutter, GutterMarker} from "@codemirror/view"
 import {Decoration,ViewPlugin} from "@codemirror/view"
 import {getClazzFromState} from '../functions/cm/getClazzFromState';
 
@@ -272,8 +270,15 @@ export default {
     },
     async update(viewUpdate){
       var state=viewUpdate.state;
+      /**direkt nach dem laden darf kein update erfolgen, sonst ist der tree (oft) fehlerhaft: */
+      if(viewUpdate.changedRanges.length===1){
+        let r=viewUpdate.changedRanges[0];
+        if(r.fromA===0 && r.fromB===0 && r.toA===0 && r.toB===state.doc.length){
+          return;
+        }
+      }
       var src=state.doc.toString();
-      this.clazz.setSrcTreeAndState(src,state);
+      this.clazz.setSrcAndTree(src,state.tree);
       if(this.triggerRecompilation){
         this.project.compile();
         //this.$emit("recompile");
@@ -287,6 +292,7 @@ export default {
       //this.updateErrors(viewUpdate.view);
     },
     emptyTransaction(){
+
       this.editor.dispatch({
       });
     },
@@ -329,7 +335,6 @@ export default {
       this.isLintPanelOpen=false;
     },
     toggleLintPanel(){
-      this.project.compile(true);
       if(this.isLintPanelOpen){
         this.closeLintPanel();
       }else{

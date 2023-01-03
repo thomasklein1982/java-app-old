@@ -2,8 +2,8 @@ export class Error{
   constructor(message,node,source){
     this.from=node.from;
     this.to=node.to;
-    this.line=source.state.doc.lineAt(node.from);
-    this.col=node.from-this.line.from;
+    this.line=source.getLine(node.from);
+    this.col=node.from-this.line.startIndex;
     if(!message){
       message="Syntax-Fehler";
     }
