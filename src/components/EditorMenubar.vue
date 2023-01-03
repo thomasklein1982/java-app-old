@@ -1,5 +1,5 @@
 <template>
-  <Menubar :model="items">
+  <Menubar :model="items" class="noprint">
     <template #start>
       <img alt="logo" src="/icon-transparent.png" height="40" >
     </template>
@@ -63,7 +63,17 @@ export default {
               command: (ev)=>{
                 this.$emit('database');
               }
-            }
+            },
+            {
+              separator:true
+            },
+            {
+              label: 'Drucken',
+              icon: 'pi pi-print',
+              command: (ev)=>{
+                this.$emit('print');
+              }
+            },
           ]
         },
         {

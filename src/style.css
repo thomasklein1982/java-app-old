@@ -1,7 +1,20 @@
 body,html{
-  position: fixed;
-  overflow: hidden;
   touch-action: pan-y;
+  padding: 0;
+  margin: 0;
+}
+
+@media screen {
+  
+  .onlyprint{
+    display: none;
+  }
+}
+
+@media print {
+  .noprint{
+    display: none;
+  }
 }
 
 .p-panel div.p-panel-header{

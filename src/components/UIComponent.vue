@@ -64,7 +64,7 @@
             }"
             handle=".handle"
             ghost-class="drag-ghost-component"
-            :style="{flex: 1,'padding-bottom': isUIClazz? '100%':'2rem'}"
+            :style="{flex: 1,'padding-bottom': (!$root.printMode && isUIClazz)? '100%':'2rem'}"
             @end="endDrag"
             @add="emitIsolatedUpdate()"
             @sort="emitIsolatedUpdate()"

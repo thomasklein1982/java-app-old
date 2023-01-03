@@ -245,6 +245,10 @@ export class Clazz{
     this.compileMethods();
   }
 
+  isUIClazz(){
+    return false;
+  }
+
   compileDeclaration(){
     var errors=[];
     this.errors=errors;

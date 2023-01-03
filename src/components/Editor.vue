@@ -1,98 +1,104 @@
-<template>
-  <div v-if="project" style="width: 100%; height: 100%; overflow: hidden" :style="{display: 'flex', flexDirection: 'column'}">
-  
-    <EditorMenubar
-      :right-closed="rightClosed"
-      @download="downloadProject"
-      @upload="uploadProject"
-      @new="$refs.dialogNewApp.setVisible(true)"
-      @prettify="prettifyCode"
-      @rename="renameSelection"
-      @undo="currentEditor?.undo()"
-      @redo="currentEditor?.redo()"
-      @search="currentEditor?.openSearchPanel()"
-      @lint="currentEditor?.toggleLintPanel()"
-      @toggleright="toggleRight()"
-      @resources="$refs.dialogResources.setVisible(true)"
-      @database="$refs.dialogDatabase.setVisible(true)"
-      @css="$refs.dialogCSS.setVisible(true)"
-      @settings="$refs.dialogSettings.setVisible(true)"
+<template>  
+  <div v-if="project" style="width: 100%;overflow: hidden" :style="{height: $root.printMode? '':'100%', display: 'flex', flexDirection: 'column'}">
+    <PrintPreview
+      :project="project"
+      ref="printPreview"
     />
-    <LinksDialog
-      ref="dialogResources"
-    />
-    <SettingsDialog
-      ref="dialogSettings"
-      :font-size="fontSize"
-      @changefontsize="changeFontSize"
-    />
-    <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
-    <DatabaseDialog :database="database" ref="dialogDatabase"/>
-    <CSSDialog :project="project" ref="dialogCSS"/>
-    <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
-      <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
-        <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
-          <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+c.name">
-            <template #header>
-              {{c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
-            </template>
-            <UIEditor 
-              v-if="isUIClazz(c)" 
-              :clazz="c"
-              @select="updateSelectedUIComponent"
-              @recompile="compileProjectAndUpdateUIPreview()"
-              @isolatedupdate="updateUIPreview()"
-            >
-            </UIEditor>
-            <CodeMirror
-              v-else
-              :clazz="c"
-              :project="project"
-              :font-size="fontSize"
-              :current="paused && i===activeTab ? current : null"
-              ref="editor"
-            />
-          </TabPanel>
-          <TabPanel>
-            <template #header>
-              &thinsp;<span class="pi pi-fw pi-plus"/>&thinsp;
-            </template>
-            <NewClazzWizard :project="project" @confirm="addNewClazz"/>
-          </TabPanel>
-        </TabView>
-        
-      </SplitterPanel>
-      <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
-        <Splitter :gutter-size="splitterSize" layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
-          <SplitterPanel style="overflow: hidden;">
-            <UIPreview ref="uipreview" v-show="isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
-            <AppPreview v-show="!isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
-          </SplitterPanel>
-          <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
-            <UIComponentEditor 
-              v-if="showUIEditor && selectedUIComponent" :component="selectedUIComponent"
-              @recompile="compileProjectAndUpdateUIPreview()"
-              @update="updateUIPreview()"
-            />
-            <Outline
-              v-else
-              @click="outlineClick"
-              :style="{flex: 1}" 
-              ref="outline"
-              :project="project"
-            />
-          </SplitterPanel>
-        </Splitter>
-      </SplitterPanel>
-    </Splitter>
-    <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
-      <Button v-if="currentClazz && activeTab>0" icon="pi pi-trash" @click="trashCurrentClazz()" style="margin-right: 0.5rem"/>
-      <span class="p-buttonset" v-if="!isCurrentClazzUIClazz">
-        <Button :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
-        <Button v-if="paused" @click="step()" icon="pi pi-arrow-right" />
-        <Button v-if="running" @click="stop()" icon="pi pi-times" />
+    <template v-if="!$root.printMode">
+      <EditorMenubar
+        :right-closed="rightClosed"
+        @download="downloadProject"
+        @upload="uploadProject"
+        @new="$refs.dialogNewApp.setVisible(true)"
+        @prettify="prettifyCode"
+        @rename="renameSelection"
+        @undo="currentEditor?.undo()"
+        @redo="currentEditor?.redo()"
+        @search="currentEditor?.openSearchPanel()"
+        @lint="currentEditor?.toggleLintPanel()"
+        @toggleright="toggleRight()"
+        @resources="$refs.dialogResources.setVisible(true)"
+        @database="$refs.dialogDatabase.setVisible(true)"
+        @css="$refs.dialogCSS.setVisible(true)"
+        @settings="$refs.dialogSettings.setVisible(true)"
+        @print="$refs.printPreview.open()"
+      />
+      <LinksDialog
+        ref="dialogResources"
+      />
+      <SettingsDialog
+        ref="dialogSettings"
+        :font-size="fontSize"
+        @changefontsize="changeFontSize"
+      />
+      <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
+      <DatabaseDialog :database="database" ref="dialogDatabase"/>
+      <CSSDialog :project="project" ref="dialogCSS"/>
+      <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
+        <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
+          <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
+            <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+c.name">
+              <template #header>
+                {{c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
+              </template>
+              <UIEditor 
+                v-if="isUIClazz(c)" 
+                :clazz="c"
+                @select="updateSelectedUIComponent"
+                @recompile="compileProjectAndUpdateUIPreview()"
+                @isolatedupdate="updateUIPreview()"
+              >
+              </UIEditor>
+              <CodeMirror
+                v-else
+                :clazz="c"
+                :project="project"
+                :font-size="fontSize"
+                :current="paused && i===activeTab ? current : null"
+                ref="editor"
+              />
+            </TabPanel>
+            <TabPanel>
+              <template #header>
+                &thinsp;<span class="pi pi-fw pi-plus"/>&thinsp;
+              </template>
+              <NewClazzWizard :project="project" @confirm="addNewClazz"/>
+            </TabPanel>
+          </TabView>
+          
+        </SplitterPanel>
+        <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
+          <Splitter :gutter-size="splitterSize" layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
+            <SplitterPanel style="overflow: hidden;">
+              <UIPreview ref="uipreview" v-show="isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
+              <AppPreview v-show="!isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
+            </SplitterPanel>
+            <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
+              <UIComponentEditor 
+                v-if="showUIEditor && selectedUIComponent" :component="selectedUIComponent"
+                @recompile="compileProjectAndUpdateUIPreview()"
+                @update="updateUIPreview()"
+              />
+              <Outline
+                v-else
+                @click="outlineClick"
+                :style="{flex: 1}" 
+                ref="outline"
+                :project="project"
+              />
+            </SplitterPanel>
+          </Splitter>
+        </SplitterPanel>
+      </Splitter>
+      <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
+        <Button v-if="currentClazz && activeTab>0" icon="pi pi-trash" @click="trashCurrentClazz()" style="margin-right: 0.5rem"/>
+        <span class="p-buttonset" v-if="!isCurrentClazzUIClazz">
+          <Button :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
+          <Button v-if="paused" @click="step()" icon="pi pi-arrow-right" />
+          <Button v-if="running" @click="stop()" icon="pi pi-times" />
+        </span>
       </span>
-    </span>
+    </template>
   </div>
 </template>
 
@@ -121,6 +127,7 @@ import UIPreview from "./UIPreview.vue";
 import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
 import CSSDialogVue from "./CSSDialog.vue";
+import PrintPreview from "./PrintPreview.vue";
 
 
 export default {
@@ -396,7 +403,8 @@ export default {
     UIComponentEditor,
     UIPreview,
     CSSDialog,
-    SettingsDialog
+    SettingsDialog,
+    PrintPreview
   }
 }
 </script>

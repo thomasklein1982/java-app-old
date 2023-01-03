@@ -84,7 +84,9 @@ export class UIClazz {
      */
   }
 
-  
+  isUIClazz(){
+    return true;
+  }
 
   getAttribute(name,staticAccess){
     if(staticAccess){

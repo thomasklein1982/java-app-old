@@ -1,5 +1,5 @@
 <template>
-  <div style="position: fixed; width: 100%; height: 100%; overflow: hidden">
+  <div style="width: 100%;overflow: hidden;" :style="{position: $root.printMode? '':'fixed', height: $root.printMode? '':'100%'}">
     <StartScreen 
       v-if="screen==='start'"
       @open-project="openProject"
@@ -23,8 +23,9 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 116,
+      version: 118,
       paused: false,
+      printMode: false,
       current: {line: -1, name: null}
     }
   },
