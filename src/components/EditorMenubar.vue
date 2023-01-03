@@ -1,7 +1,7 @@
 <template>
   <Menubar :model="items" class="noprint">
     <template #start>
-      <img alt="logo" src="/icon-transparent.png" height="40" >
+      <img alt="logo" src="/icon-white-transparent.png" height="40" >
     </template>
     <template #end>
       <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-star" @click="$emit('resources')"/>
