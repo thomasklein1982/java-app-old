@@ -197,10 +197,10 @@
 <style scoped>
   .component{
     width: 100%;
-    height: 1cm;
+    min-height: 1cm;
   }
   .jimage{
-    height: 1cm;
+    min-height: 1cm;
   }
   .ui-class-top{
     height: 1cm;
