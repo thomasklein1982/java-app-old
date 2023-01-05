@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$root.printMode" @click="close()" style="background-color: white; width: 100%; min-height: 100%; overflow-x: hidden; overflow-y: visible">
+  <div v-if="$root.printMode" @click="close()" style="background-color: white; color: black; width: 100%; min-height: 100%; overflow-x: hidden; overflow-y: visible;">
     <h1>Klassen</h1>
     <div v-for="(c,i) in project.clazzes">
       <template v-if="c.isUIClazz()">
@@ -8,6 +8,11 @@
       </template>
       <template v-else>
         <h2>Klasse {{c.name}}</h2>
+        <div v-if="c.errors.length>0" style="font-size: small; font-family: monospace; color: red; margin-bottom: 1rem;">
+          <div v-for="(e,j) in c.errors">
+            [{{e.line.number}}:{{e.col}}]: {{e.message}} 
+          </div>
+        </div>
         <CodeDisplay
           :code="c.src"
         />

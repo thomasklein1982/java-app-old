@@ -5,6 +5,10 @@ body,html{
   width: 100%;
 }
 
+.ͼo .cm-gutters{
+  border-right: 1pt solid;
+}
+
 @media screen {
   body,html{
     position: fixed;

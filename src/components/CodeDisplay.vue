@@ -1,10 +1,10 @@
 <template>
-  <table style="width:100%;font-family: monospace;white-space: pre-wrap;">
-    <tr v-for="(l,i) in lines">
-      <td style="text-align: right"><span style="display: inline-block;margin-right: 2rem;">{{i+1}}</span></td>
-      <td :style="{flex: 1}" style="">{{l}}</td>
-    </tr>
-  </table>
+  <div style="width:100%;font-family: monospace;white-space: pre-wrap;">
+    <div :style="{display: 'flex'}" v-for="(l,i) in lines">
+      <div style="text-align: right; margin-right: 2rem">{{i+1}}</div>
+      <div :style="{flex: 1}" style="">{{l}}</div>
+    </div>
+  </div>
 </template>
 
 <script>

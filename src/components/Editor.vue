@@ -93,9 +93,9 @@
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
         <Button v-if="currentClazz && activeTab>0" icon="pi pi-trash" @click="trashCurrentClazz()" style="margin-right: 0.5rem"/>
         <span class="p-buttonset" v-if="!isCurrentClazzUIClazz">
-          <Button :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
-          <Button v-if="paused" @click="step()" icon="pi pi-arrow-right" />
-          <Button v-if="running" @click="stop()" icon="pi pi-times" />
+          <Button class="p-button-lg" :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
+          <Button class="p-button-lg" v-if="paused" @click="step()" icon="pi pi-arrow-right" />
+          <Button class="p-button-lg" v-if="running" @click="stop()" icon="pi pi-times" />
         </span>
       </span>
     </template>
