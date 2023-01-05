@@ -36,7 +36,9 @@
             </tr>
           </table>
         </template>
-        <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
+        <div style="position: absolute; top: 0; right: 0">
+          <Badge v-if="showName" :value="component.name" severity="info" ></Badge>
+        </div>
         <div @click="handleClick" style="cursor: pointer; position: absolute; left: 0; right: 0; top: 0; bottom: 0"></div>
       </div>
       <Button icon="pi pi-trash" @click="clickRemove($event)" v-show="selectedComponent===component"/>
