@@ -5,6 +5,10 @@ body,html{
   width: 100%;
 }
 
+html{
+  overscroll-behavior: none;
+}
+
 .ͼo .cm-gutters{
   border-right: 1pt solid;
 }
