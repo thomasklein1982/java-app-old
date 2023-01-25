@@ -2627,7 +2627,8 @@ window.appJScode=function(){
       this.input=document.createElement("input");
       this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
       this.input.currentPosition=-1;
-      this.input.placeholder="gib einen Befehl ein..."
+      this.input.spellcheck=false;
+      this.input.placeholder="gib einen Befehl ein...";
       this.input.onchange=()=>{
         var v=this.input.value;
         if(v.trim().length===0) return;
@@ -2649,7 +2650,8 @@ window.appJScode=function(){
         this.input.currentPosition=-1;
       };
       this.input.onkeydown=(ev)=>{
-        
+        ev.test="Hallo";
+        ev.stopPropagation();
         if(ev.keyCode===40 || ev.keyCode===38 || ev.keyCode===13){
           if(ev.keyCode===13){
             this.input.onchange();

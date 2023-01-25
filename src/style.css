@@ -5,7 +5,7 @@ body,html{
   width: 100%;
 }
 
-html{
+*{
   overscroll-behavior: none;
 }
 
