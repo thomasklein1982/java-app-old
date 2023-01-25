@@ -13,7 +13,7 @@ window.appJScode=function(){
     })
   
     window.$App={
-      version: 32,
+      version: 33,
       language: window.language? window.language:'js',
       setupData: null,
       dialog: {
@@ -538,6 +538,7 @@ window.appJScode=function(){
         var style=document.createElement("style");
         document.head.appendChild(style);
         style=style.sheet;
+        style.insertRule("*{overscroll-behavior: none;}",0);
         style.insertRule(".datatable{background-color: white; text-align: center; border-collapse: collapse}",0);
         style.insertRule(".datatable td,th{border: 1pt solid black}",0);
         style.insertRule(".datatable tr.selected{background-color: yellow}",0);
@@ -2611,7 +2612,7 @@ window.appJScode=function(){
     /**Console */
     $App.Console=function(){
       this.element=document.createElement("div");
-      this.element.style="width: 100%; height: 100%; background-color: #222222; color: white";
+      this.element.style="overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white";
       this.element.className="console";
       this.items={};
       this.localItems={};
@@ -4374,6 +4375,7 @@ window.appJScode=function(){
           b.style.gridRowGap=0;
           b.style.columnGap=0;
           b.style.rowGap=0;
+          b.style.overflow="auto";
         }
         b.add=function(c){
           if(!this.noAbsolutePosition){

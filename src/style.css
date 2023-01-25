@@ -9,6 +9,10 @@ body,html{
   border-right: 1pt solid;
 }
 
+.cm-panel-lint button, .cm-search button{
+  color: white;
+}
+
 @media screen {
   body,html{
     position: fixed;

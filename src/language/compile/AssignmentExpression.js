@@ -21,6 +21,7 @@ export function AssignmentExpression(node,source,scope){
   if(node.name!=="AssignOp"){
     throw source.createError("'=' erwartet.",node);
   }
+  let assignOp=source.getText(node);
   node=node.nextSibling;
   let val=CompileFunctions.get(node,source)(node,source,scope);
   if(!val.type){
@@ -33,7 +34,7 @@ export function AssignmentExpression(node,source,scope){
   if(v.codeSet){
     code=v.codeSet+val.code+")";
   }else{
-    code=v.code+"="+val.code;
+    code=v.code+assignOp+val.code;
   }
   if(v.local){
     code+=";eval('$locals["+JSON.stringify(v.name)+"]="+v.name+"');";
