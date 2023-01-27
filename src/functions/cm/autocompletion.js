@@ -24,6 +24,7 @@ function getRealNodeBefore(node,pos){
 
 export function createAutocompletion(){
   return (context)=>{
+    console.log("autocomplete");
     let pos=context.pos;
     let lastTypedCharacter=context.state.doc.sliceString(context.pos-1,context.pos);
     if(["{","}",",",";","[","]","(",")"].indexOf(lastTypedCharacter)>=0) return;
@@ -38,6 +39,7 @@ export function createAutocompletion(){
       return;
     }
     //innerhalb einer Methode?
+    //console.log("autocomplete: check method");
     let method=null;
     let clazz=getClazzFromState(context.state);
     if(!clazz) return;
@@ -62,6 +64,8 @@ export function createAutocompletion(){
       n=n.parent;
     }
     
+    //console.log("autocomplete: check method 2",method.name);
+
     if(nodeBefore.name==="}"){
       if(nodeBefore.parent.name==="Block"){
         let n=nodeBefore.parent.parent;
@@ -107,11 +111,13 @@ export function createAutocompletion(){
       }
       return;
     }
+    //console.log("autocomplete: look for annotations");
     let annotation;
     if(nodeBefore.name==="Identifier" && nodeBefore.prevSibling){
       context.pos=nodeBefore.from;
       nodeBefore=nodeBefore.prevSibling;
     }
+    //console.log("autocomplete: nodeBefore",nodeBefore.name);
     if(nodeBefore.name==="new"){
       if(context.pos===nodeBefore.to){
         return;
