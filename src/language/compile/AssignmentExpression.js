@@ -36,10 +36,9 @@ export function AssignmentExpression(node,source,scope){
   }else{
     code=v.code+assignOp+val.code;
   }
-  if(v.local){
-    code+=";eval('$locals["+JSON.stringify(v.name)+"]="+v.name+"');";
-  }
   return {
-    code
+    code,
+    local: v.local,
+    name: v.name
   }
 }

@@ -15,7 +15,7 @@
       </tr>
       <tr v-if="component.inputType!==undefined">
         <td>Eingabetyp:</td>
-        <td><InputText @change="emitUpdate()" v-model="component.inputType" style="width: 95%"/></td>
+        <td><Dropdown @change="emitUpdate()" :options="['text','number']" v-model="component.inputType" style="width: 95%"/></td>
       </tr>
       <tr v-if="type && type.labels && type.labels.value!==undefined">
         <td>Wert:</td>

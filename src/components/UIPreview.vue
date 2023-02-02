@@ -23,7 +23,7 @@ import { UIClazz } from '../classes/UIClazz';
       reload(){
         if(!(this.uiClazz instanceof UIClazz)) return;
         let frame=document.createElement('iframe');
-        frame.style="width: 100%; height: 100%;";
+        frame.style="background-color: white; width: 100%; height: 100%;";
         if(this.$refs.wrapper.firstChild){
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
         }

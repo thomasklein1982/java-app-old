@@ -13,6 +13,10 @@ export function ExpressionStatement(node,source,scope){
   if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
     throw (source.createError("';' erwartet.",node.nextSibling));
   }
-  a.code+=";";
+  if(a.local){
+    a.code+=";eval('$locals["+JSON.stringify(a.name)+"]="+a.name+"');";
+  }else{
+    a.code+=";";
+  }
   return a;
 }

@@ -10,7 +10,7 @@
           <div class="component jlabel">{{component.value}}</div>
         </template>
         <template v-if="type==='JTextField'">
-          <input type="text" class="component jtextfield" :value="component.value" :placeholder="component.placeholder"/>
+          <input type="text" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JImage'">
           <img class="jimage" :src="component.value"/>
@@ -19,11 +19,11 @@
           <input type="checkbox" checked/> {{component.label}}
         </template>
         <template v-if="type==='JTextArea'">
-          <textarea type="text" class="component jtextarea" :value="component.value" :placeholder="component.placeholder"/>
+          <textarea type="text" class="component jtextarea" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JComboBox'">
           <select class="component jcombobox">
-            <option>{{component.value}}</option>
+            <option>{{isEditable? component.value: 'JComboBox'}}</option>
           </select>
         </template>
         <template v-if="type==='DataTable'">
@@ -155,6 +155,7 @@
           message: 'Diese UI-Komponente löschen?',
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
+            this.$emit('recompile')
             this.$emit("removethis");
           },
           reject: () => {
@@ -223,6 +224,7 @@
   }
   .jpanel-color,.jpanel-left,.jpanel-top,.jpanel-bottom{
     background-color: #DDD;
+    color: black;
     cursor: pointer;
   }
   .jpanel-left{

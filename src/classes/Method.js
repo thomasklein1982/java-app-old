@@ -35,7 +35,11 @@ export class Method{
     if(this.block){
       code+="\n"+this.block.code;
     }
-    code+="\nreturn this;\n}";
+    if(this.isConstructor){
+      code+="\nreturn this;\n}";
+    }else{
+      code+="\nreturn undefined;\n}";
+    }
     return code;
   }
   isStatic(){

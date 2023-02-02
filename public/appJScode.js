@@ -276,7 +276,7 @@ window.appJScode=function(){
       var message=event.reason.message? event.reason.message: event.reason;
       $App.handleError({
         message: message,
-        line: $App.debug.lastLine,
+        line: event.reason.line? event.reason.line: $App.debug.lastLine,
         name: $App.debug.lastName
       });
     });
@@ -297,6 +297,9 @@ window.appJScode=function(){
         m=e;
       }else{
         m=e.message;
+        if(e.line){
+          line=e.line;
+        }
       }
       if(e.stack){
         m=e.stack;
@@ -545,7 +548,7 @@ window.appJScode=function(){
         style.insertRule(".datatable tr:nth-child(even){background-color: lightgray}",0);
         style.insertRule(".datatable.show-index td:nth-child(1),.datatable.show-index th:nth-child(1){display: table-cell}",0);
         style.insertRule(".datatable td:nth-child(1),.datatable th:nth-child(1){display: none}",0);
-        style.insertRule("button{border-radius: 0}",0);
+        style.insertRule("button,button:active{border-radius: 0}",0);
         $App.headLoaded=true;
       }
       if(!dontStart && document.body){
