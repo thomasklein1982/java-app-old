@@ -17,6 +17,11 @@ body,html{
   color: white;
 }
 
+button{
+  background-color: lightgray;
+  border-radius: 0;
+}
+
 @media screen {
   body,html{
     position: fixed;

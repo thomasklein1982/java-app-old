@@ -548,7 +548,9 @@ window.appJScode=function(){
         style.insertRule(".datatable tr:nth-child(even){background-color: lightgray}",0);
         style.insertRule(".datatable.show-index td:nth-child(1),.datatable.show-index th:nth-child(1){display: table-cell}",0);
         style.insertRule(".datatable td:nth-child(1),.datatable th:nth-child(1){display: none}",0);
-        style.insertRule("button,button:active{border-radius: 0}",0);
+        style.insertRule("button:active{border-radius: 0;background-color:#e0e0e0}",0);
+        style.insertRule("button{border-radius: 0;background-color:#d0d0d0}",0);
+        style.insertRule("button:hover{border-radius: 0;background-color:#dadada}",0);
         $App.headLoaded=true;
       }
       if(!dontStart && document.body){
