@@ -13,11 +13,11 @@ import {keymap} from "@codemirror/view";
 import {indentWithTab,redo,undo} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
-import {EditorState} from '@codemirror/state';
+import {Compartment,EditorState} from '@codemirror/state';
 import {autocompletion} from "@codemirror/autocomplete";
 import {gutter, GutterMarker} from "@codemirror/view"
 import {Decoration,ViewPlugin} from "@codemirror/view"
-
+import { oneDark } from '@codemirror/theme-one-dark';
 import { nextTick } from '@vue/runtime-core';
 
 
@@ -35,6 +35,7 @@ export default {
   mounted(){
     let changed=true;
     let timer;
+    let editorTheme=new Compartment();
     this.editor=new EditorView({
       state: EditorState.create({
         doc: this.project.css,
@@ -42,6 +43,7 @@ export default {
           basicSetup,
           EditorView.lineWrapping,
           lintGutter(),
+          editorTheme.of(oneDark),
           indentUnit.of("  "),
           css().language,
           autocompletion({override: [cssCompletionSource]}),

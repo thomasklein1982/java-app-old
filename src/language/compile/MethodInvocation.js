@@ -116,9 +116,11 @@ export function MethodInvocation(node,source,scope){
   }
   code="await "+code;
   if(method.type){
-    let startLine=source.getLine(method.bodyNode.from);
-    console.log(method.bodyNode);
-    code="$m("+code+",\"Die Methode "+method.name+" muss einen Wert vom Typ "+method.type.toString()+" zurückgeben.\","+startLine.number+")";
+    let startLine=undefined;
+    if(method.bodyNode){
+      startLine=source.getLine(method.bodyNode.from).number;
+    }
+    code="$m("+code+",\"Die Methode "+method.name+" muss einen Wert vom Typ "+method.type.toString()+" zurückgeben.\","+startLine+")";
     scope.addTypeAnnotation(node,method.type,false);
   }
   return {

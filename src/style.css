@@ -9,6 +9,15 @@ body,html{
   overscroll-behavior: none;
 }
 
+/*code-mirror css falsche farben**/
+.ͼj2{
+  color: white;
+}
+
+.ͼi2{
+
+}
+
 .ͼo .cm-gutters{
   border-right: 1pt solid;
 }

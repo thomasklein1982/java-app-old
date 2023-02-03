@@ -16,12 +16,12 @@ export function ObjectCreationExpression(node,source,scope){
   let root=node;
   node=node.firstChild;
   if(node.name!=='new'){
-    let code=source.getText(root).trim();
-    let c=code.charAt(code.length-1);
-    if(c==="."){
+    let dot=node.nextSibling;
+    if(dot.name==="."){
       /**Seltsames Verhalten? Hier scheinen alle Ausdruecke zu landen, die mit einem . enden */
       /**TODO: Autocompletion klappt nicht bei mehr als einer Ebene: screen.bmi.=> keine Completion! */
       let node=root.firstChild;
+      console.log("ende mit .",node);
       while(node && node.nextSibling && !node.nextSibling.type.isError){
         let f=CompileFunctions.get(node,source);
         if(f){
