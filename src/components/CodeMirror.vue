@@ -1,7 +1,7 @@
 <template>
   <div id="root">
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
-    <Message v-for="(e,i) in runtimeError" severity="error" :key="'re'+errorID">Z{{e.line}}: {{e.message}}</Message>
+    <Message v-if="displayedRuntimeError" severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
   </div>
   
 </template>
@@ -173,7 +173,8 @@ export default {
   },
   data(){
     return {
-      runtimeError: [],
+      runtimeErrors: [],
+      displayedRuntimeError: null,
       errorID: 1,
       size: 0,
       triggerRecompilation: true,
@@ -363,7 +364,7 @@ export default {
       return this.editor.viewState.state.doc.slice(from,to).toString();
     },
     reset: function(sourceCode){
-      this.runtimeError=[];
+      this.clearRuntimeErrors();
       this.$root.sourceCode=sourceCode;
       this.editor.dispatch({
         changes: {from: 0, to: this.size, insert: this.$root.sourceCode}
@@ -378,11 +379,29 @@ export default {
     redo(){
       redo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
     },
-    setRuntimeError: function(error){
-      this.runtimeError.pop();
+    clearRuntimeErrors(){
+      while(this.runtimeErrors.length>0){
+        this.runtimeErrors.pop();
+      }
+      this.displayedRuntimeError=null;
+    },
+    dismissRuntimeError(){
+      this.displayedRuntimeError=null;
+      this.runtimeErrors.splice(0,1);
+      setTimeout(()=>{
+        if(this.runtimeErrors.length>0){
+          this.displayedRuntimeError=this.runtimeErrors[0];
+        }
+      },200);
+    },
+    setRuntimeError(error){
+      //this.runtimeError.pop();
       if(error){
         this.errorID++;
-        this.runtimeError.push(error);
+        this.runtimeErrors.push(error);
+        if(this.runtimeErrors.length===1){
+          this.displayedRuntimeError=error;
+        }
       }
     },
     insert(text){

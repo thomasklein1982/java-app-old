@@ -190,12 +190,17 @@ export class Project{
         }
       }
     }
-
-    /**Member-Deklarationen: */
+    /**Methoden-Deklarationen: */
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      c.compileMemberDeclarations(this);
+      c.compileMethodDeclarations(this);
       c.resolveSuperClazz(this);
+    }
+
+    /**Attributs-Deklarationen: */
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      c.compileAttributeDeclarations(this);
     }
 
     /**Methoden: */

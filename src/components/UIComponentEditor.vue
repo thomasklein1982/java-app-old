@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: auto">
     <table style="width: 100%">
-      <tr>
+      <tr v-if="!component.controlComponent">
         <td>Name:</td>
         <td><InputText spellcheck="false" v-model="component.name" @change="emitRecompile()" style="width: 95%"/></td>
       </tr>
@@ -21,6 +21,10 @@
         <td>Wert:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/></td>
       </tr>
+      <tr v-if="component.actionCommand!==undefined">
+        <td>ActionCommand:</td>
+        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.actionCommand" style="width: 95%"/></td>
+      </tr>
       <tr v-if="component.placeholder!==undefined">
         <td>Platzhalter:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.placeholder" style="width: 95%"/></td>
@@ -32,30 +36,38 @@
         </tr>
         <tr><td><Button icon="pi pi-pencil" label="Bearbeiten" @click="$refs.templateDialog.setVisible(true,component.template)"/></td></tr>
       </template>
-      <tr>
-        <td>CSS-Klasse:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.cssClass" style="width: 95%"/></td>
-      </tr>
-      <tr>
-        <td>Absolute Position:</td>
-        <td><InputSwitch @change="emitUpdate()" v-model="component.forceAbsolute"/></td>
-      </tr>
-      <tr>
-        <td>x:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.x" style="width: 95%"/></td>
-      </tr>
-      <tr>
-        <td>y:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.y" style="width: 95%"/></td>
-      </tr>
-      <tr>
-        <td>Breite:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.width" style="width: 95%"/></td>
-      </tr>
-      <tr>
-        <td>Höhe:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.height" style="width: 95%"/></td>
-      </tr>
+      <template v-if="component.controlComponent">
+        <tr v-for="(v,a) in component.controlComponent">
+          <td>{{ a }}</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.controlComponent[a]" style="width: 95%"/></td>
+        </tr>
+      </template>
+      <template v-else>
+        <tr>
+          <td>CSS-Klasse:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.cssClass" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Absolute Position:</td>
+          <td><InputSwitch @change="emitUpdate()" v-model="component.forceAbsolute"/></td>
+        </tr>
+        <tr>
+          <td>x:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.x" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>y:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.y" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Breite:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.width" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Höhe:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.height" style="width: 95%"/></td>
+        </tr>
+      </template>
     </table>
   </div>
   <TemplateDialog ref="templateDialog" @confirm="applyTemplate"/>
@@ -87,7 +99,7 @@ import TemplateDialog from './TemplateDialog.vue';
       },
       emitUpdate(){
         console.log("ui comp editor emit update");
-        this.$emit("update");  
+        this.$emit("recompile");
       }
     },
     emits: ["update","recompile"],

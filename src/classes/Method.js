@@ -24,7 +24,7 @@ export class Method{
   createParamsString(){
     
   }
-  getJavaScriptCode(){
+  getJavaScriptCode(additionalJSCode){
     let code;
     if(this.isConstructor){
       code="async $constructor";
@@ -32,6 +32,7 @@ export class Method{
       code=this.modifiers.getJavaScriptCode()+" async "+this.name;
     }
     code+=this.params.getJavaScriptCode()+"{";
+    if(additionalJSCode) code+=additionalJSCode;
     if(this.block){
       code+="\n"+this.block.code;
     }

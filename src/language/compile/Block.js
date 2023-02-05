@@ -42,7 +42,7 @@ export function Block(node,source,scope){
         let res=f(node,source,scope);
         let line=source.getLineNumber(node.from);
         code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
-        if(res.updateLocalVariablesAfter){
+        if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
           let vnames=res.updateLocalVariablesAfter;
           code+="eval('";
           for(let i=0;i<vnames.length;i++){

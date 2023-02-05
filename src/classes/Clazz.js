@@ -2,6 +2,7 @@ import { parseJava } from "../functions/parseJava";
 import { Java } from "../language/java";
 import {Attribute} from "./Attribute"
 import { Method } from "./Method";
+import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
 import { UIClazz } from "./UIClazz";
@@ -39,16 +40,20 @@ export class Clazz{
     if(this.hasStaticMainMethod()){
       code+="if(!window.$main){window.$main=this;}";
     }
+    let attributesInitCode="";
     for(let i in this.attributes){
       let a=this.attributes[i];
       code+="\n"+a.getJavaScriptCode();
+      if(a.initialValue){
+        attributesInitCode+="\nthis."+a.name+"="+a.initialValue+";";
+      }
     }
     code+="\n}";
     if(this.constructor){
       let c=this.constructor;
-      code+="\n"+c.getJavaScriptCode();
+      code+="\n"+c.getJavaScriptCode(attributesInitCode+"\n");
     }else{
-      code+="\n$constructor(){return this;}";
+      code+="\nasync $constructor(){\n"+attributesInitCode+"\nreturn this;}";
     }
     for(let i in this.methods){
       let m=this.methods[i];
@@ -291,6 +296,88 @@ export class Clazz{
     }
   }
 
+  compileMethodDeclarations(){
+    this.methods={};
+    this.constructor=null;
+    let errors=this.errors;
+    var node=this.clazzBody;
+    if(!node) return;
+    /**Klassenkoerper parsen: */
+    let scope=new Scope(this.project);
+    node=node.firstChild.nextSibling;
+    while(node.nextSibling){
+      if(node.name==="FieldDeclaration"){
+      }else if(node.name==='MethodDeclaration'){
+        let m=new Method(this,false);
+        errors=errors.concat(m.compileDeclaration(node,this.source));
+        if(m.name){
+          if(this.methods[m.name]){
+            errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
+          }else if(this.attributes[m.name]){
+            errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
+          }else{
+            this.methods[m.name]=m;
+          }
+        }
+      }else if(node.name=="ConstructorDeclaration"){
+        if(this.constructor){
+          errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
+        }else{
+          let c=new Method(this,true);
+          errors=errors.concat(c.compileDeclaration(node,this.source));
+          this.constructor=c;
+        }
+      }else if(node.name!=="LineComment"){
+        errors.push(this.source.createError("Attributs- oder Methoden- oder Konstruktordeklaration erwartet.",node));
+      }
+      node=node.nextSibling;
+    }
+    if(node.type.isError || !node.name==="}"){
+      errors.push(this.source.createError("Hier fehlt eine '}'",node));
+    }
+    node=node.parent;
+    while(node){
+      if(node.nextSibling){
+        errors.push(this.source.createError("Nach Abschluss der Klasse darf kein weiterer Code folgen",node.nextSibling));
+        break;
+      }
+      node=node.parent;
+    }
+    this.errors=errors;
+    return errors;
+  }
+
+  compileAttributeDeclarations(){
+    this.attributes={};
+    let errors=this.errors;
+    var node=this.clazzBody;
+    if(!node) return;
+    /**Klassenkoerper parsen: */
+    let scope=new Scope(this.project);
+    node=node.firstChild.nextSibling;
+    while(node.nextSibling){
+      if(node.name==="FieldDeclaration"){
+        var a=new Attribute(this);
+        errors=errors.concat(a.compile(node,this.source,scope));
+        let attr=a.getSingleAttributes();
+        for(var i=0;i<attr.length;i++){
+          let sa=attr[i];
+          if(sa.name){
+            if(this.attributes[sa.name]){
+              errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
+            }else if(this.methods[sa.name]){
+              errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
+            }else{
+              this.attributes[sa.name]=sa;
+            }
+          }
+        }
+      }
+      node=node.nextSibling;
+    }
+    return errors;
+  }
+
   /**
    * Kompiliert alle Member-Deklarationen
    */
@@ -302,11 +389,12 @@ export class Clazz{
     var node=this.clazzBody;
     if(!node) return;
     /**Klassenkoerper parsen: */
+    let scope=new Scope(this.project);
     node=node.firstChild.nextSibling;
     while(node.nextSibling){
       if(node.name==="FieldDeclaration"){
         var a=new Attribute(this);
-        errors=errors.concat(a.compile(node,this.source));
+        errors=errors.concat(a.compile(node,this.source,scope));
         let attr=a.getSingleAttributes();
         for(var i=0;i<attr.length;i++){
           let sa=attr[i];

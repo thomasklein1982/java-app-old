@@ -13,11 +13,13 @@ export function LocalVariableDeclaration(node,source,scope){
   node=node.nextSibling;
   let weiter=true;
   let vnames=[];
+  let initialValues=[];
   while(weiter){
     let vdekl=VariableDeclarator(node,source,scope,type);
     try{
       scope.pushLocalVariable(vdekl.name,type);
       vnames.push(vdekl.name);
+      initialValues.push(vdekl.initialValue);
     }catch(e){
       throw (source.createError(e,node));
     }
@@ -44,6 +46,7 @@ export function LocalVariableDeclaration(node,source,scope){
   return {
     code,
     type,
-    updateLocalVariablesAfter: vnames
+    updateLocalVariablesAfter: vnames,
+    initialValues
   };
 }

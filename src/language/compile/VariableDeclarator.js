@@ -3,6 +3,7 @@ import { CompileFunctions } from "../CompileFunctions";
 export function VariableDeclarator(node,source,scope,vType){
   let code;
   let type=null;
+  let initialValue=null;
   node=node.firstChild;
   let name=source.getText(node);
   if(node.nextSibling){
@@ -25,12 +26,14 @@ export function VariableDeclarator(node,source,scope,vType){
     }
     code=name+"="+val.code;
     type=val.type;
+    initialValue=val.code;
   }else{
     code=name;
   }
   return {
     code,
     name,
-    type
+    type,
+    initialValue
   }
 }

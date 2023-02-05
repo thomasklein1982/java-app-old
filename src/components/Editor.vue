@@ -336,6 +336,11 @@ export default {
         this.currentEditor.prettifyCode();
       }
     },
+    clearRuntimeErrors(){
+      for(let i=0;i<this.$refs.editor.length;i++){
+        this.$refs.editor[i].clearRuntimeErrors();
+      }
+    },
     resume(){
       if(this.rightClosed){
         this.closeRightAfterStopping=true;
@@ -350,6 +355,7 @@ export default {
         this.$refs.preview.resume();
         //this.$refs.controlArea.resume();
       }else if(!this.running){
+        this.clearRuntimeErrors();
         this.running=true;
         this.$refs.preview.reload();
       }

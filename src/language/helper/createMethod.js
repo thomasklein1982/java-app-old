@@ -19,7 +19,9 @@ export function createMethod(data,clazz,isStatic,isConstructor){
     for(let j=0;j<data.args.length;j++){
       let a=data.args[j];
       let p=new Parameter(m.params);
-      if(a.type.baseType){
+      if(a.type instanceof Type){
+        p.type=a.type;
+      }else if(a.type.baseType){
         p.type=new Type(Java.datatypes[a.type.baseType],a.type.dimension);
       }else{
         p.type=new Type(Java.datatypes[a.type],0);
@@ -60,6 +62,11 @@ export function createMethod(data,clazz,isStatic,isConstructor){
     m.modifiers.isStatic=true;
   }else{
     m.modifiers.isStatic=false;
+  }
+  if(data.jscode){
+    m.block={
+      code: data.jscode
+    };
   }
   return m;
 }

@@ -2,6 +2,7 @@ import {Type} from "./Type"
 import {Modifiers} from "./Modifiers"
 import {Error} from "./Error"
 import { Clazz } from "./Clazz";
+import { VariableDeclarator } from "../language/compile/VariableDeclarator";
 
 export class Attribute{
   constructor(clazz){
@@ -11,6 +12,7 @@ export class Attribute{
     this.attributes=null;
     this.modifiers=null;
     this.node=null;
+    this.initialValue=null;
   }
 
   isPrivate(){
@@ -51,7 +53,10 @@ export class Attribute{
     return array;
   }
 
-  compile(node,source){
+  compile(node,source,scope){
+    if(!scope){
+      console.error("compile attribute without scope");
+    }
     var errors=[];
     this.node=node;
     node=node.firstChild;
@@ -69,14 +74,13 @@ export class Attribute{
     this.attributes=[];
     while(true){
       if(node.name==="VariableDeclarator"){
-        if(node.firstChild && node.firstChild.nextSibling){
-          errors.push(source.createError("Attributen kann aktuell nicht direkt ein Startwert zugeordnet werden. Weise den Wert im Konstruktor zu.",node));
-        }
-        var name=source.getText(node);
+        let vdekl=VariableDeclarator(node,source,scope,this.type);
         let a=new Attribute(this.clazz);
         a.type=this.type;
-        a.name=name;
+        a.name=vdekl.name;
+        console.log(vdekl);
         a.modifiers=this.modifiers;
+        a.initialValue=vdekl.initialValue;
         a.node=node;
         this.attributes.push(a);
         node=node.nextSibling;

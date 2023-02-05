@@ -16,10 +16,10 @@
           <img class="jimage" :src="component.value"/>
         </template>
         <template v-if="type==='JCheckBox'">
-          <input type="checkbox" checked/> {{component.label}}
+          <input type="checkbox" :checked="component.value"/> {{component.label}}
         </template>
         <template v-if="type==='JTextArea'">
-          <textarea type="text" class="component jtextarea" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
+          <textarea type="text" class="component jtextarea" :value="isEditable? component.value:'JTextArea'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JComboBox'">
           <select class="component jcombobox">
@@ -45,15 +45,29 @@
     </div>
     <template v-else>
       <div>
-        <div v-if="isUIClazz" class="ui-clazz-top" @click="handleClick">UIKlasse {{component.name}}</div>
+        <template v-if="isUIClazz">
+          <div class="ui-clazz-top" @click="handleClick">UI-Klasse {{component.name}}</div>
+          <TextArea class="ui-clazz-variables" auto-resize style="width: 100%" v-model="component.variablesRaw" @change="$emit('recompile')"/>
+          <div style="font-family: monospace; color: red">
+            <div v-for="(e,i) in component.variablesErrors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
+          </div>
+        </template>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">
-          <span class="pi handle pi-arrows-alt"/>
-          <div :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">JPanel
+          <span class="pi handle pi-arrows-alt"/><button @click="toggleHideContent()">{{hideContent? '+':'-'}}</button>
+          <div v-if="type==='JPanel'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">JPanel
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
+          </div>
+          <div v-else-if="type==='For'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Wiederhole für <strong>{{component.controlComponent.variable}}</strong> = <strong>{{component.controlComponent.min}}</strong> bis <strong>{{component.controlComponent.max}}</strong>:
+          </div>
+          <div v-else-if="type==='If'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Falls <strong>{{component.controlComponent.condition}}</strong>:
+          </div>
+          <div v-else-if="type==='ElseIf'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Ansonsten falls <strong>{{component.controlComponent.condition}}</strong>:
+          </div>
+          <div v-else-if="type==='Else'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Ansonsten:
           </div>
           <Button icon="pi pi-trash" @click="clickRemove($event)" v-show="selectedComponent===component"/>
         </div>
-        <div style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
+        <div v-show="!hideContent" style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
           <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
           <draggable
             v-model="component.components"
@@ -68,8 +82,8 @@
             ghost-class="drag-ghost-component"
             :style="{flex: 1,'padding-bottom': (!$root.printMode && isUIClazz)? '100%':'2rem'}"
             @end="endDrag"
-            @add="emitIsolatedUpdate()"
-            @sort="emitIsolatedUpdate()"
+            @add="$emit('recompile')"
+            @sort="$emit('recompile')"
           >
             <template #item="{element}">
               <div>
@@ -90,6 +104,7 @@
 <script>
   import draggable from "vuedraggable";
   import { UIClazz } from "../classes/UIClazz";
+
   export default{
     props: {
       component: Object,
@@ -116,7 +131,7 @@
         return this.component.type;
       },
       isContainer(){
-        return this.type==="JPanel" || this.component instanceof UIClazz;
+        return this.type==="JPanel" || this.component instanceof UIClazz || this.component.controlComponent;
       },
       label(){
         if(this.isEditable && this.component.name){
@@ -126,7 +141,15 @@
         }
       }
     },
+    data(){
+      return {
+        hideContent: false
+      }
+    },
     methods: {
+      toggleHideContent(){
+        this.hideContent=!this.hideContent;
+      }, 
       removeChildComponent(comp){
         for(let i=0;i<this.component.components.length;i++){
           let c=this.component.components[i];

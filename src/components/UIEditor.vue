@@ -38,7 +38,7 @@
     },
     data: function(){
       return {
-        componentList: [{type: "JPanel", components: [], template: "1"}, {type: "JLabel", value: "JLabel"},{type: "JButton", value: "JButton"},{type: "JTextField", inputType: "text", value: "", placeholder: "JTextField"},{type: "JTextArea", value: "", placeholder: "JTextArea"}, {type: "JCheckBox", value: false, label: "JCheckBox"}, {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]'}, {type: "DataTable"}, {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png"}],
+        componentList: [{type: "JPanel", components: [], template: "1"}, {type: "JLabel", value: "JLabel"},{type: "JButton", value: "JButton", actionCommand: ""},{type: "JTextField", inputType: "text", value: "", placeholder: "JTextField"},{type: "JTextArea", value: "", placeholder: "JTextArea"}, {type: "JCheckBox", value: true, label: "JCheckBox"}, {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]'}, {type: "DataTable"}, {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png"}, {type: "For", controlComponent: {min: 0, max: 10, variable: "i"}}, {type: "If", controlComponent: {condition: "true"}}, {type: "ElseIf", controlComponent: {condition: "true"}}, {type: "Else", controlComponent: {}}],
         selectedComponent: null
       };
     },
@@ -52,11 +52,15 @@
       cloneItem(item){
         
         let copy=JSON.parse(JSON.stringify(item));
-        copy.x=50;
-        copy.y=50;
-        copy.width=100;
-        copy.height=100;
-        copy.cssClass=copy.type.toLowerCase();
+        if(copy.controlComponent){
+          copy.components=[];
+        }else{
+          copy.x=50;
+          copy.y=50;
+          copy.width=100;
+          copy.height=100;
+          copy.cssClass=copy.type.toLowerCase();
+        }
         return copy;
       },
       clickComponent(c){

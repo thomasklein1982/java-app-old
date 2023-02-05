@@ -133,6 +133,20 @@ function defineJComponent(Clazz,Java){
     info: 'Liefert das Panel zurück, in dem sich diese Komponente befindet.',
     returnType: 'JPanel'
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'getActionCommand',
+    args: [
+    ],
+    info: "Liefert den ActionCommand-String der Komponente zurück.",
+    returnType: 'String'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setActionCommand',
+    args: [
+      {name: 'actionCommand', type: 'String', info: 'Der neue ActionCommand-String der Komponente.'}
+    ],
+    info: "Legt den ActionCommand-String der Komponente fest."
+  },Clazz,false,false,Java);
   // createAttribute({
   //   name: "value",
   //   type: Java.datatypes.String,
@@ -277,6 +291,10 @@ function defineJPanel(Clazz,Java){
       {name: 'component', type: 'JComponent', info: 'Die Komponente, die entfernt werden soll.'}
     ],
     info: 'Entfernt die Komponente aus dem Panel, falls möglich.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'removeAll',
+    info: 'Entfernt alle Komponenten aus dem Panel.'
   },Clazz,false,false,Java);
   createMethod({
     name: 'getChild',

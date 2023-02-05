@@ -4,14 +4,20 @@ import { Java } from "../language/java";
 import { PrimitiveType } from "./PrimitiveType";
 
 export class Scope{
-  constructor(project,method,endPosition){
+  constructor(project,method,endPosition,addLocalVariablesUpdates){
+    if(addLocalVariablesUpdates===undefined){
+      addLocalVariablesUpdates=true;
+    }
     this.project=project;
     this.method=method;
     this.endPosition=endPosition;
     this.stack=[];
     this.typeAnnotations={};
+    this.addLocalVariablesUpdates=addLocalVariablesUpdates;
     this.pushLayer();
-    this.pushParameterList(method.params);
+    if(method && method.params){
+      this.pushParameterList(method.params);
+    }
   }
 
   isNodeBeyondEndPosition(node){
@@ -103,6 +109,7 @@ export class Scope{
    * @returns 
    */
   getAttribute(name,isStatic,clazz){
+    if(!clazz && !this.method) return null;
     let c=clazz? clazz : this.method.clazz;
     if(c.name==="null"){
       return {

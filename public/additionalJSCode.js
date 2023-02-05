@@ -270,6 +270,13 @@ function additionalJSCode(){
       this.height=height;
       this.$el=null;
       this.standardDisplayValue=null;
+      this.actionCommand="";
+    }
+    setActionCommand(ac){
+      this.actionCommand=ac;
+    }
+    getActionCommand(){
+      return this.actionCommand;
     }
     setVisible(v){
       this.visible=v;
@@ -405,6 +412,13 @@ function additionalJSCode(){
     }
     remove(comp){
       this.$el.remove(comp.$el);
+    }
+    removeAll(){
+      if(this.$el.replaceChildren){
+        this.$el.replaceChildren();
+      }else{
+        this.$el.innerHTML="";
+      }
     }
     getChildCount(){
       return this.$el.children.length;
