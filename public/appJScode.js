@@ -4635,12 +4635,16 @@ window.appJScode=function(){
       },
       label: function(text,cx,cy,width,height){
         var b=$App.createElement("div");
+        b.style.overflow="auto";
+        var innerDiv=document.createElement("div");
+        b.innerDiv=innerDiv;
+        b.appendChild(innerDiv);
         b.style.textAlign="center";
         $App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
-            this.innerHTML=v;
+            this.innerDiv.innerHTML=v;
             //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
           },
           get: function(){

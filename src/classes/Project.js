@@ -171,9 +171,7 @@ export class Project{
     let toCompile=[];
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      if(c instanceof UIClazz){
-        c.compile();
-      }else{
+      if(!(c instanceof UIClazz)){
         if(fromSource){
           c.generateSrcAndTree(c.src);
         }
@@ -201,6 +199,22 @@ export class Project{
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       c.compileAttributeDeclarations(this);
+    }
+
+    /**UI-Klassen: Variablen*/
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      if(c instanceof UIClazz){
+        c.compileVariables();
+      }
+    }
+
+    /**UI-Klassen: gesamt*/
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      if(c instanceof UIClazz){
+        c.compile();
+      }
     }
 
     /**Methoden: */

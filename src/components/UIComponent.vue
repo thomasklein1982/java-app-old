@@ -57,6 +57,9 @@
           <div v-if="type==='JPanel'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">JPanel
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
+          <div v-else-if="type==='UIClazz'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{component.componentName}}
+            <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
+          </div>
           <div v-else-if="type==='For'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Wiederhole für <strong>{{component.controlComponent.variable}}</strong> = <strong>{{component.controlComponent.min}}</strong> bis <strong>{{component.controlComponent.max}}</strong>:
           </div>
           <div v-else-if="type==='If'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Falls <strong>{{component.controlComponent.condition}}</strong>:
@@ -131,7 +134,7 @@
         return this.component.type;
       },
       isContainer(){
-        return this.type==="JPanel" || this.component instanceof UIClazz || this.component.controlComponent;
+        return this.type==="JPanel" || this.type==="UIClazz" || this.component instanceof UIClazz || this.component.controlComponent;
       },
       label(){
         if(this.isEditable && this.component.name){
@@ -222,6 +225,8 @@
   .component{
     width: 100%;
     min-height: 1cm;
+    max-height: 2cm;
+    overflow: hidden;
   }
   .jimage{
     min-height: 1cm;
@@ -267,5 +272,6 @@
   }
   .drag-ghost-component{
     opacity: 0.4;
+    height: 0.5cm;
   }
 </style>

@@ -1,10 +1,21 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: auto">
+    <div v-if="!maximized" :style="{display: 'flex', 'align-items': 'center'}">
+      <Button @click="showExpandedDialog=true" icon="pi pi-window-maximize"/>&nbsp;{{ componentName }}
+    </div>
     <table style="width: 100%">
       <tr v-if="!component.controlComponent">
         <td>Name:</td>
         <td><InputText spellcheck="false" v-model="component.name" @change="emitRecompile()" style="width: 95%"/></td>
       </tr>
+      <template v-if="uiClazz">
+        <tr v-for="(v,i) in uiClazz.variables">
+          <td>{{ v.name }}:</td>
+          <td>
+            <InputText spellcheck="false" v-model="component.variablesValues[v.name]" @change="emitRecompile()" style="width: 95%"/>
+          </td>
+        </tr>
+      </template>
       <tr v-if="component.options!==undefined">
         <td>Optionen:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.options" style="width: 95%"/></td>
@@ -19,7 +30,18 @@
       </tr>
       <tr v-if="type && type.labels && type.labels.value!==undefined">
         <td>Wert:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/></td>
+        <td v-if="component.valueType==='Boolean'">
+          <InputSwitch @change="emitUpdate()" v-model="component.value"/>
+        </td>
+        <td v-else-if="component.valueType===undefined || component.valueType==='inline-text' || !maximized">
+          <InputText spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
+        </td>
+        <td v-else-if="component.valueType==='text'">
+          <TextArea auto-resize rows="5" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
+        </td>
+        <td v-else>
+          <CodeMirrorEditor :language="component.valueType" v-model="component.value"/>
+        </td>
       </tr>
       <tr v-if="component.actionCommand!==undefined">
         <td>ActionCommand:</td>
@@ -44,7 +66,16 @@
       </template>
       <template v-else>
         <tr>
-          <td>CSS-Klasse:</td>
+          <td>CSS-Code:</td>
+          <td v-if="!maximized">
+            <InputText spellcheck="false" @change="emitUpdate()" v-model="component.cssCode" style="width: 95%"/>
+          </td>
+          <td v-else>
+            <TextArea spellcheck="false" @change="emitUpdate()" v-model="component.cssCode" style="width: 95%"/>
+          </td>
+        </tr>
+        <tr>
+          <td>CSS-Klassen:</td>
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.cssClass" style="width: 95%"/></td>
         </tr>
         <tr>
@@ -71,22 +102,50 @@
     </table>
   </div>
   <TemplateDialog ref="templateDialog" @confirm="applyTemplate"/>
+  <Dialog @hide="emitUpdate(true)" v-if="!maximized" :header="componentName" v-model:visible="showExpandedDialog"  :maximizable="true" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}">
+    <UIComponentEditor maximized :project="project" :component="component"/>
+  </Dialog>
 </template>
 
 <script>
 import { UIClazz } from '../classes/UIClazz';
+import CodeMirrorEditor from './CodeMirrorEditor.vue';
 import TemplateDialog from './TemplateDialog.vue';
 
   let timer;
   let oldName=null;
   export default{
     props: {
-      component: Object
+      component: Object,
+      project: Object,
+      maximized: {
+        type: Boolean,
+        default: false
+      }
     },
     computed: {
       type(){
         return UIClazz.UIClazzes[this.component.type];
+      },
+      uiClazz(){
+        if(this.component.type!=='UIClazz')
+          return null;
+        let uc=this.project.getClazzByName(this.component.componentName);
+        if(!uc) return null;
+        return uc;
+      },
+      componentName(){
+        if(this.component.componentName){
+          return this.component.componentName;
+        }else{
+          return this.component.type;
+        }
       }
+    },
+    data(){
+      return {
+        showExpandedDialog: false
+      };
     },
     methods: {
       applyTemplate(template){
@@ -94,17 +153,18 @@ import TemplateDialog from './TemplateDialog.vue';
         this.emitUpdate();
       },
       emitRecompile(){
-        console.log("ui comp editor emit recompile");
         this.$emit("recompile");  
       },
-      emitUpdate(){
-        console.log("ui comp editor emit update");
-        this.$emit("recompile");
+      emitUpdate(force){
+        if(force || !this.maximized){
+          this.$emit("recompile");
+        }
       }
     },
     emits: ["update","recompile"],
     components: {
-      TemplateDialog
-    }
+    TemplateDialog,
+    CodeMirrorEditor
+}
   }
 </script>

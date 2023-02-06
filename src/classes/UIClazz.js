@@ -102,7 +102,26 @@ export class UIClazz {
     return true;
   }
 
+  getComponentObject(){
+    let values={};
+    for(let i=0;i<this.variables.length;i++){
+      let v=this.variables[i];
+      values[v.name]=v.type.baseType.initialValue;
+    }
+    return {
+      type: "UIClazz",
+      componentName: this.name,
+      variablesValues: values,
+      
+    }
+  }
+
+  getSetterMethodName(attributeName){
+    return "set"+attributeName.charAt(0).toUpperCase()+attributeName.substring(1);
+  }
+
   compileVariables(scope){
+    if(!scope) scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.variables=[];
     this.variablesErrors=[];
     this.methods={};
@@ -129,15 +148,18 @@ export class UIClazz {
             },this,false,"private");
             a.initialValue=c.initialValues[i];
             a.isNamedComponent=false;
+            this.variables.push(a);
             this.attributes[a.name]=a;
-            let setterMethodName="set"+a.name.charAt(0).toUpperCase()+a.name.substring(1);
+            let setterMethodName=this.getSetterMethodName(a.name);
             this.methods[setterMethodName]=createMethod({
               name: setterMethodName,
-              args: [{
-                name: a.name,
-                type: a.type
-              }],
-              jscode: "this."+a.name+"="+a.name+";\nthis.rerender();"
+              args: [
+                {
+                  name: a.name,
+                  type: a.type
+                }
+              ],
+              jscode: "this."+a.name+"="+a.name+";\nif(arguments[1]!==true){this.rerender();}"
             },this,false,false);
           }
         }catch(e){
@@ -275,79 +297,7 @@ export class UIClazz {
     code+="\n}";
     console.log(code);
     return code;
-  }
-
-  
-
-  appendJavaScriptCodeForComponents(comp,startIndex,codeObject,containerString){
-    let index=startIndex;
-    for(let i=0;i<comp.components.length;i++){
-      let c=comp.components[i];
-      if(c.controlComponent){
-        if(c.type==='For'){
-          let length=c.value;
-          for(let j=0;j<length;j++){
-            index=this.appendJavaScriptCodeForComponent(c,index,codeObject,containerString);
-          }
-        }
-        continue;
-      }
-      let name="this.components["+index+"]";
-      codeObject.code+="\n "+name+"=";
-      codeObject.code+="new "+c.type+"(";
-      let clazz=UIClazz.UIClazzes[c.type];
-      let args=[];
-      for(let j=0;j<clazz.params.length;j++){
-        let p=clazz.params[j];
-        if(p==="x" || p==="y" || p==="width" || p==="height"){
-          args.push(c[p]);
-        }else if(p==="options"){
-          try{
-            let array=JSON.parse(c[p]);
-            args.push("new $App.Array('String',"+array.length+","+JSON.stringify(array)+")");
-          }catch(e){
-
-          }
-        }else{
-          args.push(JSON.stringify(c[p]));
-        }
-      }
-      codeObject.code+=args.join(",");
-      codeObject.code+=");";
-      codeObject.code+="\n"+containerString+".add("+name+");";
-      if(c.name){
-        //codeObject.code+="\nif("
-        if(c.array){
-          codeObject.code+="\nthis."+c.name+".push("+name+");";
-        }else{
-          codeObject.code+="\nthis."+c.name+"= "+name+";";
-        }
-      }
-      if(c.cssClass){
-        codeObject.code+="\n"+name+".setCSSClass("+JSON.stringify(c.cssClass)+");";
-      }
-      if(c.forceAbsolute){
-        codeObject.code+="\n"+name+".setStyle('position','absolute');";
-        codeObject.code+="\n"+name+".$el.updatePosition();";
-      }
-      if(c.value!==null && c.value!==undefined){
-        let v;
-        if(c.value.slice){
-          v=JSON.stringify(c.value);
-        }else{
-          v=c.value;
-        }
-        console.log(c.value,v);
-        
-        codeObject.code+="\n"+name+".value="+v+";";
-      }
-      index++;
-      if(c.components){
-        index=this.appendJavaScriptCodeForComponent(c,index,codeObject,name);
-      }
-    }
-    return index;
-  }
+  }  
 
   getConstructorParameters(){
     return [];
@@ -380,29 +330,37 @@ export class UIClazz {
   }
 
   compile(){
-    let scope=new Scope(this.project,undefined,undefined,false);
+    let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.attributes={};
     this.compileVariables(scope);
     let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
     console.log("compile ui clazz",namedComponents);
     for(let name in namedComponents){
       let c=namedComponents[name];
+      let type;
+      if(c.type==="UIClazz"){
+        type=c.componentName;
+        type=this.project.getClazzByName(type);
+      }else{
+        type=c.type;
+      }
       let a=createAttribute({
         name,
-        type: c.array? {baseType: c.type, dimension: 1} : c.type
+        type: c.array? {baseType: type, dimension: 1} : type
       },this,false);
       a.isNamedComponent=true;
       this.attributes[name]=a;
     }
     this.componentCode="";
     let codeObject={code: "var container0=this;\n"};
-    scope=new Scope(this.project,this.rerenderMethod,undefined,false);
+    scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.appendJavaScriptCodeForComponent(scope,this,codeObject,0);
     console.log(codeObject.code);
     this.componentCode=codeObject.code;
   }
 
   parseInterpolatedString(scope,src){
+    if(!src) return '""';
     let parts=[];
     let pos2=-1;
     let pos=src.indexOf("{{");
@@ -432,6 +390,7 @@ export class UIClazz {
   }
 
   parseJavaStatement(scope,src){
+    if(!src) return "";
     try{
       let tree=parseJava(src);
       let node=tree.topNode.firstChild;
@@ -478,26 +437,50 @@ export class UIClazz {
       let last="component";
       codeObject.code+="{\n";
       codeObject.code+="\nlet "+last+"=";
-      codeObject.code+="new "+c.type+"(";
-      let clazz=UIClazz.UIClazzes[c.type];
-      let args=[];
-      for(let j=0;j<clazz.params.length;j++){
-        let p=clazz.params[j];
-        if(p==="x" || p==="y" || p==="width" || p==="height"){
-          args.push(c[p]);
-        }else if(p==="options"){
-          try{
-            let array=JSON.parse(c[p]);
-            args.push("new $App.Array('String',"+array.length+","+JSON.stringify(array)+")");
-          }catch(e){
-
+      if(c.type==="UIClazz"){
+        codeObject.code+="new "+c.componentName+"();";
+        let uiClazz=this.project.getClazzByName(c.componentName);
+        if(uiClazz){
+          let variables=uiClazz.variables;
+          if(!c.variablesValues){
+            c.variablesValues={};
+          }
+          for(let vn in variables){
+            let v=variables[vn];
+            let setterName=this.getSetterMethodName(v.name);
+            if(!(v.name in c.variablesValues)){
+              c.variablesValues[v.name]=v.type.baseType.initialValue;
+            }
+            let value=c.variablesValues[v.name];
+            value=this.parseJavaStatement(scope,value);
+            codeObject.code+="\n"+last+"."+setterName+"("+value.code+",true);";
           }
         }else{
-          args.push(JSON.stringify(c[p]));
+
         }
+        codeObject.code+="\n"+last+".rerender();";
+      }else{
+        codeObject.code+="new "+c.type+"(";
+        let clazz=UIClazz.UIClazzes[c.type];
+        let args=[];
+        for(let j=0;j<clazz.params.length;j++){
+          let p=clazz.params[j];
+          if(p==="x" || p==="y" || p==="width" || p==="height"){
+            args.push(c[p]);
+          }else if(p==="options"){
+            try{
+              let array=JSON.parse(c[p]);
+              args.push("new $App.Array('String',"+array.length+","+JSON.stringify(array)+")");
+            }catch(e){
+
+            }
+          }else{
+            args.push(JSON.stringify(c[p]));
+          }
+        }
+        codeObject.code+=args.join(",");
+        codeObject.code+=");";
       }
-      codeObject.code+=args.join(",");
-      codeObject.code+=");";
       codeObject.code+="\ncontainer"+containerIndex+".add("+last+");";
       if(c.name){
         codeObject.code+="\nthis."+c.name+"= "+last+";";
@@ -507,6 +490,9 @@ export class UIClazz {
       }
       if(c.cssClass){
         codeObject.code+="\n"+last+".setCSSClass("+JSON.stringify(c.cssClass)+");";
+      }
+      if(c.cssCode){
+        codeObject.code+="\n"+last+".$el.style="+last+".$el.style+"+JSON.stringify(";"+c.cssCode)+";";
       }
       if(c.forceAbsolute){
         codeObject.code+="\n"+last+".setStyle('position','absolute');";

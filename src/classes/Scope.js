@@ -4,16 +4,20 @@ import { Java } from "../language/java";
 import { PrimitiveType } from "./PrimitiveType";
 
 export class Scope{
-  constructor(project,method,endPosition,addLocalVariablesUpdates){
-    if(addLocalVariablesUpdates===undefined){
-      addLocalVariablesUpdates=true;
-    }
+  constructor(project,method,endPosition,options){
     this.project=project;
     this.method=method;
     this.endPosition=endPosition;
     this.stack=[];
     this.typeAnnotations={};
-    this.addLocalVariablesUpdates=addLocalVariablesUpdates;
+    if(options){
+      this.addLocalVariablesUpdates=options.addLocalVariablesUpdates;
+      this.ignoreVisibilityRestrictions=options.ignoreVisibilityRestrictions;
+    }else{
+      this.addLocalVariablesUpdates=true;
+      this.ignoreVisibilityRestrictions=false;
+    }
+    
     this.pushLayer();
     if(method && method.params){
       this.pushParameterList(method.params);
@@ -128,7 +132,7 @@ export class Scope{
     if(a.error){
       return a;
     }
-    if(a.isPrivate() && this.method.clazz.name!==c.name){
+    if(!this.ignoreVisibilityRestrictions && a.isPrivate() && this.method.clazz.name!==c.name){
       return {
         error: "Das Attribut '"+name+"' ist private."
       };
@@ -169,7 +173,7 @@ export class Scope{
     if(m.error){
       return m;
     }
-    if(m.isPrivate() && this.method.clazz!==clazz){
+    if(!this.ignoreVisibilityRestrictions && m.isPrivate() && this.method.clazz!==clazz){
       return {
         error: "Die Methode '"+name+"' ist private."
       };

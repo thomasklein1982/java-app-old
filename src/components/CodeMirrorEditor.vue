@@ -8,6 +8,7 @@
 <script>
 import { EditorView, basicSetup } from "codemirror";
 import { css, cssCompletionSource } from "@codemirror/lang-css";
+import {html,htmlCompletionSource} from "@codemirror/lang-html";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
 import {indentWithTab,redo,undo} from "@codemirror/commands";
@@ -21,11 +22,26 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { nextTick } from '@vue/runtime-core';
 
 
-
-
 export default {
   props: {
-    project: Object,
+    language: String,
+    modelValue: String
+  },
+  emits: ["update:modelValue","change"],
+  computed: {
+    languagePlugins(){
+      if(this.language==="html"){
+        return {
+          language: html({autoCloseTags: true}).language,
+          completionSource: htmlCompletionSource
+        };
+      }else if(this.language==="css"){
+        return {
+          language: css().language,
+          completionSource: cssCompletionSource
+        };
+      }
+    }
   },
   data(){
     return {
@@ -38,18 +54,19 @@ export default {
     let editorTheme=new Compartment();
     this.editor=new EditorView({
       state: EditorState.create({
-        doc: this.project.css,
+        doc: this.modelValue,
         extensions: [
           basicSetup,
           EditorView.lineWrapping,
           lintGutter(),
           editorTheme.of(oneDark),
           indentUnit.of("  "),
-          css().language,
-          autocompletion({override: [cssCompletionSource]}),
+          this.languagePlugins.language,
+          autocompletion({override: [this.languagePlugins.completionSource]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
-            this.project.css=this.getCode();
+            this.$emit('update:modelValue', this.getCode());
+            //this.project.css=this.getCode();
           }),
         ]
       }),

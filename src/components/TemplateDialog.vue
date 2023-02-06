@@ -7,7 +7,7 @@
       <p v-for="(t,i) in interpretation.text">{{t}}</p>
     </template>
     <div :style="interpretation.style" style="width: 5cm; height: 5cm">
-      <div v-for="i in interpretation.compCount" style="border: 1pt dotted black">&nbsp;</div>
+      <div v-for="i in interpretation.compCount" style="border: 1pt dotted white">&nbsp;</div>
     </div>
     <div style="text-align: right">
       <Button @click="confirm()" label="OK"/>
@@ -118,7 +118,9 @@ export default {
   },
   methods: {
     selectExample(){
-      this.template=this.selectedExample.template;
+      if(this.selectedExample){
+        this.template=this.selectedExample.template;
+      }
     },
     setVisible(v,template){
       this.show=v;

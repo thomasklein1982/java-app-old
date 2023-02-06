@@ -1,6 +1,6 @@
 <template>
   <Dialog header="CSS-Editor" v-model:visible="show" :modal="true" class="p-dialog-maximized">
-    <CodeMirrorEditor :project="project"/>    
+    <CodeMirrorEditor v-model="project.css" language="css"/>    
     
     
   </Dialog>

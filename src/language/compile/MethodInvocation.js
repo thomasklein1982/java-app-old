@@ -24,6 +24,12 @@ export function MethodInvocation(node,source,scope){
     clazz: null,
     static: false
   };
+  if(node.name==="MethodName" && node.nextSibling.type.isError){
+    /**seltsamerweise scheinen manchmal auch identifier hier zu landen?!? (UIClazz) */
+    let code=Identifier(node,source,scope);
+    console.log(code);
+    return code;
+  }
   if(node.name==="MethodName"||node.name==="this"){
     code+="this";
     if(node.name==="this"){

@@ -1,7 +1,7 @@
 <template>
   <div :style="{flex: 1, display: 'flex', 'flex-direction': 'row', overflow: 'hidden'}">
     <draggable 
-      v-model="componentList"
+      v-model="allComponents"
       item-key="id"
       :group="{
         name: 'components',
@@ -36,9 +36,23 @@
         type: Object
       }
     },
+    computed: {
+      allComponents(){
+        let components=[];
+        components=components.concat(this.componentList);
+        let project=this.clazz.project;
+        for(let i=0;i<project.clazzes.length;i++){
+          let c=project.clazzes[i];
+          if(c.isUIClazz()){
+            components.push(c.getComponentObject());
+          }
+        }
+        return components;
+      }
+    },
     data: function(){
       return {
-        componentList: [{type: "JPanel", components: [], template: "1"}, {type: "JLabel", value: "JLabel"},{type: "JButton", value: "JButton", actionCommand: ""},{type: "JTextField", inputType: "text", value: "", placeholder: "JTextField"},{type: "JTextArea", value: "", placeholder: "JTextArea"}, {type: "JCheckBox", value: true, label: "JCheckBox"}, {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]'}, {type: "DataTable"}, {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png"}, {type: "For", controlComponent: {min: 0, max: 10, variable: "i"}}, {type: "If", controlComponent: {condition: "true"}}, {type: "ElseIf", controlComponent: {condition: "true"}}, {type: "Else", controlComponent: {}}],
+        componentList: [{type: "JPanel", components: [], template: "1"}, {type: "JLabel", value: "JLabel", valueType: "html"},{type: "JButton", value: "JButton", valueType: "html", actionCommand: ""},{type: "JTextField", inputType: "text", value: "", placeholder: "JTextField", valueType: "inline-text"},{type: "JTextArea", value: "", placeholder: "JTextArea", valueType: "text"}, {type: "JCheckBox", value: true, label: "JCheckBox", valueType: "Boolean"}, {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]',valueType: "text"}, {type: "DataTable"}, {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png", valueType: "text"}, {type: "For", controlComponent: {min: 1, max: 10, variable: "i"}}, {type: "If", controlComponent: {condition: "true"}}, {type: "ElseIf", controlComponent: {condition: "true"}}, {type: "Else", controlComponent: {}}],
         selectedComponent: null
       };
     },
@@ -60,6 +74,7 @@
           copy.width=100;
           copy.height=100;
           copy.cssClass=copy.type.toLowerCase();
+          copy.cssCode="";
         }
         return copy;
       },

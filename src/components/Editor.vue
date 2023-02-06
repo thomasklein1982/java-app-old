@@ -75,7 +75,10 @@
             </SplitterPanel>
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
               <UIComponentEditor 
-                v-if="showUIEditor && selectedUIComponent" :component="selectedUIComponent"
+                v-if="showUIEditor && selectedUIComponent" 
+                :component="selectedUIComponent"
+                :project="project"
+                :maximized="false"
                 @recompile="compileProjectAndUpdateUIPreview()"
                 @update="updateUIPreview()"
               />
@@ -153,7 +156,6 @@ export default {
   },
   watch: {
     activeTab(nv,ov){
-      console.log("change tab",nv,ov);
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         ed.updateLinter();
@@ -291,7 +293,9 @@ export default {
       let i=this.project.getClazzIndexByName(error.name);
       if(i>=0){
         this.$refs.editor[i].setRuntimeError(error);
-        this.activeTab=i;
+        if(this.running){
+          this.activeTab=i;
+        }
       }else{
         
       }
