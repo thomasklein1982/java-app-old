@@ -177,7 +177,7 @@ export default {
       displayedRuntimeError: null,
       errorID: 1,
       size: 0,
-      triggerRecompilation: true,
+      triggerRecompilation: true
     };
   },
   mounted(){
@@ -201,6 +201,7 @@ export default {
           message: e.message
         });
       }
+      console.log("linter",errors,this.clazz.name);
       return errors;
     });
     let editorTheme=new Compartment();
@@ -266,8 +267,8 @@ export default {
   },
   methods: {
     updateLinter(){
-      let lintPlugin=this.editor.plugins[12];
-      if(lintPlugin && lintPlugin.value && lintPlugin.value.lintTime){
+      let lintPlugin=this.editor.plugins[14];
+      if(lintPlugin && lintPlugin.value && lintPlugin.value.run){
         lintPlugin.value.run()
       }
     },

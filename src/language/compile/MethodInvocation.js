@@ -31,6 +31,7 @@ export function MethodInvocation(node,source,scope){
     return code;
   }
   if(node.name==="MethodName"||node.name==="this"){
+    owner.clazz=scope.method.clazz;
     code+="this";
     if(node.name==="this"){
       node=node.nextSibling.nextSibling;
@@ -125,8 +126,8 @@ export function MethodInvocation(node,source,scope){
     let startLine=undefined;
     if(method.bodyNode){
       startLine=source.getLine(method.bodyNode.from).number;
+      code="$m("+code+",\"Die Methode "+method.name+" muss einen Wert vom Typ "+method.type.toString()+" zurückgeben.\","+startLine+")";
     }
-    code="$m("+code+",\"Die Methode "+method.name+" muss einen Wert vom Typ "+method.type.toString()+" zurückgeben.\","+startLine+")";
     scope.addTypeAnnotation(node,method.type,false);
   }
   return {

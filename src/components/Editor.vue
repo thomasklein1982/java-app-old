@@ -156,8 +156,10 @@ export default {
   },
   watch: {
     activeTab(nv,ov){
+      console.log("change tab")
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
+        console.log("update linter");
         ed.updateLinter();
       }
     },
