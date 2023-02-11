@@ -78,7 +78,6 @@ export class Attribute{
         let a=new Attribute(this.clazz);
         a.type=this.type;
         a.name=vdekl.name;
-        console.log(vdekl);
         a.modifiers=this.modifiers;
         a.initialValue=vdekl.initialValue;
         a.node=node;

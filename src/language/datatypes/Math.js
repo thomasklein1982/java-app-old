@@ -91,6 +91,54 @@ export function defineMath(MathClazz,Java){
     args: [{name: "x", type: "double", info: "Winkel im Bogenmaß."}],
   },MathClazz,true,false,Java);
   createMethod({
+    name: "atan2",
+    info: "Liefert den Winkel, der zum Punkt (x|y) gehört.",
+    returnType: 'double',
+    args: [{name: "x", type: "double", info: "Winkel im Bogenmaß."}, {name: "y", type: "double", info: "y-Koordinate."}],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "exp",
+    info: "Liefert e hoch x.",
+    returnType: 'double',
+    args: [{name: "x", type: "double"}],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "expm1",
+    info: "Liefert e hoch x -1.",
+    returnType: 'double',
+    args: [{name: "x", type: "double"}],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "log10",
+    info: "Liefert den Logarithmus zur Basis 10 von x.",
+    returnType: 'double',
+    args: [{name: "x", type: "double"}],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "log",
+    info: "Liefert den natürlichen Logarithmus von x.",
+    returnType: 'double',
+    args: [{name: "x", type: "double"}],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "log1p",
+    info: "Liefert ln(1+x)",
+    returnType: 'double',
+    args: [{name: "x", type: "double"}],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "random",
+    info: "Liefert eine Zufallszahl zwischen 0 (einschließlich) und 1 (ausschließlich).",
+    returnType: 'double',
+    args: [],
+  },MathClazz,true,false,Java);
+  createMethod({
+    name: "exp",
+    info: "Liefert e hoch x.",
+    returnType: 'double',
+    args: [{name: "x", type: "double"}],
+  },MathClazz,true,false,Java);
+  createMethod({
     name: "toRadians",
     isExtraFunction: true,
     info: "Wandelt einen Winkel im Gradmaß ins Bogenmaß um.",

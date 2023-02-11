@@ -133,6 +133,14 @@ export function defineString(StringClazz,Java){
     }
   },StringClazz,false,false,Java);
   createMethod({
+    name: "format",
+    isExtraFunction: true,
+    args: [{name: "format",type: "String", info: "Beschreibung des Formats."}, {name: "object", type: "String", info: "Objekt, das formatiert wird."}],
+    info: "Formatiert das Objekt.",
+    returnType: 'String',
+    jsName: "$StringFormat"
+  },StringClazz,true,false,Java);
+  createMethod({
     name: "matches",
     isExtraFunction: true,
     args: [{name: "regexp",type: "String"}],

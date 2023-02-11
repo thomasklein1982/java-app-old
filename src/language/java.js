@@ -12,6 +12,7 @@ import { defineMatcher } from "./datatypes/matcher";
 import { defineFile } from "./datatypes/file";
 import { defineStorage } from "./datatypes/storage";
 import { defineObject } from "./datatypes/object";
+import { defineMatrix } from "./datatypes/Matrix";
 
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
@@ -69,12 +70,14 @@ Storage.cannotBeInstantiated=true;
 let Session=new Clazz("Session");
 Session.cannotBeInstantiated=true;
 
+let Matrix =new Clazz("Matrix");
+
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage, Session
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix
 }
 
 export const Java={
@@ -100,3 +103,4 @@ defineDatabaseClazzes(Java);
 definePattern(Pattern,Java);
 defineMatcher(Matcher,Java);
 defineFile(File);
+defineMatrix(Matrix);

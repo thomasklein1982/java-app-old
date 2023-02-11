@@ -201,7 +201,6 @@ export default {
           message: e.message
         });
       }
-      console.log("linter",errors,this.clazz.name);
       return errors;
     });
     let editorTheme=new Compartment();

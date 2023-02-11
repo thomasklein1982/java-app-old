@@ -349,7 +349,6 @@ export class Clazz{
 
   compileAttributeDeclarations(){
     this.attributes={};
-    let errors=this.errors;
     var node=this.clazzBody;
     if(!node) return;
     /**Klassenkoerper parsen: */
@@ -358,15 +357,15 @@ export class Clazz{
     while(node.nextSibling){
       if(node.name==="FieldDeclaration"){
         var a=new Attribute(this);
-        errors=errors.concat(a.compile(node,this.source,scope));
+        this.errors=this.errors.concat(a.compile(node,this.source,scope));
         let attr=a.getSingleAttributes();
         for(var i=0;i<attr.length;i++){
           let sa=attr[i];
           if(sa.name){
             if(this.attributes[sa.name]){
-              errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
+              this.errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
             }else if(this.methods[sa.name]){
-              errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
+              this.errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
             }else{
               this.attributes[sa.name]=sa;
             }
@@ -375,7 +374,7 @@ export class Clazz{
       }
       node=node.nextSibling;
     }
-    return errors;
+    return this.errors;
   }
 
   /**

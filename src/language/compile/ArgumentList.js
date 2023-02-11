@@ -34,7 +34,8 @@ export function ArgumentList(node,source,scope,parameters){
     }
     p.type.autoCastValue(arg);
     if(!arg.type || !arg.type.isSubtypeOf(p.type)){
-      throw source.createError( "Das "+(i+1)+"-te Argument '"+arg.code+"' ist kein "+p.type+".",node);
+      let text=source.getText(node);
+      throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.type+".",node);
     }
     codeArgs.push(arg.code);
     list.push(arg);

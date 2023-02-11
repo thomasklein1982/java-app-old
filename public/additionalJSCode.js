@@ -88,6 +88,26 @@ function additionalJSCode(){
     return x*180/Math.PI;
   }
 
+  function $StringFormat(StringClazz,format,object){
+    let v=format;
+    if(!format) return format;
+    let pos=format.indexOf("%s");
+    if(pos>=0){
+      return format.substring(0,pos)+object+format.substring(pos+2);
+    }
+    let m=/%.(\d+)f/.exec(format);
+    if(m){
+      let z=object*1;
+      if(isNaN(z)){
+        return format;
+      }
+      z=z.toFixed(m[1]*1);
+      return format.replace("%."+m[1]+"f",z);
+    }
+    
+    return format;
+  }
+
   function $StringReplaceAll(string,s,r){
     var regexp=new RegExp(s,"g");
     return string.replace(regexp,r);
@@ -552,6 +572,154 @@ function additionalJSCode(){
     }
     setArray(array){
       this.$el.array=array;
+    }
+  }
+
+  class Matrix{
+    constructor(rows,cols){
+      this.rows=[];
+      this.rowCount=rows;
+      this.colCount=cols;
+      for(let i=0;i<rows;i++){
+        let z=[];
+        for(let j=0;j<cols;j++){
+          z.push(0);
+        }
+        this.rows.push(z);
+      }
+    }
+    getRowCount(){
+      return this.rowCount;
+    }
+    getColCount(){
+      return this.colCount;
+    }
+    set(r,c,value){
+      if(r<1 ||r>this.rowCount){
+        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+      }
+      if(c<1 ||c>this.colCount){
+        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+      }
+      this.rows[r-1][c-1]=value;
+    }
+    get(r,c){
+      if(r<1 ||r>this.rowCount){
+        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+      }
+      if(c<1 ||c>this.colCount){
+        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+      }
+      return this.rows[r-1][c-1];
+    }
+    getRow(r){
+      if(r<1 ||r>this.rowCount){
+        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+      }
+      let row=new $App.Array(this.colCount);
+      for(let i=0;i<this.colCount;i++){
+        row.set(i,this.rows[r-1][i]);
+      }
+      return row;
+    }
+    setRow(r,values){
+      if(r<1 ||r>this.rowCount){
+        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+      }
+      if(values.length!==this.colCount){
+        throw new Exception("Die neue Zeile muss genau "+this.colCount+" Einträge haben. Sie hat aber "+values.length+".");
+      }
+      for(let i=0;i<this.colCount;i++){
+        this.rows[r-1][i]=values.get(i);
+      }
+    }
+    getColumn(c){
+      if(c<1 ||c>this.colCount){
+        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+      }
+      let col=new $App.Array(this.rowCount);
+      for(let i=0;i<this.rowCount;i++){
+        col.set(i,this.rows[i][c-1]);
+      }
+      return col;
+    }
+    setColumn(c,values){
+      if(c<1 ||c>this.colCount){
+        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+      }
+      if(values.length!==this.rowCount){
+        throw new Exception("Die neue Spalte muss genau "+this.rowCount+" Einträge haben. Sie hat aber "+values.length+".");
+      }
+      for(let i=0;i<this.rowCount;i++){
+        this.rows[i][c-1]=values.get(i);
+      }
+    }
+    multiply(m){
+      if(m.rowCount!==this.colCount){
+        throw new Exception("Die Matrix hat "+m.rowCount+" Zeilen, sie muss aber "+this.colCount+" Zeilen haben.");
+      }
+      let res=new Matrix(this.rowCount,m.colCount);
+      for(let i=0;i<this.rowCount;i++){
+        let row=this.rows[i];
+        for(let j=0;j<m.colCount;j++){
+          let e=0;
+          for(let k=0;k<this.colCount;k++){
+            e+=row[k]*m.rows[k][j];
+          }
+          res.rows[i][j]=e;
+        }
+      }
+      return res;
+    }
+    add(m){
+      if(m.rowCount!==this.rowCount || m.colCount!==this.colCount){
+        throw new Exception("Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
+      }
+      let res=new Matrix(this.rowCount,this.colCount);
+      for(let i=0;i<this.rowCount;i++){
+        let row=this.rows[i];
+        for(let j=0;j<this.colCount;j++){
+          res.rows[i][j]=this.rows[i][j]+m.rows[i][j];
+        }
+      }
+      return res;
+    }
+    sub(m){
+      if(m.rowCount!==this.rowCount || m.colCount!==this.colCount){
+        throw new Exception("Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
+      }
+      let res=new Matrix(this.rowCount,this.colCount);
+      for(let i=0;i<this.rowCount;i++){
+        let row=this.rows[i];
+        for(let j=0;j<this.colCount;j++){
+          res.rows[i][j]=this.rows[i][j]-m.rows[i][j];
+        }
+      }
+      return res;
+    }
+    scale(s){
+      let res=new Matrix(this.rowCount,this.colCount);
+      for(let i=0;i<this.rowCount;i++){
+        for(let j=0;j<this.colCount;j++){
+          res.rows[i][j]=s*this.rows[i][j];
+        }
+      }
+      return res;
+    }
+    toString(){
+      let t="(";
+      for(let i=0;i<this.rowCount;i++){
+        if(i>0){
+          t+=" | ";
+        }
+        let row=this.rows[i];
+        for(let j=0;j<row.length;j++){
+          if(j>0) t+=" ";
+          t+=row[j].toFixed(2);
+        }
+      }
+      t+=")";
+      return t;
     }
   }
 

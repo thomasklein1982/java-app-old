@@ -168,7 +168,6 @@ export class UIClazz {
       }
       node=node.nextSibling;
     }
-    console.log(this.attributes);
   }
 
   getAttribute(name,staticAccess){
@@ -295,7 +294,6 @@ export class UIClazz {
       code+="\n"+m.getJavaScriptCode();
     }
     code+="\n}";
-    console.log(code);
     return code;
   }  
 
@@ -334,7 +332,6 @@ export class UIClazz {
     this.attributes={};
     this.compileVariables(scope);
     let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
-    console.log("compile ui clazz",namedComponents);
     for(let name in namedComponents){
       let c=namedComponents[name];
       let type;
@@ -355,7 +352,6 @@ export class UIClazz {
     let codeObject={code: "var container0=this;\n"};
     scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.appendJavaScriptCodeForComponent(scope,this,codeObject,0);
-    console.log(codeObject.code);
     this.componentCode=codeObject.code;
   }
 

@@ -173,7 +173,7 @@ export class Scope{
     if(m.error){
       return m;
     }
-    if(!this.ignoreVisibilityRestrictions && m.isPrivate() && this.method.clazz!==clazz){
+    if(!this.ignoreVisibilityRestrictions && m.isPrivate && m.isPrivate() && this.method.clazz!==clazz){
       return {
         error: "Die Methode '"+name+"' ist private."
       };
