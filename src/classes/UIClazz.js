@@ -390,6 +390,8 @@ export class UIClazz {
   }
 
   parseJavaStatement(scope,src){
+    if(src===undefined || src===null) return "";
+    src+="";
     if(!src) return "";
     try{
       let tree=parseJava(src);
@@ -499,8 +501,12 @@ export class UIClazz {
         codeObject.code+="\n"+last+".$el.updatePosition();";
       }
       if(c.value!==null && c.value!==undefined){
-        let v=this.parseInterpolatedString(scope,c.value);
-        
+        let v;
+        if(c.valueType==="Boolean"){
+          v=c.value;
+        }else{
+          v=this.parseInterpolatedString(scope,c.value);
+        }
         codeObject.code+="\n"+last+".value="+v+";";
       }
       if(c.components){

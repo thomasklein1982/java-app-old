@@ -1,5 +1,6 @@
 <template>
   <div style="position: relative; padding: 0.1rem" :style="{'user-select': 'none',border: selectedComponent===component? '2pt solid gold':'2pt solid transparent'}" >
+    <span style="color: red" class="pi handle pi-exclamation-circle" v-if="component.errors && component.errors.length>0"/>
     <div v-if="!isContainer" :style="{display: 'flex'}">
       <span class="pi handle pi-arrows-alt"/>
       <div style="position: relative" :style="{flex: 1}">
@@ -181,8 +182,8 @@
           message: 'Diese UI-Komponente löschen?',
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
-            this.$emit('recompile')
             this.$emit("removethis");
+            this.$emit('recompile');
           },
           reject: () => {
               //callback to execute when user rejects the action

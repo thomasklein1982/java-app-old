@@ -6,7 +6,7 @@
     <table style="width: 100%">
       <tr v-if="!component.controlComponent">
         <td>Name:</td>
-        <td><InputText spellcheck="false" v-model="component.name" @change="emitRecompile()" style="width: 95%"/></td>
+        <td><InputText spellcheck="false" v-model.trim="component.name" @change="emitRecompile()" style="width: 95%"/></td>
       </tr>
       <template v-if="uiClazz">
         <tr v-for="(v,i) in uiClazz.variables">
@@ -146,6 +146,16 @@ import TemplateDialog from './TemplateDialog.vue';
       return {
         showExpandedDialog: false
       };
+    },
+    watch: {
+      "component.name": {
+        handler: function(n){
+          if(!n) return;
+          n=n.replace(/\s/g,"");
+          n=n.replace(/[^A-Za-z0-9_]/g,"");
+          this.component.name=n;
+        }
+      }
     },
     methods: {
       applyTemplate(template){
