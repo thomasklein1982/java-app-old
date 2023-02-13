@@ -20,7 +20,7 @@ export function Block(node,source,scope){
   let errors=scope.method.clazz.errors;
   let blockNode=node;
   node=node.firstChild;
-  if(node.type.isError || node.name!=='{'){
+  if(!node || node.type.isError || node.name!=='{'){
     errors.push(source.createError("'{' erwartet.",node));
     return {
       code,errors

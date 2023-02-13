@@ -2502,7 +2502,11 @@ window.appJScode=function(){
     
     /*****Array */
     $App.Array=function(type, dim, values){
-      this.type=type.name;
+      if(typeof type==="string"){
+        this.type=type;
+      }else{
+        this.type=type.name;
+      }
       if(Array.isArray(dim)){
         this.dim=dim;
         this.values=$App.Array.createArrayValues(type,dim,0);
@@ -2518,6 +2522,10 @@ window.appJScode=function(){
     };
   
     $App.Array.prototype={
+      toString: function(){
+        //return this.type+"-Array["+this.dim.join("][")+"]: "+this.values.join(", ");
+        return "{"+this.values.join(", ")+"}";
+      },
       get length(){
         return this.dim[0];
       },

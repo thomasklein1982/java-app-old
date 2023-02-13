@@ -81,10 +81,18 @@ export function defineMatrix(clazz){
   createMethod({
     name: "multiply",
     args: [
-      {name: "m", type: "Matrix", info: "Die Matrix, mit der multipliziert wird. Muss so viele Zeilen haben wie diese Matrix Spalte hat."}
+      {name: "m", type: "Matrix", info: "Die Matrix, mit der multipliziert wird. Muss so viele Zeilen haben wie diese Matrix Spalten hat."}
     ],
     returnType: "Matrix",
     info: "Multipliziert diese Matrix mit der Matrix m und gibt die Ergebnis-Matrix zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "multiplyVector",
+    args: [
+      {name: "v", type: "Vector", info: "Der Vektor, mit dem multipliziert wird. Muss so viele Zeilen haben wie diese Matrix Spalten hat."}
+    ],
+    returnType: "Vector",
+    info: "Multipliziert diese Matrix mit dem Vektor v und gibt den Ergebnis-Vektor zurück."
   },clazz,false,false);
   createMethod({
     name: "add",
@@ -110,22 +118,58 @@ export function defineMatrix(clazz){
     returnType: "Matrix",
     info: "Mutipliziert alle Einträge dieser Matrix mit s."
   },clazz,false,false);
+}
 
-  // multiply(m){
-  //   if(m.rowCount!==this.colCount){
-  //     throw new Exception("Die Matrix hat "+m.rowCount+" Zeilen, sie muss aber "+this.colCount+" Zeilen haben.");
-  //   }
-  //   let res=new Matrix(this.rowCount,m.colCount);
-  //   for(let i=0;i<this.rowCount;i++){
-  //     let row=this.rows[i];
-  //     for(let j=0;j<m.colCount;j++){
-  //       let e=0;
-  //       for(let k=0;k<this.colCount;k++){
-  //         e+=row[k]*m.rows[k][j];
-  //       }
-  //       res.setEntry(i+1,j+1,e);
-  //     }
-  //   }
-  //   return res;
-  // }
+export function defineVector(clazz){
+  clazz.name="Vector";
+  createMethod({
+    args: [
+      {name: "size", type: "int", info: "Anzahl der Einträge"}
+    ]
+  },clazz,false,true);
+  createMethod({
+    name: "set",
+    args: [
+      {name: "pos", type: "int", info: "Position im Vektor (beginnt mit 1)"},
+      {name: "value", type: "double", info: "Neuer Wert an dieser Stelle"}
+    ],
+    info: "Legt den Eintrag an der Position pos fest."
+  },clazz,false,false);
+  createMethod({
+    name: "get",
+    args: [
+      {name: "pos", type: "int", info: "Position im Vektor (beginnt mit 1)"}
+    ],
+    returnType: "double",
+    info: "Gibt den Wert des Eintrags an der Position pos zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "getAsArray",
+    args: [],
+    returnType: {baseType: "double", dimension: 1},
+    info: "Gibt die Einträge als double-Array zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "setFromArray",
+    args: [{
+      name: "array", type: {baseType: "double", dimension: 1}, info: "Das Array, das die Einträge enthält."
+    }],
+    info: "Legt die Einträge des Vektors fest."
+  },clazz,false,false);
+  createMethod({
+    name: "add",
+    args: [
+      {name: "v", type: "Vector", info: "Der Vektor, der addiert wird. Muss dieselbe Dimension wie dieser Vektor haben."}
+    ],
+    returnType: "Vector",
+    info: "Addiert zu diesem Vektor den Vektor v und gibt den Ergebnis-Vektor zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "sub",
+    args: [
+      {name: "v", type: "Vector", info: "Der Vektor, der subtrahiert wird. Muss dieselbe Dimension wie dieser Vektor haben."}
+    ],
+    returnType: "Vector",
+    info: "Subtrahiert von diesem Vektor den Vektor v und gibt den Ergebnis-Vektor zurück."
+  },clazz,false,false);
 }
