@@ -295,6 +295,13 @@ export default {
     },
     handleResize(ev){
       this.sizeCode=ev.sizes[0];
+      setTimeout(()=>{
+        if(this.$refs.editor){
+          for(let i=0;i<this.$refs.editor.length;i++){
+            this.$refs.editor[i].adaptLayout();
+          }
+        }
+      },2000);
     },
     setRuntimeError(error){
       let i=this.project.getClazzIndexByName(error.name);

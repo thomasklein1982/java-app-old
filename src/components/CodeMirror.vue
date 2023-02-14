@@ -266,6 +266,9 @@ export default {
     // this.emptyTransaction();
   },
   methods: {
+    adaptLayout(){
+      this.editor.requestMeasure();
+    },
     updateLinter(){
       let lintPlugin=this.editor.plugins[14];
       if(lintPlugin && lintPlugin.value && lintPlugin.value.run){
