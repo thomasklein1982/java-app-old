@@ -124,12 +124,12 @@ export class Method{
     return scope;
   }
 
-  compileBody(source){
+  compileBody(source,optimizeCompiler){
     let errors=[];
     if(!this.bodyNode){
       return null;
     }
-    let scope=new Scope(this.clazz.project,this);
+    let scope=new Scope(this.clazz.project,this,undefined,{optimizeCompiler: optimizeCompiler});
     this.block=Block(this.bodyNode,source,scope);
     this.typeAnnotations=scope.typeAnnotations;
     return this.block;

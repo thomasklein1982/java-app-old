@@ -1,7 +1,7 @@
 window.appJScode=function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  
+
     window.onmessage=function(message){
       $App.debug.onMessage(message);
     };
@@ -13,7 +13,7 @@ window.appJScode=function(){
     })
   
     window.$App={
-      version: 33,
+      version: 34,
       language: window.language? window.language:'js',
       setupData: null,
       dialog: {
@@ -151,7 +151,11 @@ window.appJScode=function(){
       toast: null,
       keyboard: {
         down: [],
-        lastKeycodeDown: null
+        lastKeycodeDown: null,
+        reset: function(){
+          this.lastKeycodeDown=null;
+          this.down=[];
+        }
       },
       audio: {
         context: null,
@@ -283,6 +287,9 @@ window.appJScode=function(){
   
     $App.handleError=function(errorData){
       if(window.parent!==window){
+        if(errorData.line<=0){
+          errorData.line=$App.debug.lastLine;
+        }
         window.parent.postMessage({type: "error", data: errorData});
       }else{
         console.log(errorData.completeMessage);
@@ -612,15 +619,28 @@ window.appJScode=function(){
           this.console.setVisible(true);
         }
         this.onResize();
+        this.animationFrame=async ()=>{
+          this.gamepad.updatePhysicalGamepad();
+          if(window.onNextFrame && !$App.debug.paused){
+            try{
+              await window.onNextFrame();
+            }catch(e){
+              $App.handleException(e);
+              return;
+            }
+          }
+          requestAnimationFrame(this.animationFrame);
+        }
         if(window.onStart){
           var startFunc=async ()=>{
             if(!$App.debug.paused){  
               try{
                 await window.onStart();
-                $App.executedOnStart=true;
               }catch(e){
                 $App.handleException(e);
+
               }
+              requestAnimationFrame(this.animationFrame);
             }else{
               setTimeout(startFunc,100);
             }
@@ -630,20 +650,12 @@ window.appJScode=function(){
           }else{
             setTimeout(startFunc,10);
           }
-        }
-        this.addMouseStateHandler(this.canvas.el);
-        this.animationFrame=async ()=>{
-          this.gamepad.updatePhysicalGamepad();
-          if($App.executedOnStart && window.onNextFrame && !$App.debug.paused){
-            try{
-              await window.onNextFrame();
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
+        }else{
           requestAnimationFrame(this.animationFrame);
         }
-        requestAnimationFrame(this.animationFrame);
+        this.addMouseStateHandler(this.canvas.el);
+        
+        
       }else{
         setTimeout(()=>{
           this.setup();
@@ -1477,7 +1489,13 @@ window.appJScode=function(){
             console.log(m);
             throw m;
           }
+          if(!asset.object){
+            var m="Das Asset '"+image+"' ist keine gültige Bilddatei. Prüfe die URL.";
+            console.log(m);
+            throw m;
+          }
           image=asset.object;
+          
         }
         if(sourceRect){
           this.ctx.drawImage(image,image.width/2+sourceRect.cx-sourceRect.w/2,image.height/2+sourceRect.cy-sourceRect.h/2,sourceRect.w,sourceRect.h,-w/2,-h/2,w,h);
@@ -3408,6 +3426,7 @@ window.appJScode=function(){
     $App.handleModalDialog=function(){
       $App.gamepad.resetAllButtons();
       $App.mouse.down=false;
+      $App.keyboard.reset();
     };
   
     $App.addFunction(function alert(text){
@@ -3801,7 +3820,7 @@ window.appJScode=function(){
       {
         name: 'inRect', 
         returnType: 'boolean',
-        args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Rechtecks'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Rechtecks'}, {name: 'width', type: 'double', info: 'Breite des Rechtecks'}, {name: 'cx', type: 'double', info: 'Hoehe des Rechtecks'}],
+        args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Rechtecks'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Rechtecks'}, {name: 'width', type: 'double', info: 'Breite des Rechtecks'}, {name: 'height', type: 'double', info: 'Hoehe des Rechtecks'}],
         info: 'Prueft, ob sich die Maus aktuell innerhalb des Rechtecks mit Mittelpunkt (cx|cy) und Breite width und Hoehe height befindet.'
       }, 
       {
@@ -5224,4 +5243,5 @@ window.appJScode=function(){
     }else{
       $main=null;
     }
+    
 }

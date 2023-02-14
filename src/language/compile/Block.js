@@ -26,7 +26,9 @@ export function Block(node,source,scope){
       code,errors
     }
   }
-  code+=createUpdateLocalVariablesCode(scope);
+  if(!scope.optimizeCompiler){
+    code+=createUpdateLocalVariablesCode(scope);
+  }
   scope.pushLayer();
   let open=true;
   while(node.nextSibling){
@@ -40,16 +42,20 @@ export function Block(node,source,scope){
       try{
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
-        let line=source.getLineNumber(node.from);
-        code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
-        if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
-          let vnames=res.updateLocalVariablesAfter;
-          code+="eval('";
-          for(let i=0;i<vnames.length;i++){
-            let name=vnames[i];
-            code+="$locals["+JSON.stringify(name)+"]="+name+";";
+        if(!scope.optimizeCompiler){
+          let line=source.getLineNumber(node.from);
+          code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
+          if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
+            let vnames=res.updateLocalVariablesAfter;
+            code+="eval('";
+            for(let i=0;i<vnames.length;i++){
+              let name=vnames[i];
+              code+="$locals["+JSON.stringify(name)+"]="+name+";";
+            }
+            code+="',$App.console.updateLocalVariables($locals));";
           }
-          code+="',$App.console.updateLocalVariables($locals));";
+        }else{
+          code+="\n"+res.code;
         }
       }catch(e){
         errors.push(e);
@@ -60,10 +66,14 @@ export function Block(node,source,scope){
     errors.push(source.createError("'}' erwartet.",node));
   }
   //let line=source.state.doc.lineAt(blockNode.to).number;
-  let line=source.getLineNumber(blockNode.to);
-  code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
+  if(!scope.optimizeCompiler){
+    let line=source.getLineNumber(blockNode.to);
+    code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
+  }
   scope.popLayer();
-  code+=createUpdateLocalVariablesCode(scope);
+  if(!scope.optimizeCompiler){
+    code+=createUpdateLocalVariablesCode(scope);
+  }
   return {
     code
   }

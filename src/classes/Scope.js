@@ -13,9 +13,11 @@ export class Scope{
     if(options){
       this.addLocalVariablesUpdates=options.addLocalVariablesUpdates;
       this.ignoreVisibilityRestrictions=options.ignoreVisibilityRestrictions;
+      this.optimizeCompiler=options.optimizeCompiler;
     }else{
       this.addLocalVariablesUpdates=true;
       this.ignoreVisibilityRestrictions=false;
+      this.optimizeCompiler=false;
     }
     
     this.pushLayer();

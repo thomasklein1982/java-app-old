@@ -227,7 +227,24 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
             options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
               label: name+"(...)",
               type: "function",
-              info: m.comment
+              info: (completion)=>{
+                let node=document.createElement("div");
+                let sign=document.createElement("div");
+                sign.style.marginBottom="0.2rem";
+                sign.style.fontFamily="monospace";
+                node.appendChild(sign);
+                var type;
+                if(m.type){
+                  type=m.type.toString();
+                }else{
+                  type="void";
+                }
+                sign.innerHTML=type+" "+m.name+createParamsString(m,false);
+                let desc=document.createElement("div");
+                node.appendChild(desc);
+                desc.innerHTML=m.comment;
+                return node;
+              }
             }));
           }
         }

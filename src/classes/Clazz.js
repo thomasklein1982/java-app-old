@@ -241,13 +241,13 @@ export class Clazz{
     this.source=new Source(src,tree);
   }
 
-  compile(fromSource){
+  compile(fromSource,optimizeCompiler){
     if(fromSource){
       this.generateSrcAndTree(this.src);
     }
     this.compileDeclaration();
     this.compileMemberDeclarations();
-    this.compileMethods();
+    this.compileMethods(optimizeCompiler);
   }
 
   isUIClazz(){
@@ -454,14 +454,14 @@ export class Clazz{
   /**
    * Kompiliert alle Methoden (inklusive Konstruktoren) der Klasse
    */
-  compileMethods(){
+  compileMethods(optimizeCompiler){
     for(let mi in this.methods){
       let m=this.methods[mi];
-      m.compileBody(this.source);
+      m.compileBody(this.source,optimizeCompiler);
     }
     if(this.constructor){
       let c=this.constructor;
-      c.compileBody(this.source);
+      c.compileBody(this.source,optimizeCompiler);
     }
   }
 }

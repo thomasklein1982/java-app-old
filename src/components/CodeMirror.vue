@@ -148,7 +148,8 @@ export default {
       default: 4
     },
     current: Object,
-    project: Object
+    project: Object,
+    settings: Object
   },
   watch: {
     clazz(nv){
@@ -283,11 +284,11 @@ export default {
       var src=state.doc.toString();
       this.clazz.setSrcAndTree(src,state.tree);
       if(this.triggerRecompilation){
-        this.project.compile();
+        this.project.compile(false,this.settings.optimizeCompiler);
         //this.$emit("recompile");
       }else{
         let t1=new Date();
-        await this.clazz.compile();
+        await this.clazz.compile(false,this.settings.optimizeCompiler);
         let t2=new Date();
         console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
       }

@@ -47,6 +47,22 @@ button{
   }
 }
 
+.cm-tooltip{
+  z-index: 1000;
+}
+
+.cm-completionInfo{
+  
+}
+
+.ͼo .cm-tooltip{
+  border: 4pt solid white;
+}
+
+.cm-tooltip-autocomplete, .ͼ1 .cm-completionInfo.cm-completionInfo-right-narrow,.ͼ1 .cm-completionInfo.cm-completionInfo-left-narrow{
+  /*border: 4pt solid white;*/
+}
+
 .p-panel div.p-panel-header{
   padding-top: 0;
   padding-bottom: 0;

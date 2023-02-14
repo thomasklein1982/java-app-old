@@ -160,7 +160,7 @@ export class Project{
     return Java.datatypes[name]; 
   }
   /**Kompiliert das gesamte Projekt */
-  async compile(fromSource){
+  async compile(fromSource,optimizeCompiler){
     /**
      * 1. Alle Klassendeklarationen parsen
      * 2. Alle Memberdeklarationen parsen
@@ -220,7 +220,7 @@ export class Project{
     /**Methoden: */
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      c.compileMethods(this);
+      c.compileMethods(optimizeCompiler);
     }
     let end=Date.now();
     console.log("parsing done in "+(end-start)+"ms");

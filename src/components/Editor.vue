@@ -30,6 +30,7 @@
         ref="dialogSettings"
         :font-size="fontSize"
         @changefontsize="changeFontSize"
+        :settings="settings"
       />
       <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
       <DatabaseDialog :database="database" ref="dialogDatabase"/>
@@ -53,6 +54,7 @@
                 v-else
                 :clazz="c"
                 :project="project"
+                :settings="settings"
                 :font-size="fontSize"
                 :current="paused && i===activeTab ? current : null"
                 ref="editor"
@@ -145,6 +147,9 @@ export default {
       running: false,
       project: null,
       fontSize: 20,
+      settings: {
+        optimizeCompiler: false
+      },
       breakpoints: [],
       sizeCode: 60,
       rightClosed: false,
