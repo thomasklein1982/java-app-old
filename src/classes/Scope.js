@@ -10,14 +10,19 @@ export class Scope{
     this.endPosition=endPosition;
     this.stack=[];
     this.typeAnnotations={};
+    this.addLocalVariablesUpdates=true;
+    this.ignoreVisibilityRestrictions=false;
+    this.optimizeCompiler=false;
     if(options){
-      this.addLocalVariablesUpdates=options.addLocalVariablesUpdates;
-      this.ignoreVisibilityRestrictions=options.ignoreVisibilityRestrictions;
-      this.optimizeCompiler=options.optimizeCompiler;
-    }else{
-      this.addLocalVariablesUpdates=true;
-      this.ignoreVisibilityRestrictions=false;
-      this.optimizeCompiler=false;
+      if(options.addLocalVariablesUpdates===false){
+        this.addLocalVariablesUpdates=false;
+      }
+      if(options.ignoreVisibilityRestrictions===true){
+        this.ignoreVisibilityRestrictions=true;
+      }
+      if(options.optimizeCompiler===true){
+        this.optimizeCompiler=true;
+      }
     }
     
     this.pushLayer();
