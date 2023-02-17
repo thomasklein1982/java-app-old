@@ -282,6 +282,18 @@ function additionalJSCode(){
     this.right=keycode;
   }
 
+  class PrintStream{
+    println(text){
+      console.log(text);
+    }
+  }
+
+  class System{
+    static out=new PrintStream();
+    constructor(){
+    }
+  }
+
   class JComponent{
     constructor(x,y,width,height){
       this.x=x;
@@ -738,33 +750,51 @@ function additionalJSCode(){
     }
   }
 
-  class Vector extends Matrix{
+  class Vector{
     constructor(size){
-      super(size,1);
+      if(size<1){
+        throw new Exception("Die Länge des neuen Vektors muss mindestens 1 betragen.");
+      }
+      this.components=[];
+      this.size=size;
+      for(let i=0;i<size;i++){
+        this.components.push(0);
+      }
     }
     set(pos,value){
-      super.set(pos,1,value);
+      if(pos<1 || pos>this.size){
+        throw new Exception("Vector.set: Position "+pos+" gibt es nicht in einem Vektor der Länge "+this.size+".");
+      }
+      this.components[pos-1]=value;
     }
     get(pos){
-      return super.get(pos,1);
+      if(pos<1 || pos>this.size){
+        throw new Exception("Vector.get: Position "+pos+" gibt es nicht in einem Vektor der Länge "+this.size+".");
+      }
+      return this.components[pos-1];
     }
     setFromArray(array){
-      super.setColumn(1,array);
+      if(array.length!==this.size){
+        throw new Exception("Das Array hat "+array.length+" Einträge, er muss aber "+this.size+" Einträge haben.");
+      }
+      for(let i=0;i<array.length;i++){
+        this.components[i]=array[i];
+      }
     }
     toString(){
-      let t="(";
-      for(let i=0;i<this.rowCount;i++){
+      let t="[";
+      for(let i=0;i<this.size;i++){
         if(i>0){
           t+=" ";
         }
-        t+=this.cols[0][i].toFixed(2);
+        t+=this.components[i].toFixed(2);
       }
-      t+=")";
+      t+="]";
       return t;
     }
     add(v){
-      if(v.rowCount!==this.rowCount){
-        throw new Exception("Der Vektor hat "+v.rowCount+" Zeilen, er muss aber "+this.rowCount+" Zeilen haben.");
+      if(v.size!==this.size){
+        throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
       let res=new Vector(this.rowCount);
       for(let i=0;i<this.rowCount;i++){
@@ -773,8 +803,8 @@ function additionalJSCode(){
       return res;
     }
     sub(m){
-      if(v.rowCount!==this.rowCount){
-        throw new Exception("Der Vektor hat "+v.rowCount+" Zeilen, er muss aber "+this.rowCount+" Zeilen haben.");
+      if(v.size!==this.size){
+        throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
       let res=new Vector(this.rowCount);
       for(let i=0;i<this.rowCount;i++){

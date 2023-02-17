@@ -1,16 +1,16 @@
-import { Type } from "../../classes/Type";
+import { createMethod } from "../helper/createMethod";
 
-export function definePrintStream(datatypes){
-  let m={
-    m: {
-      println: {
-        info: "Gibt den angegebenen Text aus und macht anschließend einen Zeilenumbruch.",
-        params: [{name: "s", type: null}],
-        exec: function(t){
-          console.log(t);
-        }
+export function definePrintStream(clazz){
+  createMethod({
+    name: "println",
+    args: [
+      {
+        name: "text",
+        type: "String",
+        info: "Der Wert, der ausgegeben werden soll."
       }
-    }
-  };
-  datatypes.PrintStream.define(datatypes.Object,"keine Beschreibung vorhanden",m,true);
+    ],
+    info: "Gibt den Text aus und macht einen Zeilenumbruch."
+  },clazz,false,false);
+  console.log("print stream");
 }

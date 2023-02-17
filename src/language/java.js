@@ -13,6 +13,8 @@ import { defineFile } from "./datatypes/file";
 import { defineStorage } from "./datatypes/storage";
 import { defineObject } from "./datatypes/object";
 import { defineMatrix, defineVector } from "./datatypes/Matrix";
+import { defineSystem } from "./datatypes/system";
+import { definePrintStream } from "./datatypes/printStream";
 
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
@@ -72,14 +74,18 @@ Session.cannotBeInstantiated=true;
 
 let Matrix =new Clazz("Matrix");
 let Vector=new Clazz("Vector");
-Vector.superClazz=Matrix;
+
+let System=new Clazz("System");
+System.cannotBeInstantiated=true;
+let PrintStream=new Clazz("PrintStream");
+PrintStream.cannotBeInstantiated=true;
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
 }
 
 export const Java={
@@ -90,6 +96,8 @@ export const Java={
 defineObject(Object);
 defineString(String,Java);
 defineMath(Math,Java);
+definePrintStream(PrintStream);
+defineSystem(System);
 defineGenericClazz(Gamepad,appjsdata.objects.gamepad,Java);
 defineGenericClazz(Console,appjsdata.objects.console,Java);
 defineGenericClazz(Path,appjsdata.objects.path,Java);
