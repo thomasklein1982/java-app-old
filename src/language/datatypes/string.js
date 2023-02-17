@@ -2,7 +2,6 @@ import { createMethod } from "../helper/createMethod";
 
 export function defineString(StringClazz,Java){
   StringClazz.name="String";
-  let methods=[];
   createMethod({
     name: "length",
     info: "Liefert die Anzahl der Zeichen des Strings zurück.",
