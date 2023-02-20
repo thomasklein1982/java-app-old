@@ -23,7 +23,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 150,
+      version: 151,
       paused: false,
       printMode: false,
       current: {line: -1, name: null}
@@ -59,6 +59,7 @@ export default{
         });
         iter.next();
       }
+      console.log("update breakpoints",bp);
       this.$refs.editor.setBreakpoints(bp);
     }
   },

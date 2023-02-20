@@ -54,6 +54,11 @@ export class Project{
       let save=this.toSaveString();
       body=`<textarea style="display: none">${save}</textarea>`;
     }
+    let mainClazz=this.getMainClazz();
+    let codeMainCall="";
+    if(mainClazz){
+      codeMainCall="(async function(){await "+mainClazz.name+".main([]);})();"
+    }
     let code=`<!doctype html>
 <html>
     <head>
@@ -67,6 +72,7 @@ export class Project{
         ${databaseCode}
         ${js}
         ${additionalCode}
+        ${codeMainCall}
       </script>
       <style>
         .jimage{
@@ -80,6 +86,15 @@ export class Project{
     </body>
 </html>`;
     return code;
+  }
+  getMainClazz(){
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      if(c.hasStaticMainMethod()){
+        return c;
+      }
+    }
+    return null;
   }
   getJavaScriptCode(){
     let code="";
@@ -110,7 +125,7 @@ export class Project{
     }
 
     if(mainClazz){
-      code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n\n(async function(){await "+mainClazz.name+".main([]);})()";
+      code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n";
     }
     let clazzInfos={};
     /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */

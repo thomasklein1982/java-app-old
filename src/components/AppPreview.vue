@@ -62,6 +62,7 @@
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
         }
         this.$refs.wrapper.appendChild(frame);
+        console.log("start app",this.breakpoints);
         let code=this.project.getFullAppCode("$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");");
         let doc=frame.contentWindow.document;
         doc.open();
