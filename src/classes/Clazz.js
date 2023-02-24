@@ -6,6 +6,7 @@ import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
 import { UIClazz } from "./UIClazz";
+import  * as autocomplete  from "@codemirror/autocomplete";
 
 export class Clazz{
   constructor(name,project){
@@ -23,6 +24,14 @@ export class Clazz{
     this.node=null;
     this.references=[];
     this._isBuiltIn=project===undefined;
+    if(this.name){
+      this.typeSnippet=autocomplete.snippetCompletion(this.name, {
+          label: this.name,
+          type: "function"
+      });
+    }else{
+      this.typeSnippet=null;
+    }
   }
   isNative(){
     return this.project===undefined;
@@ -155,6 +164,9 @@ export class Clazz{
   }
 
   getMethod(name,staticAccess){
+    if(name==="toString"){
+      name="$toString";
+    }
     let m=this.methods[name];
     if(!m){
       let sc=this.getRealSuperClazz();
@@ -311,12 +323,16 @@ export class Clazz{
         let m=new Method(this,false);
         errors=errors.concat(m.compileDeclaration(node,this.source));
         if(m.name){
+          let name=m.name;
+          if(name==="toString"){
+            name="$"+name;
+          }
           if(this.methods[m.name]){
             errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
           }else if(this.attributes[m.name]){
             errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
           }else{
-            this.methods[m.name]=m;
+            this.methods[name]=m;
           }
         }
       }else if(node.name=="ConstructorDeclaration"){

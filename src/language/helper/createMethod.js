@@ -10,7 +10,11 @@ export function createMethod(data,clazz,isStatic,isConstructor){
   if(isConstructor){
     clazz.constructor=m;
   }else{
-    clazz.methods[m.name]=m;
+    let name=m.name;
+    if(name==="toString"){
+      name="$"+toString;
+    }
+    clazz.methods[name]=m;
   }
   m.comment=data.info;
   m.params=new ParameterList(m);

@@ -1,6 +1,6 @@
 import { Java } from "../language/java";
 import { Type } from "./Type";
-
+import  * as autocomplete  from "@codemirror/autocomplete";
 
 export class PrimitiveType{
   constructor(name,supertype,initialValue,info){
@@ -9,6 +9,11 @@ export class PrimitiveType{
     this.initialValue=initialValue;
     this.info=info;
     this.isNumeric=(typeof initialValue)==="number";
+    this.typeSnippet=autocomplete.snippetCompletion(this.name, {
+      label: this.name,
+      type: "function",
+      info: info
+  });
   }
   toString(){
     return this.name;

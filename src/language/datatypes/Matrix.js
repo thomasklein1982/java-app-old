@@ -118,6 +118,27 @@ export function defineMatrix(clazz){
     returnType: "Matrix",
     info: "Mutipliziert alle Einträge dieser Matrix mit s."
   },clazz,false,false);
+  createMethod({
+    name: "lengthSquared",
+    args: [
+    ],
+    returnType: "double",
+    info: "Liefert die quadrierte Länge der Matrix zurück (d.h., die Summe aller Quadrate der Einträge)."
+  },clazz,false,false);
+  createMethod({
+    name: "length",
+    args: [
+    ],
+    returnType: "double",
+    info: "Liefert die Länge der Matrix zurück (d.h., die Wurzel aus der Summe aller Quadrate der Einträge)."
+  },clazz,false,false);
+  createMethod({
+    name: "getCopy",
+    args: [
+    ],
+    returnType: "Matrix",
+    info: "Liefert eine neue Matrix mit den gleichen Einträgen zurück."
+  },clazz,false,false);
 }
 
 export function defineVector(clazz){
@@ -171,5 +192,33 @@ export function defineVector(clazz){
     ],
     returnType: "Vector",
     info: "Subtrahiert von diesem Vektor den Vektor v und gibt den Ergebnis-Vektor zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "lengthSquared",
+    args: [
+    ],
+    returnType: "double",
+    info: "Liefert die quadrierte euklidische Länge des Vektors zurück (d.h., die Summe aller Quadrate der Einträge)."
+  },clazz,false,false);
+  createMethod({
+    name: "length",
+    args: [
+    ],
+    returnType: "double",
+    info: "Liefert die euklidische Länge des Vektors zurück (d.h., die Wurzel aus der Summe aller Quadrate der Einträge)."
+  },clazz,false,false);
+  createMethod({
+    name: "getSize",
+    args: [
+    ],
+    returnType: "int",
+    info: "Liefert die Anzahl der Komponenten des Vektors."
+  },clazz,false,false);
+  createMethod({
+    name: "getCopy",
+    args: [
+    ],
+    returnType: "Vector",
+    info: "Liefert einen neuen Vektor mit den gleichen Einträgen zurück."
   },clazz,false,false);
 }

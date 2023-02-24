@@ -24,6 +24,7 @@ function getRealNodeBefore(node,pos){
 
 export function createAutocompletion(){
   return (context)=>{
+    let project=app.$refs.editor.project;
     console.log("autocomplete");
     let pos=context.pos;
     let lastTypedCharacter=context.state.doc.sliceString(context.pos-1,context.pos);
@@ -85,9 +86,27 @@ export function createAutocompletion(){
         // }else{
         //   from=pos;
         // }
+        let options=[];
+        for(let i=0;i<snippets.eventListeners.length;i++){
+          options.push(snippets.eventListeners[i]);
+        }
+        /**Datentypen und Klassen: */
+        for(let dt in Java.datatypes){
+          let d=Java.datatypes[dt];
+          if(d && d.typeSnippet){
+            options.push(d.typeSnippet);
+          }
+        }
+        for(let i=0;i<project.clazzes.length;i++){
+          let c=project.clazzes[i];
+          let s=autocomplete.snippetCompletion(c.name,{
+            label: c.name
+          });
+          options.push(s);
+        }
         return {
           from,
-          options: snippets.eventListeners,
+          options,
           span: /^[\w$]*$/
         }
       }else{
@@ -112,13 +131,19 @@ export function createAutocompletion(){
       return;
     }
     //console.log("autocomplete: look for annotations");
+    
     let annotation;
     if(nodeBefore.name==="Identifier" && nodeBefore.prevSibling){
       context.pos=nodeBefore.from;
       nodeBefore=nodeBefore.prevSibling;
     }
     //console.log("autocomplete: nodeBefore",nodeBefore.name);
+    if(nodeBefore.prevSibling && nodeBefore.name==="TypeName" && nodeBefore.prevSibling.name==="new"){
+      context.pos=nodeBefore.from;
+      nodeBefore=nodeBefore.prevSibling;
+    }
     if(nodeBefore.name==="new"){
+      console.log(context.pos);
       if(context.pos===nodeBefore.to){
         return;
       }
@@ -149,7 +174,7 @@ export function createAutocompletion(){
         options,
         span: /^[\w$]*$/
       }
-    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<"){
+    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<" || nodeBefore.name==="," || nodeBefore.name==="ArithOp" || nodeBefore.name==="CompareOp"){
       from=context.pos;
       let scope=method.getScopeAtPosition(from);
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true, scope};

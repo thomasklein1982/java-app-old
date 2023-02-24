@@ -1,6 +1,7 @@
 import  * as autocomplete  from "@codemirror/autocomplete";
 import {syntaxTree} from "@codemirror/language"
 import { Clazz } from "../classes/Clazz";
+import { Java } from "../language/java";
 
 
 
@@ -70,86 +71,7 @@ function createSnippets(data){
     objects[o.name]=o;
   }
   data.objects=objects;
-  /*
-    for(let m in o.members){
-      m=o.members[m];
-      let name=m.name;
-      let pos=name.indexOf("(");
-      let params;
-      if(pos>0){
-        params=name.substring(pos+1,name.length-1);
-        name=name.substring(0,pos);
-        params=params.split(",");
-        params=createParamsString(params,true);
-      }else{
-        params="";
-      }
-      array.push(autocomplete.snippetCompletion(o.name+"."+name+params, {
-        label: o.name+"."+m.name,
-        info: replaceHTML(m.info),
-        type: null
-      }));
-    }
-  }
   
-  let array=snippets.everywhere;
-
-  array.push({
-    apply: "Math", 
-    label: "Math",
-    info: "Enthält eine Vielzahl mathematischer Funktionen und Konstanten.",
-    type: "object"
-  });
-
-  array.push(autocomplete.snippetCompletion("Math.round(${x})", {
-    label: "Math.round",
-    info: "Rundet die Zahl auf Ganze.",
-    type: "function"
-  }));
-
-  array.push(autocomplete.snippetCompletion("Math.floor(${x})", {
-    label: "Math.floor",
-    info: "Rundet die Zahl auf Ganze ab.",
-    type: "function"
-  }));
-
-  array.push(autocomplete.snippetCompletion("Math.ceil(${x})", {
-    label: "Math.ceil",
-    info: "Rundet die Zahl auf Ganze auf.",
-    type: "function"
-  }));
-
-  array.push(autocomplete.snippetCompletion("Math.sin(${x})", {
-    label: "Math.sin",
-    info: "Berechnet den Sinus der Zahl im Bogenmaß.",
-    type: "function"
-  }));
-
-  array.push(autocomplete.snippetCompletion("Math.cos(${x})", {
-    label: "Math.cos",
-    info: "Berechnet den Kosinus der Zahl im Bogenmaß.",
-    type: "function"
-  }));
-
-  array.push(autocomplete.snippetCompletion("Math.sqrt(${x})", {
-    label: "Math.sqrt",
-    info: "Berechnet die Wurzel aus der Zahl.",
-    type: "function"
-  }));
-
-  array.push(autocomplete.snippetCompletion("Math.pow(${basis},${exp})", {
-    label: "Math.pow",
-    info: "Berechnet basis hoch exp.",
-    type: "function"
-  }));
-
-  
-  snippets.topLevel.push(autocomplete.snippetCompletion("function ${name}( ) {\n\t${}\n}", {
-    label: "function",
-    info: "Definiert eine neue Funktion.",
-    type: "keyword"
-  }));
-  */
   snippets.inMethod.push(autocomplete.snippetCompletion("System.out.println( ${} );", {
     label: "sysout",
     info: "Konsolen-Ausgabe",

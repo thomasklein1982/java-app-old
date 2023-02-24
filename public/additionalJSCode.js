@@ -589,15 +589,15 @@ function additionalJSCode(){
 
   class Matrix{
     constructor(rows,cols){
-      this.cols=[];
+      this.rows=[];
       this.rowCount=rows;
       this.colCount=cols;
-      for(let i=0;i<cols;i++){
+      for(let i=0;i<rows;i++){
         let z=[];
-        for(let j=0;j<rows;j++){
+        for(let j=0;j<cols;j++){
           z.push(0);
         }
-        this.cols.push(z);
+        this.rows.push(z);
       }
     }
     getRowCount(){
@@ -613,7 +613,7 @@ function additionalJSCode(){
       if(c<1 ||c>this.colCount){
         throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
       }
-      this.cols[c-1][r-1]=value;
+      this.rows[r-1][c-1]=value;
     }
     get(r,c){
       if(r<1 ||r>this.rowCount){
@@ -625,15 +625,16 @@ function additionalJSCode(){
       if(!this.cols[c-1]){
         console.log("fehler");
       }
-      return this.cols[c-1][r-1];
+      return this.rows[r-1][c-1];
     }
     getRow(r){
       if(r<1 ||r>this.rowCount){
         throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
       }
-      let row=new $App.Array("double",[this.colCount]);
+      let array=new $App.Array("double",[this.colCount]);
+      let row=this.rows[r-1];
       for(let i=0;i<this.colCount;i++){
-        row.set(i,this.cols[i][r-1]);
+        array.set(i,row[i]);
       }
       return row;
     }
@@ -644,8 +645,9 @@ function additionalJSCode(){
       if(values.length!==this.colCount){
         throw new Exception("Die neue Zeile muss genau "+this.colCount+" Einträge haben. Sie hat aber "+values.length+".");
       }
+      let row=this.rows[r-1];
       for(let i=0;i<this.colCount;i++){
-        this.cols[i][r-1]=values.get(i);
+        row[i]=values.get(i);
       }
     }
     getColumn(c){
@@ -654,7 +656,7 @@ function additionalJSCode(){
       }
       let col=new $App.Array("double",[this.rowCount]);
       for(let i=0;i<this.rowCount;i++){
-        col.set(i,this.cols[c-1][i]);
+        col.set(i,this.rows[i][c-1]);
       }
       return col;
     }
@@ -666,7 +668,7 @@ function additionalJSCode(){
         throw new Exception("Die neue Spalte muss genau "+this.rowCount+" Einträge haben. Sie hat aber "+values.length+".");
       }
       for(let i=0;i<this.rowCount;i++){
-        this.cols[c-1][i]=values.get(i);
+        this.rows[i][c-1]=values.get(i);
       }
     }
     multiply(m){
@@ -678,24 +680,25 @@ function additionalJSCode(){
         for(let j=0;j<m.colCount;j++){
           let e=0;
           for(let k=0;k<this.colCount;k++){
-            e+=this.cols[k][i]*m.cols[j][k];
+            e+=this.rows[i][k]*m.rows[k][j];
           }
-          res.cols[j][i]=e;
+          res.rows[i][j]=e;
         }
       }
       return res;
     }
     multiplyVector(v){
-      if(v.rowCount!==this.colCount){
+      if(v.size!==this.colCount){
         throw new Exception("Der Vektor hat "+v.rowCount+" Zeilen, er muss aber "+this.colCount+" Zeilen haben.");
       }
       let res=new Vector(this.rowCount);
       for(let i=0;i<this.rowCount;i++){
         let e=0;
+        let row=this.rows[i];
         for(let k=0;k<this.colCount;k++){
-          e+=this.cols[k][i]*v.cols[0][k];
+          e+=row[k]*v.components[k];
         }
-        res.cols[0][i]=e;
+        res.components[i]=e;
       }
       return res;
     }
@@ -705,9 +708,10 @@ function additionalJSCode(){
       }
       let res=new Matrix(this.rowCount,this.colCount);
       for(let i=0;i<this.rowCount;i++){
-        let row=this.cols[i];
+        let row=this.rows[i];
+        let row2=m.rows[i];
         for(let j=0;j<this.colCount;j++){
-          res.cols[j][i]=this.cols[j][i]+m.cols[j][i];
+          res.rows[i][j]=row[j]+row2[j];
         }
       }
       return res;
@@ -718,9 +722,10 @@ function additionalJSCode(){
       }
       let res=new Matrix(this.rowCount,this.colCount);
       for(let i=0;i<this.rowCount;i++){
-        let row=this.cols[i];
+        let row=this.rows[i];
+        let row2=m.rows[i];
         for(let j=0;j<this.colCount;j++){
-          res.cols[j][i]=this.cols[j][i]-m.cols[j][i];
+          res.rows[i][j]=row[j]-row2[j];
         }
       }
       return res;
@@ -729,7 +734,7 @@ function additionalJSCode(){
       let res=new Matrix(this.rowCount,this.colCount);
       for(let i=0;i<this.rowCount;i++){
         for(let j=0;j<this.colCount;j++){
-          res.cols[j][i]=s*this.cols[j][i];
+          res.rows[i][j]=s*this.rows[i][j];
         }
       }
       return res;
@@ -742,11 +747,34 @@ function additionalJSCode(){
         }
         for(let j=0;j<this.colCount;j++){
           if(j>0) t+=" ";
-          t+=this.cols[j][i].toFixed(2);
+          t+=this.rows[i][j].toFixed(2);
         }
       }
       t+=")";
       return t;
+    }
+    lengthSquared(){
+      let s=0;
+      for(let i=0;i<this.rowCount;i++){
+        let row=this.rows[i];
+        for(let k=0;k<this.colCount;k++){
+          s+=row[k]*row[k];
+        }
+      }
+      return s;
+    }
+    length(){
+      return Math.sqrt(this.lengthSquared());
+    }
+    getCopy(){
+      let M=new Matrix(this.rowCount,this.colCount);
+      for(let i=0;i<this.rowCount;i++){
+        let row=this.rows[i];
+        for(let j=0;j<this.colCount;j++){
+          M.rows[i][j]=row[j];
+        }
+      }
+      return M;
     }
   }
 
@@ -760,6 +788,9 @@ function additionalJSCode(){
       for(let i=0;i<size;i++){
         this.components.push(0);
       }
+    }
+    getSize(){
+      return this.size;
     }
     set(pos,value){
       if(pos<1 || pos>this.size){
@@ -778,7 +809,7 @@ function additionalJSCode(){
         throw new Exception("Das Array hat "+array.length+" Einträge, er muss aber "+this.size+" Einträge haben.");
       }
       for(let i=0;i<array.length;i++){
-        this.components[i]=array[i];
+        this.components[i]=array.get(i);
       }
     }
     toString(){
@@ -796,9 +827,9 @@ function additionalJSCode(){
       if(v.size!==this.size){
         throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
-      let res=new Vector(this.rowCount);
-      for(let i=0;i<this.rowCount;i++){
-        res.cols[0][i]=this.cols[0][i]+v.cols[0][i];
+      let res=new Vector(this.size);
+      for(let i=0;i<this.size;i++){
+        res.components[i]=this.components[i]+v.components[i];
       }
       return res;
     }
@@ -806,11 +837,28 @@ function additionalJSCode(){
       if(v.size!==this.size){
         throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
-      let res=new Vector(this.rowCount);
-      for(let i=0;i<this.rowCount;i++){
-        res.cols[0][i]=this.cols[0][i]-v.cols[0][i];
+      let res=new Vector(this.size);
+      for(let i=0;i<this.size;i++){
+        res.components[i]=this.components[i]+v.components[i];
       }
       return res;
+    }
+    lengthSquared(){
+      let s=0;
+      for(let i=0;i<this.size;i++){
+        s+=this.components[i]*this.components[i];
+      }
+      return s;
+    }
+    length(){
+      return Math.sqrt(this.lengthSquared());
+    }
+    getCopy(){
+      let v=new Vector(this.size);
+      for(let i=0;i<this.size;i++){
+        v.components[i]=this.components[i];
+      }
+      return v;
     }
   }
 
