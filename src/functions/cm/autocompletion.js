@@ -249,8 +249,8 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
         for (let name in clazz.methods) {
           let m=clazz.methods[name];
           if(m.isStatic()===isStatic){
-            options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
-              label: name+"(...)",
+            options.push(autocomplete.snippetCompletion(m.name+createParamsString(m,true),{
+              label: m.name+"(...)",
               type: "function",
               info: (completion)=>{
                 let node=document.createElement("div");

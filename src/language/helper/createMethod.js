@@ -12,7 +12,7 @@ export function createMethod(data,clazz,isStatic,isConstructor){
   }else{
     let name=m.name;
     if(name==="toString"){
-      name="$"+toString;
+      name="$"+name;
     }
     clazz.methods[name]=m;
   }
