@@ -42,6 +42,17 @@ export default {
           code: "class NAME{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new NAME();\n  }\n}"
         },
         {
+          name: "App mit UI",
+          description: "Eine leere mit mit einer UI-Klasse.",
+          code: [
+            'class NAME {\n  UI ui;\n  void onStart( ) {\n    ui = new UI( );\n  }\n  \n  void onAction( JComponent trigger ) {\n    \n  }\n  \n  public static void main( String[ ] args ) {\n    new NAME( );\n  }\n}',
+            {
+              type: "UI",
+              code: '{"name":"UI","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
+            }
+          ]
+        },
+        {
           name: "Spiel mit Gamepad-Steuerung",
           description: "Eine App, die bereits den nötigen Code enthält, um ein Spiel mit Gamepad-Steuerung zu programmieren.",
           code: "class NAME{\n  int x, y;\n  \n  void onStart(){\n    App.gamepad.show();\n    x = 50;\n    y = 50;\n  }\n\n  void onNextFrame(){\n    App.clear();\n    if( App.gamepad.left ){\n      x = x - 1;\n    }\n    if( App.gamepad.right ){\n      x = x + 1;\n    }\n    if( App.gamepad.up ){\n      y = y + 1;\n    }\n    if( App.gamepad.down ){\n      y = y - 1;\n    }\n    App.setMirrored( true );\n    App.write(\"🐝\",x,y,\"center\");\n    App.setMirrored( true );\n  }\n  \n  public static void main(String[] args){\n     App.setupApp(\"NAME\",\"🐝\",100,100,\"lime\");\n    new NAME();\n  }\n}"

@@ -21,6 +21,9 @@ export class Method{
     this.jsName=null;
     this.node=null;
   }
+  isBuiltIn(){
+    return this.bodyNode===null;
+  }
   createParamsString(){
     
   }

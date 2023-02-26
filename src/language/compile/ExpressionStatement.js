@@ -13,7 +13,7 @@ export function ExpressionStatement(node,source,scope){
   if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
     throw (source.createError("';' erwartet.",node.nextSibling));
   }
-  if(a.local && scope.addLocalVariablesUpdate){
+  if(a.local && scope.addLocalVariablesUpdates && !scope.optimizeCompiler){
     a.code+=";eval('$locals["+JSON.stringify(a.name)+"]="+a.name+"');";
   }else{
     a.code+=";";

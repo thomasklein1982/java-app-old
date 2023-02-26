@@ -60,29 +60,6 @@ export function MethodInvocation(node,source,scope){
         static: false
       };
     }
-    
-    // else if(node.name==="FieldAccess"){
-    //   let fa=FieldAccess(node,source,scope);
-    //   code+=fa.code;
-    //   owner={
-    //     clazz: fa.type.baseType,
-    //     static: false
-    //   };
-    // }else if(node.name==="ArrayAccess"){
-    //   let fa=ArrayAccess(node,source,scope);
-    //   code+=fa.code;
-    //   owner={
-    //     clazz: fa.type.baseType,
-    //     static: false
-    //   };
-    // }else if(node.name==="MethodInvocation"){
-    //   let fa=MethodInvocation(node,source,scope);
-    //   code+=fa.code;
-    //   owner={
-    //     clazz: fa.type.baseType,
-    //     static: false
-    //   };
-    // }
     node=node.nextSibling;
     if(node.name==="."){
     }else{
@@ -111,7 +88,11 @@ export function MethodInvocation(node,source,scope){
   
   if(node.name!=="ArgumentList"){
   }
+  let updateLocalVariablesAfter=!method.isBuiltIn();
   al=ArgumentList(node,source,scope,method.params);
+  if(al.updateLocalVariablesAfter){
+    updateLocalVariablesAfter=true;
+  }
   if(method.isExtraFunction){
     if(al.list.length===0){
       code=method.jsName+"("+code+")";
@@ -131,6 +112,6 @@ export function MethodInvocation(node,source,scope){
     scope.addTypeAnnotation(node,method.type,false);
   }
   return {
-    method,arguments: al, code, type: method.type? method.type: null
+    method,arguments: al, code, type: method.type? method.type: null, updateLocalVariablesAfter
   }
 }

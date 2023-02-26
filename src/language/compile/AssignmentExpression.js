@@ -6,6 +6,7 @@ import { PrimitiveType } from "./PrimitiveType";
 export function AssignmentExpression(node,source,scope){
   let code;
   node=node.firstChild;
+  let updateLocalVariablesAfter=false;
   if(node.name!=="Identifier"){
 
   }
@@ -31,6 +32,9 @@ export function AssignmentExpression(node,source,scope){
   if(!val.type.isSubtypeOf(v.type)){
     throw source.createError("Einer Variablen vom Typ '"+v.type+"' kann kein Wert vom Typ '"+val.type+"' zugewiesen werden.",node);
   }
+  if(val.updateLocalVariablesAfter===true){
+    updateLocalVariablesAfter=true;
+  }
   if(v.codeSet){
     code=v.codeSet+val.code+")";
   }else{
@@ -39,6 +43,7 @@ export function AssignmentExpression(node,source,scope){
   return {
     code,
     local: v.local,
-    name: v.name
+    name: v.name,
+    updateLocalVariablesAfter
   }
 }

@@ -32,6 +32,8 @@ export function UpdateExpression(node,source,scope){
   }
   return {
     code: code,
-    type: v.type
+    type: v.type,
+    local: v.local,
+    name: v.name
   };
 }

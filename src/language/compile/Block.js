@@ -46,13 +46,25 @@ export function Block(node,source,scope){
           let line=source.getLineNumber(node.from);
           code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
           if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
-            let vnames=res.updateLocalVariablesAfter;
-            code+="eval('";
-            for(let i=0;i<vnames.length;i++){
-              let name=vnames[i];
-              code+="$locals["+JSON.stringify(name)+"]="+name+";";
+            let vnames;
+            if(res.updateLocalVariablesAfter===true){
+              console.log("ruecksprung");
+              vnames=[];
+              let localVariables=scope.getLocalVariables();
+              for(let vname in localVariables){
+                vnames.push(localVariables[vname].name);
+              }
+            }else{
+              vnames=res.updateLocalVariablesAfter;
             }
-            code+="',$App.console.updateLocalVariables($locals));";
+            if(vnames){
+              code+="eval('";
+              for(let i=0;i<vnames.length;i++){
+                let name=vnames[i];
+                code+="$locals["+JSON.stringify(name)+"]="+name+";";
+              }
+              code+="',$App.console.updateLocalVariables($locals));";
+            }
           }
         }else{
           code+="\n"+res.code;
@@ -67,7 +79,7 @@ export function Block(node,source,scope){
   }
   //let line=source.state.doc.lineAt(blockNode.to).number;
   if(!scope.optimizeCompiler){
-    let line=source.getLineNumber(blockNode.to);
+    let line=source.getLineNumber(blockNode.to-1);
     code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
   }
   scope.popLayer();

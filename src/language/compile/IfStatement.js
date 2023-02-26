@@ -22,17 +22,21 @@ export function IfStatement(node,source,scope){
   code+=condition.code;
   node=node.nextSibling;
   let thenBlock;
+  scope.pushLayer();
   thenBlock=CompileFunctions.get(node,source)(node,source,scope);
   if(thenBlock.errors && thenBlock.errors.length>0){
     throw thenBlock.errors[0];
   }
   code+="{"+thenBlock.code+"}";
+  scope.popLayer();
   node=node.nextSibling;
   if(node && node.name==="else"){
     code+="else";
     node=node.nextSibling;
+    scope.pushLayer();
     let elseBlock=CompileFunctions.get(node,source)(node,source,scope);
     code+="{"+elseBlock.code+"}";
+    scope.popLayer();
   }
   return {
     code: code,

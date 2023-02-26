@@ -10,6 +10,7 @@ export function ArgumentList(node,source,scope,parameters){
   let codeArgs=[];
   let i=0;
   let pcount=parameters? parameters.count:0;
+  let updateLocalVariablesAfter=false;
   let minCount=-1;
   if(parameters && parameters.minCount>=0){
     minCount=parameters.minCount;
@@ -29,6 +30,9 @@ export function ArgumentList(node,source,scope,parameters){
     }
     let f=CompileFunctions.get(node,source);
     let arg=f(node,source,scope);
+    if(arg.updateLocalVariablesAfter){
+      updateLocalVariablesAfter=true;
+    }
     if(arg.error){
       throw source.createError(arg.error,node);
     }
@@ -51,6 +55,6 @@ export function ArgumentList(node,source,scope,parameters){
   code+=codeArgs.join(",");
   code+=")";
   return {
-    list, code
+    list, code, updateLocalVariablesAfter
   };
 }
