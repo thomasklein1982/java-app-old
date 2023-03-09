@@ -316,15 +316,14 @@ export class UIClazz {
   }
 
   restoreFromSaveObject(obj){
-    this.name=obj.name;
-    this.components=obj.components;
-    this.variablesRaw=obj.variablesRaw;
-    this.cssClass=obj.cssClass;
-    this.template=obj.template;
-    this.x=obj.x;
-    this.y=obj.y;
-    this.width=obj.width;
-    this.height=obj.height;
+    let props=["name","components","variablesRaw","cssClass","template","x","y","width","height"];
+    for(let i=0;i<props.length;i++){
+      let p=props[i];
+      if(obj[p]!==undefined){
+        this[p]=obj[p];
+      }
+    }
+    
   }
 
   compile(){
