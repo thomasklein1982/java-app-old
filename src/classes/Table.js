@@ -56,11 +56,16 @@ export class Table{
             }
             
           }else{
-            d=+d;
-            if(isNaN(d)){
-              d=null;
+            let n=+d;
+            if(isNaN(n)){
+              if(d){
+                n=+d.replace(",",".");
+              }
+              if(isNaN(n)){
+                n=null;
+              }
             }
-            code+=d;
+            code+=n;
           }
         }
       }

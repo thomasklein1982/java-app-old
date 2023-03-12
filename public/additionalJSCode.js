@@ -804,6 +804,13 @@ function additionalJSCode(){
       }
       return this.components[pos-1];
     }
+    getAsArray(){
+      let array=new $App.Array("double",[this.size]);
+      for(let i=0;i<this.size;i++){
+        array.set(i,this.components[i]);
+      }
+      return array;
+    }
     setFromArray(array){
       if(array.length!==this.size){
         throw new Exception("Das Array hat "+array.length+" Einträge, er muss aber "+this.size+" Einträge haben.");
@@ -876,7 +883,8 @@ function additionalJSCode(){
             records.push(r);
           }
         }
-        return records;
+        var a=new $App.Array("Record",records.length,records);
+        return a;
       }catch(e){
         return null;
       }
@@ -937,7 +945,7 @@ function additionalJSCode(){
       this.$data=$data;
     }
     get(attribute){
-      return this.$data[attribute];
+      return this.$data[attribute.toLowerCase()];
     }
   }
 

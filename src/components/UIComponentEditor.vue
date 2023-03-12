@@ -1,6 +1,5 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: auto">
-    {{ component.components.errors }}
     <div v-if="!maximized" :style="{display: 'flex', 'align-items': 'center'}">
       <Button @click="showExpandedDialog=true" icon="pi pi-window-maximize"/>&nbsp;{{ componentName }}
     </div>

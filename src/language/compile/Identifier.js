@@ -66,7 +66,8 @@ export function Identifier(node,source,scope,owner){
     if(!obj){
       obj=scope.getAttribute(name,false);
       if(obj && obj.error){
-        throw source.createError(obj.error,node);
+        throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);
+        //throw source.createError(obj.error,node);
       }else{
         code="this."+code;
         type=obj.type;
