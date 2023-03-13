@@ -48,6 +48,13 @@ export class Table{
           var typ=this.attributes[j].type;
           if(typ.id===Database.String.id){
             code+="'"+d+"'";
+          }else if(typ.id===Database.Time.id){
+            if(/^\d\d(?:\:\d\d(?:\:\d\d)?)?$/.test(d)){
+              code+="'"+d+"'";/*"new Date('"+d+"')";*/
+            }else{
+              code+=null;
+            }
+            
           }else if(typ.id===Database.Date.id){
             if(/^\d\d\d\d(?:-\d\d(?:\-\d\d)?)?$/.test(d)){
               code+="'"+d+"'";/*"new Date('"+d+"')";*/

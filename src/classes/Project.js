@@ -41,6 +41,27 @@ export class Project{
     let cmds=database.createInMemory(true);
     if(cmds && cmds.length>1){
       databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
+      databaseCode+=`alasql.fn.datepart=function(date_part,date){
+        if(/^\\d\\d(?:\\:\\d\\d(?:\\:\\d\\d)?)?$/.test(date)){
+          let s=date.split(':');
+          let part=date_part.toLowerCase();
+          if(part==='second' || part==='ss'){
+            if(s.length>2){
+              return s[2]*1;
+            }
+          }else if(part==='minute'||part==='mm'){
+            if(s.length>1){
+              return s[1]*1;
+            }
+          }else if(part==='hour'|| part==="hh"){
+            if(s.length>0){
+              return s[0]*1;
+            }
+          }
+          return 0;
+        } 
+        return null;
+      };`;
       databaseCode+="$clearAlaSQL();\ntry{";
       for(var i=0;i<cmds.length;i++){
         databaseCode+="alasql("+JSON.stringify(cmds[i])+");\n";

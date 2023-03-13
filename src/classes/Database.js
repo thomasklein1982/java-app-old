@@ -1,5 +1,26 @@
 import {Table} from "./Table";
 alasql_code();
+alasql.fn.datepart=function(date_part,date){
+  if(/^\d\d(?:\:\d\d(?:\:\d\d)?)?$/.test(date)){
+    let s=date.split(':');
+    let part=date_part.toLowerCase();
+    if(part==='second' || part==='ss'){
+      if(s.length>2){
+        return s[2]*1;
+      }
+    }else if(part==='minute'||part==='mm'){
+      if(s.length>1){
+        return s[1]*1;
+      }
+    }else if(part==='hour'|| part==="hh"){
+      if(s.length>0){
+        return s[0]*1;
+      }
+    }
+    return 0;
+  } 
+  return null;
+};
 alasql.options.casesensitive=false;
 
 export const SQL_KEYWORDS=['alter','create','table','add','constraint','all','column','and','any','as','asc','backup','database','between','case','check','create','index','replace','default','delete','desc','distinct','drop','view','exec','exists','foreign','key','from','full','outer','join','group','by','having','in','inner','insert','into','select','null','not','left','right','like','limit','or','order','primary','procedure','rownum','top','set','truncate','union','all','unique','update','values','where'];
@@ -8,7 +29,8 @@ export class Database{
 
   static String={name: "String", id: "STRING", value: "", icon: "pi pi-comment", comment: "Eine beliebige Zeichenkette."};
   static Numeric={name: "Numeric", id: "NUMERIC", value: 0, icon : "pi pi-percentage", comment: "Eine Zahl (mit oder ohne Komma bzw. Punkt). Arithmetische Operationen und Aggregatfunktionen wie SUM, MIN und MAX sind anwendbar."};
-  static Date={name: "Date", id: "date", value: "1970-01-01", icon: "pi pi-calendar", comment: "Ein Datum in der Form jjjj-mm-tt. Aggregatfunktionen wie YEAR, MONTH und DAY sind anwendbar."};
+  static Date={name: "Date", id: "date", value: "1970-01-01", icon: "pi pi-calendar", comment: "Ein Datum in der Form jjjj-mm-tt. Funktionen wie YEAR, MONTH und DAY sind anwendbar."};
+  static Time={name: "Time", id: "TIME", value: "13:45:30", icon: "pi pi-clock", comment: "Eine Uhrzeit in der Form hh:mm:ss. Aggregatfunktionen wie YEAR, MONTH und DAY sind anwendbar."};
   constructor(sourceCSV,fileName){
     this.clearFromMemory();
     this.tables=[];
@@ -24,6 +46,8 @@ export class Database{
       return Database.Numeric;
     }else if(type==="date"){
       return Database.Date;
+    }else if(type==="time"){
+      return Database.Time;
     }
     return null;
   }

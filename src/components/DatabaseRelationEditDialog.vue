@@ -89,7 +89,7 @@
       },
       datatypes(){
         return [
-          Database.String, Database.Numeric, Database.Date
+          Database.String, Database.Numeric, Database.Date, Database.Time
         ]
       }
     },
