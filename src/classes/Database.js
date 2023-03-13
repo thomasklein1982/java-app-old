@@ -6,9 +6,9 @@ export const SQL_KEYWORDS=['alter','create','table','add','constraint','all','co
 
 export class Database{
 
-  static String={name: "String", id: "STRING", value: "", icon: "pi pi-comment"};
-  static Numeric={name: "Numeric", id: "NUMERIC", value: 0, icon : "pi pi-percentage"};
-  static Date={name: "Date", id: "date", value: "1970-01-01", icon: "pi pi-calendar"};
+  static String={name: "String", id: "STRING", value: "", icon: "pi pi-comment", comment: "Eine beliebige Zeichenkette."};
+  static Numeric={name: "Numeric", id: "NUMERIC", value: 0, icon : "pi pi-percentage", comment: "Eine Zahl (mit oder ohne Komma bzw. Punkt). Arithmetische Operationen und Aggregatfunktionen wie SUM, MIN und MAX sind anwendbar."};
+  static Date={name: "Date", id: "date", value: "1970-01-01", icon: "pi pi-calendar", comment: "Ein Datum in der Form jjjj-mm-tt. Aggregatfunktionen wie YEAR, MONTH und DAY sind anwendbar."};
   constructor(sourceCSV,fileName){
     this.clearFromMemory();
     this.tables=[];

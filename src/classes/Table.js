@@ -49,7 +49,7 @@ export class Table{
           if(typ.id===Database.String.id){
             code+="'"+d+"'";
           }else if(typ.id===Database.Date.id){
-            if(/^\d\d\d\d-\d\d\-\d\d$/.test(d)){
+            if(/^\d\d\d\d(?:-\d\d(?:\-\d\d)?)?$/.test(d)){
               code+="'"+d+"'";/*"new Date('"+d+"')";*/
             }else{
               code+=null;

@@ -13,25 +13,27 @@
       <Button @click="dialogs.importRelation.show=false" class="p-button-outlined" label="Abbrechen"/>
     </template>
   </Dialog>
-  <Dialog header="Neues Attribut" v-model:visible="dialogs.newAttribute.show" :modal="true">
+  <Dialog header="Neues Attribut" :style="{width: '50vw'}" v-model:visible="dialogs.newAttribute.show" :modal="true">
     <DatabaseNameInput help="Der Name des neuen Attributs." v-model="dialogs.newAttribute.name" label="Name"/>
     <div class="field">
       <label for="datatype">Datentyp</label>
-      <Dropdown id="datatype" optionLabel="name" v-model="dialogs.newAttribute.datatype" :options="datatypes" />
+      <Dropdown id="datatype" optionLabel="name" v-model="dialogs.newAttribute.type" :options="datatypes" />
+      <div>{{ dialogs.newAttribute.type.comment }}</div>
     </div>
     <template #footer>
-      <Button :disabled="!dialogs.newAttribute.name.ok" @click="confirmNewAttribute(dialogs.newAttribute.name.name,dialogs.newAttribute.datatype)" label="OK"/>
+      <Button :disabled="!dialogs.newAttribute.name.ok" @click="confirmNewAttribute(dialogs.newAttribute.name.name,dialogs.newAttribute.type)" label="OK"/>
       <Button @click="dialogs.newAttribute.show=false" class="p-button-outlined" label="Abbrechen"/>
     </template>
   </Dialog>
-  <Dialog header="Attribut bearbeiten" v-model:visible="dialogs.editAttribute.show">
+  <Dialog header="Attribut bearbeiten" :style="{width: '50vw'}" v-model:visible="dialogs.editAttribute.show">
     <DatabaseNameInput help="Der Name des Attributs." v-model="dialogs.editAttribute.name" label="Name"/>
     <div class="field">
       <label for="datatype">Datentyp</label>
-      <Dropdown id="datatype" optionLabel="name" v-model="dialogs.editAttribute.datatype" :options="datatypes" />
+      <Dropdown id="datatype" optionLabel="name" v-model="dialogs.editAttribute.type" :options="datatypes" />
+      <div>{{ dialogs.editAttribute.type.comment }}</div>
     </div>
     <template #footer>
-      <Button :disabled="!dialogs.editAttribute.name.ok" @click="confirmEditAttribute(dialogs.editAttribute.name.name,dialogs.editAttribute.datatype)" label="OK"/>
+      <Button :disabled="!dialogs.editAttribute.name.ok" @click="confirmEditAttribute(dialogs.editAttribute.name.name,dialogs.editAttribute.type)" label="OK"/>
       <Button @click="dialogs.editAttribute.show=false" class="p-button-outlined" label="Abbrechen"/>
     </template>
   </Dialog>
@@ -100,7 +102,7 @@
               name: "",
               ok: true
             },
-            datatype: Database.String,
+            type: Database.String,
             isPrimaryKey: false
           },
           editAttribute: {
@@ -109,7 +111,7 @@
               name: "",
               ok: true
             },
-            datatype: Database.String,
+            type: Database.String,
             isPrimaryKey: false
           },
           importRelation: {

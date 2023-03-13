@@ -47,7 +47,7 @@
             </div>
           </div>
         </div>
-        <Textarea :rows="6" v-model="sqlcommand" autoresize/>
+        <Textarea spellcheck="false" :rows="6" v-model="sqlcommand" autoresize/>
         <div style="text-align: right">
           <Button @click="executeSQL()" icon="pi pi-play" label="SQL-Befehl ausführen"/>
         </div>

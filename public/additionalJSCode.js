@@ -538,6 +538,7 @@ function additionalJSCode(){
     constructor(type,placeholder,x,y,width,height){
       super(x,y,width,height);
       this.$el=ui.input(type,placeholder,x,y,width,height);
+      this.$el.spellcheck=false;
       this.$el.component=this;
     }
   }
@@ -572,6 +573,7 @@ function additionalJSCode(){
     constructor(placeholder,x,y,width,height){
       super(x,y,width,height);
       this.$el=ui.textarea(placeholder,x,y,width,height);
+      this.$el.spellcheck=false;
       this.$el.component=this;
     }
   }
