@@ -908,18 +908,18 @@ function additionalJSCode(){
         return true;
       }
       var n1=0;
-      var r1=array1[0];
+      var r1=array1.values[0];
       for(var a in r1){
         n1++;
       }
-      var r2=array2[0];
+      var r2=array2.values[0];
       var n2=0;
       for(var a in r2){
         n2++;
       }
       if(n1!==n2) return false;
       for(var i=0;i<n1;i++){
-        var r1=array1[i];
+        var r1=array1.values[i];
         var s1=0;
         for(var a in r1.$data){
           s1++;
@@ -929,7 +929,7 @@ function additionalJSCode(){
           s2++;
         }
         if(s1!==s2) return false;
-        var r2=array2[i];
+        var r2=array2.values[i];
         for(var a in r1.$data){
           if(a in r2.$data){
             if(r1.$data[a]!==r2.$data[a]) return false;
