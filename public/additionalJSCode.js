@@ -832,6 +832,13 @@ function additionalJSCode(){
       t+="]";
       return t;
     }
+    scale(s){
+      let res=new Vector(this.size);
+      for(let i=0;i<this.size;i++){
+        res.components[i]=this.components[i]*s;
+      }
+      return res;
+    }
     add(v){
       if(v.size!==this.size){
         throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");

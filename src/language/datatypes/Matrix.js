@@ -215,6 +215,14 @@ export function defineVector(clazz){
     info: "Liefert die Anzahl der Komponenten des Vektors."
   },clazz,false,false);
   createMethod({
+    name: "scale",
+    args: [
+      {name: "s", type: "double", info: "Der Faktor, mit dem der Vektor skaliert wird."}
+    ],
+    returnType: "Vector",
+    info: "Mutipliziert alle Einträge dieses Vektors mit s."
+  },clazz,false,false);
+  createMethod({
     name: "getCopy",
     args: [
     ],
