@@ -624,7 +624,7 @@ function additionalJSCode(){
       if(c<1 ||c>this.colCount){
         throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
       }
-      if(!this.cols[c-1]){
+      if(!this.rows[r-1]){
         console.log("fehler");
       }
       return this.rows[r-1][c-1];
@@ -849,13 +849,13 @@ function additionalJSCode(){
       }
       return res;
     }
-    sub(m){
+    sub(v){
       if(v.size!==this.size){
         throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
       let res=new Vector(this.size);
       for(let i=0;i<this.size;i++){
-        res.components[i]=this.components[i]+v.components[i];
+        res.components[i]=this.components[i]-v.components[i];
       }
       return res;
     }
