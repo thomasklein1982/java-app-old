@@ -499,10 +499,19 @@ window.appJScode=function(){
         Object.defineProperty(el,'value', {
           set: function(v){
             this.appJSData.value=v;
-            this.src=v;
+            var asset=$App.assets[v];
+            if(asset){
+              var url=asset.url;
+              if(!url.startsWith("data:")){
+                url=(new URL(asset.url,document.baseURI)).href;
+              }
+            }else{
+              var url=v;
+            }
+            this.src=url;
           },
           get: function(){
-            return this.src;
+            return this.appJSData.value;
           }
         });
       }else if(tagname==="div"){
@@ -4555,7 +4564,16 @@ window.appJScode=function(){
       },
       image: function (url,cx,cy,width,height){
         var b=$App.createElement("img");
-        b.src=url;
+        var asset=$App.assets[url];
+        if(asset){
+          var url=asset.url;
+          if(!url.startsWith("data:")){
+            url=(new URL(asset.url,document.baseURI)).href;
+          }
+          b.src=url;
+        }else{
+          b.src=url;
+        }
         $App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },

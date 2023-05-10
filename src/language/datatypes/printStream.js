@@ -12,5 +12,4 @@ export function definePrintStream(clazz){
     ],
     info: "Gibt den Text aus und macht einen Zeilenumbruch."
   },clazz,false,false);
-  console.log("print stream");
 }

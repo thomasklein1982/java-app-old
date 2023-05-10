@@ -105,8 +105,9 @@ export async function upload(options){
 
 export async function saveLocally(key,data){
   var s=JSON.stringify(data);
-  var c=LZString.compress(s);
-  await localforage.setItem(key,c);
+  //var c=LZString.compress(s);
+  //let c=s;
+  await localforage.setItem(key,s);
 }
 
 export async function loadLocally(key){
@@ -114,7 +115,12 @@ export async function loadLocally(key){
   if(c===undefined || c===null){
     return null;
   }
-  var s=LZString.decompress(c);
-  var data=JSON.parse(s);
+  //var s=LZString.decompress(c);
+  try{
+    var data=JSON.parse(c);
+  }catch(e){
+    c=LZString.decompress(c);
+    data=JSON.parse(c);
+  }
   return data;
 }

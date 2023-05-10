@@ -14,7 +14,7 @@
           <input type="text" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JImage'">
-          <img class="jimage" :src="component.value"/>
+          <div class="jimage"><span class="pi pi-image"/> {{ isEditable? imageName:'Bild' }}</div>
         </template>
         <template v-if="type==='JCheckBox'">
           <input type="checkbox" :checked="component.value"/> {{component.label}}
@@ -119,6 +119,11 @@
       }
     },
     computed: {
+      imageName(){
+        let name=this.component.value;
+        let pos=name.lastIndexOf("/");
+        return name.substring(pos+1);
+      },
       showName(){
         if(this.component instanceof UIClazz){
           return false;
@@ -231,6 +236,7 @@
   }
   .jimage{
     min-height: 1cm;
+    line-height: 1cm;
   }
   .ui-class-top{
     height: 1cm;

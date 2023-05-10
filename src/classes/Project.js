@@ -10,6 +10,7 @@ export class Project{
   constructor(name,code){
     this.clazzes=[];
     this.css="";
+    this.assets=[];
     if(!name){
       name="MyApp";
       code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
@@ -68,7 +69,11 @@ export class Project{
       }
       databaseCode+="}catch(e){console.log('** Datenbank-Fehler: **');console.log(e);console.log('**************')}\n";
     }
-    
+    let assetsCode="";
+    for(let i=0;i<this.assets.length;i++){
+      let a=this.assets[i];
+      assetsCode+="loadAsset('"+a.file.code+"','"+a.name+"');";
+    }
     let js=this.getJavaScriptCode();
     let body="";
     if(includeSave){
@@ -91,6 +96,7 @@ export class Project{
         ${includeSave? 'console.hide()':''}
         ${window.additionalJSCode}
         ${databaseCode}
+        ${assetsCode}
         ${js}
         ${additionalCode}
         ${codeMainCall}
@@ -279,6 +285,15 @@ export class Project{
   getName(){
     return this.clazzes[0].name;
   }
+  updateAssetsSaveString(){
+    this.assetsSaveString=JSON.stringify(this.assets);
+  }
+  addAsset(asset){
+    this.assets.push(asset);
+  }
+  deleteAssetAt(index){
+    this.assets.splice(index,1);
+  }
   toSaveString(){
     var t=[];
     for(var i=0;i<this.clazzes.length;i++){
@@ -293,7 +308,8 @@ export class Project{
     return start+JSON.stringify({
       clazzesSourceCode: t,
       database: db,
-      css: this.css
+      css: this.css,
+      assets: this.assets
     })+stop;
   }
   async fromSaveString(appcode){
@@ -313,6 +329,9 @@ export class Project{
       }
       if(o.css){
         this.css=o.css;
+      }
+      if(o.assets){
+        this.assets=o.assets;
       }
     }catch(e){
       return;

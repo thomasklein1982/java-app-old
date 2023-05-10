@@ -31,6 +31,14 @@ button{
   border-radius: 0;
 }
 
+.asset .p-card-title{
+  font-size: 100%;
+}
+
+.asset.p-card{
+  border: orange 1pt solid;
+}
+
 @media screen {
   body,html{
     position: fixed;

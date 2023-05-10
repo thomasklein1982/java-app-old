@@ -58,6 +58,13 @@ export default {
               }
             },
             {
+              label: 'Assets',
+              icon: 'pi pi-images',
+              command: (ev)=>{
+                this.$emit('assets');
+              }
+            },
+            {
               label: 'Datenbank',
               icon: 'pi pi-database',
               command: (ev)=>{

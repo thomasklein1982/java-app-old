@@ -19,6 +19,7 @@
         @toggleright="toggleRight()"
         @resources="$refs.dialogResources.setVisible(true)"
         @database="$refs.dialogDatabase.setVisible(true)"
+        @assets="$refs.dialogAssets.setVisible(true)"
         @css="$refs.dialogCSS.setVisible(true)"
         @settings="$refs.dialogSettings.setVisible(true)"
         @print="$refs.printPreview.open()"
@@ -33,6 +34,7 @@
         :settings="settings"
       />
       <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
+      <AssetsDialog :project="project" ref="dialogAssets"/>
       <DatabaseDialog :database="database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
@@ -127,11 +129,11 @@ import LinksDialog from "./LinksDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
 import DatabaseDialog from "./DatabaseDialog.vue";
 import CSSDialog from "./CSSDialog.vue";
+import AssetsDialog from "./AssetsDialog.vue";
 import {database} from "../classes/Database.js";
 import UIPreview from "./UIPreview.vue";
 import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
-import CSSDialogVue from "./CSSDialog.vue";
 import PrintPreview from "./PrintPreview.vue";
 
 
@@ -327,7 +329,7 @@ export default {
     },
     openProject(p){
       this.project=p;
-      p.compile();
+      p.compile(true);
     },
     getProject(){
       return this.project;
@@ -423,6 +425,7 @@ export default {
     LinksDialog,
     NewAppDialog,
     DatabaseDialog,
+    AssetsDialog,
     UIEditor,
     UIComponentEditor,
     UIPreview,
