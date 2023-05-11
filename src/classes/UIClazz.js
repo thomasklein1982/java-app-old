@@ -59,6 +59,13 @@ export class UIClazz {
       labels: {
         value: "Die aktuell ausgewählte Option."
       }
+    },
+    Canvas: {
+      params: ["internalWidth","internalHeight","x","y","width","height"],
+      labels: {
+        internalWidth: "Die Breite des Koordinatensystems.",
+        internalHeight: "Die Höhe des Koordinatensystems"
+      }
     }
   };
 

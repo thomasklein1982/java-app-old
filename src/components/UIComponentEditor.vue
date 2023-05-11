@@ -43,6 +43,16 @@
           <CodeMirrorEditor :language="component.valueType" v-model="component.value"/>
         </td>
       </tr>
+      <template v-if="component.internalWidth!==undefined">
+        <tr>
+          <td>Koordinatenbreite:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.internalWidth" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Koordinatenhöhe:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.internalHeight" style="width: 95%"/></td>
+        </tr>
+      </template>
       <tr v-if="component.actionCommand!==undefined">
         <td>ActionCommand:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.actionCommand" style="width: 95%"/></td>

@@ -58,6 +58,9 @@
           <div v-if="type==='JPanel'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">JPanel
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
+          <div v-if="type==='Canvas'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Canvas
+            <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
+          </div>
           <div v-else-if="type==='UIClazz'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{component.componentName}}
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
@@ -140,7 +143,7 @@
         return this.component.type;
       },
       isContainer(){
-        return this.type==="JPanel" || this.type==="UIClazz" || this.component instanceof UIClazz || this.component.controlComponent;
+        return this.type==="Canvas" || this.type==="JPanel" || this.type==="UIClazz" || this.component instanceof UIClazz || this.component.controlComponent;
       },
       label(){
         if(this.isEditable && this.component.name){

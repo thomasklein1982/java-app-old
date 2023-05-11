@@ -27,7 +27,7 @@ window.appJScode=function(){
     })
   
     window.$App={
-      version: 37,
+      version: 38,
       language: window.language? window.language:'js',
       setupData: null,
       lazyLoading: false,
@@ -354,6 +354,25 @@ window.appJScode=function(){
       }
     }
 
+    $App.alignSelf=function(el,align){
+      if(align.h==="center"){
+        el.style.marginLeft="auto";
+        el.style.marginRight="auto";
+      }else if(align.h==="left"){
+        el.style.marginRight="auto";
+      }else{
+        el.style.marginLeft="auto";
+      }
+      if(align.v==="middle"){
+        el.style.marginTop="auto";
+        el.style.marginBottom="auto";
+      }else if(align.v==="top"){
+        el.style.marginBottom="auto";
+      }else{
+        el.style.marginTop="auto";
+      }
+    };
+
     $App.createElement=function(tagname){
       let el=document.createElement(tagname);
       el.style.boxSizing="border-box";
@@ -382,25 +401,25 @@ window.appJScode=function(){
       el.updateAlignContent=function(v){
         var a=$App.Canvas.$getAlignment(v);
         this.appJSData.alignContent=a;
-        if(a.h==="center"){
-          //this.style.transform
-          // this.style.marginLeft="auto";
-          // this.style.marginRight="auto";
-          this.style.justifyContent="center";
-        }else if(a.h==="left"){
-          // this.style.marginRight="auto";
-          this.style.justifyContent="flex-end";
-        }else{
-          // this.style.marginLeft="auto";
-          this.style.justifyContent="flex-start";
+        //TODO: Wenn der Inhalt zu groß ist, wird er abgeschnitten!
+        for(var i=0;i<this.childNodes.length;i++){
+          var c=this.childNodes[i];
+          $App.alignSelf(c,a);
         }
-        if(a.v==="middle"){
-          this.style.alignItems="center";
-        }else if(a.v==="top"){
-          this.style.alignItems="flex-end";
-        }else{
-          this.style.alignItems="flex-start";
-        }
+        // if(a.h==="center"){
+        //   this.style.justifyContent="center";
+        // }else if(a.h==="left"){
+        //   this.style.justifyContent="flex-end";
+        // }else{
+        //   this.style.justifyContent="flex-start";
+        // }
+        // if(a.v==="middle"){
+        //   this.style.alignItems="center";
+        // }else if(a.v==="top"){
+        //   this.style.alignItems="flex-end";
+        // }else{
+        //   this.style.alignItems="flex-start";
+        // }
       };
       el.updateAlignContent();
       Object.defineProperty(el,'align', {
@@ -612,7 +631,7 @@ window.appJScode=function(){
         root.style="font-family: sans-serif;position: fixed;width:100%;height:100%";
         root.className="app-root";
         this.body.element.appendChild(root);
-        this.canvas=new $App.Canvas(root,100,100);
+        this.canvas=new $App.Canvas(root,100,100,true);
         this.world=new $App.World(this.canvas);
         let left=document.createElement("div");
         left.style="font-family: monospace; position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
@@ -1012,8 +1031,12 @@ window.appJScode=function(){
     };
     
     /**Canvas: */
-    $App.Canvas=function Canvas(parent,width,height){
-      this.container=document.createElement("div");
+    $App.Canvas=function Canvas(parent,width,height,isRoot){
+      if(isRoot){
+        this.container=document.createElement("div");
+      }else{
+        this.container=$App.createElement("div");
+      }
       this.el=document.createElement("canvas");
       this.el.jel=this;
       this.el.isCanvas=true;
@@ -1196,14 +1219,25 @@ window.appJScode=function(){
         el.appJSData.align=align;
         if(!width){
           width=el.offsetWidth;
+          if(!width && el.childNodes.length>0){
+            width=el.childNodes[0].offsetWidth;
+          }
           width=this.getCanvasWidth(width);
         }
         if(!height){
           height=el.offsetHeight;
+          if(!height && el.childNodes.length>0){
+            height=el.childNodes[0].offsetHeight;
+          }
           height=this.getCanvasHeight(height);
         }
         if(el.noAbsolutePosition){
-          el.style.position="";
+          el.style.position="relative";
+          el.style.width="auto";
+          el.style.height="auto";
+          el.style.left="0px";
+          el.style.top="0px";
+          return;
         }else{
           el.style.position="absolute";
         }
@@ -1570,6 +1604,18 @@ window.appJScode=function(){
           this.ctx.fillRect(0,(this.pixelHeight+this.pixelTop)*this.dpr,this.pixelWidth*this.dpr,this.pixelTop*this.dpr);
         }
       },
+      drawRect: function(x,y,w,h,dontAdd){
+        if(!dontAdd){
+          this.addCommand("drawRect",[x,y,w,h]);
+        }
+        return this.paintRect(x,y,w,h,false);
+      },
+      fillRect: function(x,y,w,h,dontAdd){
+        if(!dontAdd){
+          this.addCommand("fillRect",[x,y,w,h]);
+        }
+        return this.paintRect(x,y,w,h,true);
+      },
       paintRect: function(x,y,w,h,fill,dontAdd){
         if(!dontAdd){
           this.addCommand("paintRect",[x,y,w,h,fill]);
@@ -1599,6 +1645,18 @@ window.appJScode=function(){
           this.ctx.strokeRect(x-w/2,y-h/2,w,h);
         }
         return obj;
+      },
+      drawCircle: function(x,y,r,dontAdd){
+        if(!dontAdd){
+          this.addCommand("drawCircle",[x,y,r]);
+        }
+        return this.paintCircle(x,y,r,false);
+      },
+      fillCircle: function(x,y,r,dontAdd){
+        if(!dontAdd){
+          this.addCommand("fillCircle",[x,y,r]);
+        }
+        return this.paintCircle(x,y,r,true);
       },
       paintCircle: function(cx,cy,r,fill,dontAdd){
         if(!dontAdd){
@@ -2713,6 +2771,8 @@ window.appJScode=function(){
       this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
       this.input.currentPosition=-1;
       this.input.spellcheck=false;
+      this.input.autocapitalize="none";
+      this.input.autocorrect="off";
       this.input.placeholder="gib einen Befehl ein...";
       this.input.onchange=()=>{
         var v=this.input.value;
@@ -3695,7 +3755,7 @@ window.appJScode=function(){
         $App.canvas.setOrigin(originX,originY);
       }
       $App.canvas.setSize(width,height,$App.body.width,$App.body.height);
-    },null,'Legt das Koordiantensystem der App fest.',[{name: 'width', type: 'double', info: 'Breite des Koordinatensystems'}, {name: 'height', type: 'double', info: 'Hoehe des Koordinatensystems'}, {name: 'originX', type: 'double', info: 'x-Koordinate des Koordinatenursprungs', optional: true}, {name: 'originY', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],'');
+    },null,'Legt das Koordinatensystem der App fest.',[{name: 'width', type: 'double', info: 'Breite des Koordinatensystems'}, {name: 'height', type: 'double', info: 'Hoehe des Koordinatensystems'}, {name: 'originX', type: 'double', info: 'x-Koordinate des Koordinatenursprungs', optional: true}, {name: 'originY', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],'');
   
     $App.addFunction(function getWidth(){
       return $App.body.width;
@@ -3719,7 +3779,7 @@ window.appJScode=function(){
     
     $App.addFunction(function setOpacity(value){
       $App.canvas.setOpacity(value);
-    },null,'Legt die Transparenz alle nachfolgenden Zeichnungen fest.',[{name: 'value', type: 'double', info: 'Wert zwischen 0 (komplett transparent) und 1 (komplett sichtbar).'}],'');
+    },null,'Legt die Transparenz aller nachfolgenden Zeichnungen fest.',[{name: 'value', type: 'double', info: 'Wert zwischen 0 (komplett transparent) und 1 (komplett sichtbar).'}],'');
     
     $App.addFunction(function setFontsize(size){
       $App.canvas.setFontsize(size);
@@ -4469,6 +4529,22 @@ window.appJScode=function(){
     ],'');
     
     $App.addObject('ui',false,{
+      canvas: function(internalWidth,internalHeight,cx,cy,width,height){
+        var canvas=new $App.Canvas(null,internalWidth,internalHeight);
+        var b=canvas.container;
+        b.canvas=canvas;
+        var methods=["setSize","setMirrored","setRotation","setOpacity","setFontsize","setFont","setLinewidth","write","drawCircle","fillCircle","drawRect","fillRect","drawLine","beginPath","lineTo","closePath","setColor","drawImage","drawImagePart","rotate","translate","scale","addElement"];
+        for(var i=0;i<methods.length;i++){
+          let m=methods[i];
+          b[m]=function(){
+            return this.canvas[m].apply(this.canvas,arguments);
+          }
+        }
+        $App.canvas.addElement(b,cx,cy,width,height);
+        console.log($App.canvas.getRawWidth(width),$App.canvas.getRawHeight(height))
+        canvas.resize($App.canvas.getRawWidth(width),$App.canvas.getRawHeight(height));
+        return b;
+      },
       panel: function (template,cx,cy,width,height){
         var b=$App.createElement("div");
         if(!template){
@@ -4505,9 +4581,11 @@ window.appJScode=function(){
         }
         b.add=function(c){
           if(!this.noAbsolutePosition){
-            c.style.position="";
+            c.style.position="relative";
             c.style.width="auto";
             c.style.height="auto";
+            c.style.left="0px";
+            c.style.top="0px";
           }
           if(c.parent){
             c.parent.removeChild(c);
@@ -4812,6 +4890,8 @@ window.appJScode=function(){
           }
         });
         b.value=text;
+        b.updateAlignContent();
+        b.updatePosition();
         return b;
       }
     },'Erlaubt das Hinzufuegen und Manipulieren der grafischen Benutzeroberflaeche (UI).',[
@@ -5176,7 +5256,7 @@ window.appJScode=function(){
           {name: 'y', type: 'double', info: 'y-Koordinate in der Welt'},
           {name: 'newType', type: 'String', info: 'Neuer Typ'}
         ],
-        info: 'Ã„ndert den Typ (das Zeichen) an der angegebenen Position.'
+        info: 'Aendert den Typ (das Zeichen) an der angegebenen Position.'
       },
       {
         name: 'getInfo',
@@ -5382,5 +5462,4 @@ window.appJScode=function(){
     }else{
       $main=null;
     }
-    
 }

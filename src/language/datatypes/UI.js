@@ -13,6 +13,7 @@ export function defineUIClazzes(Java){
   defineJComboBox(Java.datatypes.JComboBox,Java);
   defineDataTable(Java.datatypes.DataTable,Java);
   defineJPanel(Java.datatypes.JPanel,Java);
+  defineCanvas(Java.datatypes.Canvas,Java);
 }
 
 function defineJComponent(Clazz,Java){
@@ -343,6 +344,142 @@ function defineJPanel(Clazz,Java){
     ],
     info: "Liefert den Index der Spalte der angegebenen Kind-Komponente innerhalb des Panels zurück. Der Index beginnt bei 0.",
     returnType: 'int'
+  },Clazz,false,false,Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
+}
+
+function defineCanvas(Clazz,Java){
+  createConstructor ({
+    args: [
+      {type: 'double', name: 'internalWidth'}, {type: 'double', name: 'internalHeight'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+    ]
+  },Clazz,Java);
+  Clazz.superClazz=Java.datatypes.JCPanel;
+  createMethod({
+    name: 'save',
+    args: [
+    ],
+    info: "Speichert den aktuellen Zustand des Canvas auf einem Stack."
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'restore',
+    args: [
+    ],
+    info: "Stellt den zuletzt gespeicherten Zustand des Canvas wieder her."
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'reset',
+    args: [
+    ],
+    info: "Resettet den Canvas."
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'rotate',
+    args: [{name: 'angle', type: 'double', info: 'Winkel, um den gedreht wird'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Drehung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Drehung.'}],
+    info: "Dreht alles, was danach gezeichnet wird, um den angegebenen Punkt."
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'translate',
+    args: [{name: 'dx', type: 'double', info: 'Verschiebung in x-Richtung.'}, {name: 'dy', type: 'double', info: 'Verschiebung in y-Richtung.'}],
+    info: 'Verschiebt alles, was danach gezeichnet wird.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setTransform',
+    args: [{name: 'm00', type: 'double'}, {name: 'm10', type: 'double'},{name: 'm01', type: 'double'},{name: 'm11', type: 'double'},{name: 'm02', type: 'double'},{name: 'm12', type: 'double'}],
+    info: 'Legt die Transformationsmatrix auf die angegebenen Werte fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'scale',
+    args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
+    info: 'Skaliert alles, was danach gezeichnet wird.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'scale',
+    args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
+    info: 'Skaliert alles, was danach gezeichnet wird.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setMirrored',
+    args: [
+      {name: 'm', type: 'boolean', info: 'true, wenn gespiegelt werden soll, sonst false'}
+    ],
+    info: ""
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'redraw',
+    args: [
+    ],
+    info: "Zeichnet den Canvas neu."
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setOrigin',
+    args: [{name: 'x', type: 'double', info: 'x-Koordinate des Koordinatenursprungs'}, {name: 'y', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],
+    info: 'Legt die Position des Koordinatenursprungs (0|0) fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setRotation',
+    args: [{name: 'angle', type: 'double', info: 'Winkel, um den gedreht wird'}],
+    info: ''
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setOpacity',
+    args: [{name: 'value', type: 'double', info: 'Wert zwischen 0 (komplett transparent) und 1 (komplett sichtbar).'}],
+    info: 'Legt die Transparenz aller nachfolgenden Zeichnungen fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'clear',
+    args: [],
+    info: 'Löscht alle Zeichnungen auf dem Canvas.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setFontsize',
+    args: [{name: 's', type: 'double', info: 'Schriftgröße'}],
+    info: 'Ändert die Schriftgröße für die write-Befehle.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setFont',
+    args: [{name: 'fontName', type: 'String', info: 'Name der Schriftart'}],
+    info: 'Legt die Schriftart für die write-Befehle fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setLinewidth',
+    args: [{name: 'w', type: 'double', info: 'Dicke der Linien'}],
+    info: 'Legt die Breite der gezeichneten Linien fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'write',
+    args: [{name: 'text', type: 'String', info: 'Der Text, der geschrieben werden soll. Verwende &bsol;n fuer Zeilenumbrueche.'}, {name: 'x', type: 'double', info: 'Die x-Koordinate des Texts.'}, {name: 'y', type: 'double', info: 'Die y-Koordinate des Texts.'}, {name: 'align', type: 'String', info: 'Eine Angabe aus bis zu 2 Woertern, die bestimmen, wie der Text am Punkt (x|y) ausgerichtet sein soll. Moegliche Woerter: "left", "center", "right" und "top", "middle", "bottom".', hide: true}],
+    info: 'Schreibt Text in den Canvas.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'drawCircle',
+    args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'r', type: 'double', info: 'Radius.'}],
+    info: 'Zeichnet einen Kreis.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'fillCircle',
+    args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'r', type: 'double', info: 'Radius.'}],
+    info: 'Zeichnet einen ausgefüllten Kreis.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'drawRect',
+    args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Hoehe.'}],
+    info: 'Zeichnet ein Rechteck.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'fillRect',
+    args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts.'}, {name: 'width', type: 'double', info: 'Breite.'}, {name: 'height', type: 'double', info: 'Hoehe.'}],
+    info: 'Zeichnet ein ausgefülltes Rechteck.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'drawLine',
+    args: [{name: 'x1', type: 'double', info: 'x-Koordinate des ersten Punkts.'}, {name: 'y1', type: 'double', info: 'y-Koordinate des ersten Punkts.'}, {name: 'x2', type: 'double', info: 'x-Koordinate des zweiten Punkts.'}, {name: 'y2', type: 'double', info: 'y-Koordinate des zweiten Punkts.'}],
+    info: 'Zeichnet eine gerade Linie.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setColor',
+    args: [{name: 'farbe', type: 'String'}],
+    info: 'Legt die Farbe für die nachfolgenden Zeichnungen fest.'
   },Clazz,false,false,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
 }

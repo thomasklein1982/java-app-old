@@ -53,6 +53,7 @@ let JCheckBox=new Clazz("JCheckBox");
 let JComboBox=new Clazz("JCombobox");
 let JPanel=new Clazz("JPanel");
 let DataTable=new Clazz("DataTable");
+let Canvas=new Clazz("Canvas");
 let App=new Clazz("App");
 App.cannotBeInstantiated=true;
 let Database=new Clazz("Database");
@@ -81,11 +82,11 @@ let PrintStream=new Clazz("PrintStream");
 PrintStream.cannotBeInstantiated=true;
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage,DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
 }
 
 export const Java={
