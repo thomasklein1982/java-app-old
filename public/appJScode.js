@@ -376,8 +376,8 @@ window.appJScode=function(){
     $App.createElement=function(tagname){
       let el=document.createElement(tagname);
       el.style.boxSizing="border-box";
-      el.style.display="flex";
-      el.style.flexDirection="column";
+      //el.style.display="flex";
+      
       //el.style.position="absolute";
       this.implementStyleGetterAndSetter(el);
       el.appJSData={
@@ -407,13 +407,13 @@ window.appJScode=function(){
           var c=this.childNodes[i];
           $App.alignSelf(c,a);
         }
-        // if(a.h==="center"){
-        //   this.style.justifyContent="center";
-        // }else if(a.h==="left"){
-        //   this.style.justifyContent="flex-end";
-        // }else{
-        //   this.style.justifyContent="flex-start";
-        // }
+        if(a.h==="center"){
+          this.style.textAlign="center";
+        }else if(a.h==="left"){
+          this.style.textAlign="left";
+        }else{
+          this.style.textAlign="right";
+        }
         // if(a.v==="middle"){
         //   this.style.alignItems="center";
         // }else if(a.v==="top"){
@@ -1232,16 +1232,21 @@ window.appJScode=function(){
           }
           height=this.getCanvasHeight(height);
         }
-        if(el.noAbsolutePosition){
-          el.style.position="relative";
-          el.style.width="auto";
-          el.style.height="auto";
-          el.style.left="0px";
-          el.style.top="0px";
-          return;
-        }else{
-          el.style.position="absolute";
-        }
+        // if(el.noAbsolutePosition){
+        //   if(el.$standardPositionValue){
+        //     el.style.position=el.$standardPositionValue;
+        //   }else{
+        //     el.style.position="";
+        //   }
+        //   //el.style.width="";
+        //   //el.style.height="";
+        //   el.style.left="0px";
+        //   el.style.top="0px";
+        //   return;
+        // }else{
+        //   el.style.position="absolute";
+        // }
+        el.style.position="absolute";
         var x,y;
         if(align.h==="center"){
           x=cx-width/2;
@@ -4549,6 +4554,7 @@ window.appJScode=function(){
       },
       panel: function (template,cx,cy,width,height){
         var b=$App.createElement("div");
+        b.style.flexDirection="column";
         if(!template){
           b.noAbsolutePosition=true;
           b.style.overflow="auto";
@@ -4606,8 +4612,8 @@ window.appJScode=function(){
       button: function (text,cx,cy,width,height){
         var b=$App.createElement("button");
         b.value=text;
-        b.style.padding=0;
-        b.style.margin=0;
+        //b.style.padding=0;
+        //b.style.margin=0;
         $App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
@@ -4666,7 +4672,7 @@ window.appJScode=function(){
         }
         if(type) type=type.toLowerCase();
         if(type==="checkbox"){
-          var b=$App.createElement("div");
+          var b=$App.createElement("span");
           var cb=document.createElement("input");
           cb.type=type;
           var id=Math.floor(Math.random()*100000000);
@@ -4746,6 +4752,7 @@ window.appJScode=function(){
           }
         });
         b.placeholder=placeholdertext;
+        b.style.textAlign="";
         $App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
@@ -4866,6 +4873,7 @@ window.appJScode=function(){
         b.placeholder=placeholdertext;
         b.style.resize="none";
         $App.canvas.addElement(b,cx,cy,width,height);
+        b.style.textAlign="";
         return b;
       },
       select: function (options,cx,cy,width,height){
@@ -4875,9 +4883,10 @@ window.appJScode=function(){
         return b;
       },
       label: function(text,cx,cy,width,height){
-        var b=$App.createElement("div");
+        var b=$App.createElement("span");
         b.style.overflow="auto";
-        var innerDiv=document.createElement("div");
+        b.$standardPositionValue="relative";
+        var innerDiv=document.createElement("span");
         b.innerDiv=innerDiv;
         b.appendChild(innerDiv);
         b.style.textAlign="center";

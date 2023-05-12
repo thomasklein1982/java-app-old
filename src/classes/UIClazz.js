@@ -490,7 +490,9 @@ export class UIClazz {
         codeObject.code+="\nthis."+c.name+"= "+last+";";
       }
       if(c.onAction){
-        if(c.type==="JImage"){
+        if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
+          codeObject.code+="\n"+last+".$el.onchange=function(){$main.onAction(this.component);}";
+        }else{
           codeObject.code+="\n"+last+".$el.onclick=function(){$main.onAction(this.component);}";
         }
       }
