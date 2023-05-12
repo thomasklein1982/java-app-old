@@ -53,6 +53,10 @@
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.internalHeight" style="width: 95%"/></td>
         </tr>
       </template>
+      <tr v-if="type">
+        <td>onAction auslösen?</td>
+        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.onAction" style="width: 95%"/></td>
+      </tr>
       <tr v-if="component.actionCommand!==undefined">
         <td>ActionCommand:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.actionCommand" style="width: 95%"/></td>

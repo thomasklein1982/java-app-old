@@ -6,7 +6,7 @@ export function definePrintStream(clazz){
     args: [
       {
         name: "text",
-        type: "String",
+        type: "Object",
         info: "Der Wert, der ausgegeben werden soll."
       }
     ],

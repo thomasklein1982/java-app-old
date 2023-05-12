@@ -323,7 +323,7 @@ export class UIClazz {
   }
 
   restoreFromSaveObject(obj){
-    let props=["name","components","variablesRaw","cssClass","template","x","y","width","height"];
+    let props=["name","components","variablesRaw","cssClass","template","x","y","width","height","onAction"];
     for(let i=0;i<props.length;i++){
       let p=props[i];
       if(obj[p]!==undefined){
@@ -488,6 +488,11 @@ export class UIClazz {
       codeObject.code+="\ncontainer"+containerIndex+".add("+last+");";
       if(c.name){
         codeObject.code+="\nthis."+c.name+"= "+last+";";
+      }
+      if(c.onAction){
+        if(c.type==="JImage"){
+          codeObject.code+="\n"+last+".$el.onclick=function(){$main.onAction(this.component);}";
+        }
       }
       if(c.actionCommand){
         codeObject.code+="\n"+last+".setActionCommand("+this.parseInterpolatedString(scope, c.actionCommand)+");";

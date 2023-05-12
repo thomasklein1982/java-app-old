@@ -377,6 +377,7 @@ window.appJScode=function(){
       let el=document.createElement(tagname);
       el.style.boxSizing="border-box";
       el.style.display="flex";
+      el.style.flexDirection="column";
       //el.style.position="absolute";
       this.implementStyleGetterAndSetter(el);
       el.appJSData={
@@ -4532,6 +4533,7 @@ window.appJScode=function(){
       canvas: function(internalWidth,internalHeight,cx,cy,width,height){
         var canvas=new $App.Canvas(null,internalWidth,internalHeight);
         var b=canvas.container;
+        b.noAbsolutePosition=true;
         b.canvas=canvas;
         var methods=["setSize","setMirrored","setRotation","setOpacity","setFontsize","setFont","setLinewidth","write","drawCircle","fillCircle","drawRect","fillRect","drawLine","beginPath","lineTo","closePath","setColor","drawImage","drawImagePart","rotate","translate","scale","addElement"];
         for(var i=0;i<methods.length;i++){
@@ -4549,6 +4551,7 @@ window.appJScode=function(){
         var b=$App.createElement("div");
         if(!template){
           b.noAbsolutePosition=true;
+          b.style.overflow="auto";
         }else{
           b.noAbsolutePosition=false;
           template+="";
@@ -4580,13 +4583,13 @@ window.appJScode=function(){
           b.style.overflow="auto";
         }
         b.add=function(c){
-          if(!this.noAbsolutePosition){
+          //if(!this.noAbsolutePosition){
             c.style.position="relative";
             c.style.width="auto";
             c.style.height="auto";
             c.style.left="0px";
             c.style.top="0px";
-          }
+          //}
           if(c.parent){
             c.parent.removeChild(c);
           }
