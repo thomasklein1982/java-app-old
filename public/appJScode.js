@@ -27,7 +27,7 @@ window.appJScode=function(){
     })
   
     window.$App={
-      version: 38,
+      version: 39,
       language: window.language? window.language:'js',
       setupData: null,
       lazyLoading: false,
@@ -376,7 +376,6 @@ window.appJScode=function(){
     $App.createElement=function(tagname){
       let el=document.createElement(tagname);
       el.style.boxSizing="border-box";
-      //el.style.display="flex";
       
       //el.style.position="absolute";
       this.implementStyleGetterAndSetter(el);
@@ -414,13 +413,13 @@ window.appJScode=function(){
         }else{
           this.style.textAlign="right";
         }
-        // if(a.v==="middle"){
-        //   this.style.alignItems="center";
-        // }else if(a.v==="top"){
-        //   this.style.alignItems="flex-end";
-        // }else{
-        //   this.style.alignItems="flex-start";
-        // }
+        if(a.v==="middle"){
+          this.style.alignItems="center";
+        }else if(a.v==="top"){
+          this.style.alignItems="flex-end";
+        }else{
+          this.style.alignItems="flex-start";
+        }
       };
       el.updateAlignContent();
       Object.defineProperty(el,'align', {
@@ -1037,6 +1036,7 @@ window.appJScode=function(){
         this.container=document.createElement("div");
       }else{
         this.container=$App.createElement("div");
+        this.container.style.overflow="hidden";
       }
       this.el=document.createElement("canvas");
       this.el.jel=this;
@@ -1274,7 +1274,18 @@ window.appJScode=function(){
         this.updateElementPosition(el,cx,cy,width,height);
         
       },
+      add: function(el){
+        if(el.parentNode){
+          el.parentNode.removeChild(el);
+        }
+        this.addElement(el,el.appJSData.cx,el.appJSData.cy,el.appJSData.width,el.appJSData.height);
+      },
       resize: function(w,h,force){
+        if(!w){
+          console.error("keine breite");
+          w=this.container.offsetWidth;
+          h=this.container.offsetHeight;
+        }
         if(force || (w!==this.pixelWidth || h!==this.pixelHeight)){
           this.el.width=Math.round(w*this.dpr);
           this.el.height=Math.round(h*this.dpr);
@@ -1307,6 +1318,12 @@ window.appJScode=function(){
           // this.el.width=Math.round(w*this.dpr);
           // this.el.height=Math.round(h*this.dpr);
           this.redraw();
+          for(var i=0;i<this.container.childNodes.length;i++){
+            var c=this.container.childNodes[i];
+            if(c.resize){
+              c.resize();
+            }
+          }
         }
       },
       setColor: function(c,dontAdd){
@@ -4538,6 +4555,9 @@ window.appJScode=function(){
       canvas: function(internalWidth,internalHeight,cx,cy,width,height){
         var canvas=new $App.Canvas(null,internalWidth,internalHeight);
         var b=canvas.container;
+        b.resize=function(){
+          this.canvas.resize();
+        }
         b.noAbsolutePosition=true;
         b.canvas=canvas;
         var methods=["setSize","setMirrored","setRotation","setOpacity","setFontsize","setFont","setLinewidth","write","drawCircle","fillCircle","drawRect","fillRect","drawLine","beginPath","lineTo","closePath","setColor","drawImage","drawImagePart","rotate","translate","scale","addElement"];
@@ -4548,8 +4568,7 @@ window.appJScode=function(){
           }
         }
         $App.canvas.addElement(b,cx,cy,width,height);
-        console.log($App.canvas.getRawWidth(width),$App.canvas.getRawHeight(height))
-        canvas.resize($App.canvas.getRawWidth(width),$App.canvas.getRawHeight(height));
+        canvas.resize();
         return b;
       },
       panel: function (template,cx,cy,width,height){
@@ -4587,6 +4606,14 @@ window.appJScode=function(){
           b.style.columnGap=0;
           b.style.rowGap=0;
           b.style.overflow="auto";
+          b.resize=function(w,h){
+            for(var i=0;i<this.childNodes.length;i++){
+              var c=this.childNodes[i];
+              if(c.resize){
+                c.resize();
+              }
+            }
+          }
         }
         b.add=function(c){
           //if(!this.noAbsolutePosition){
@@ -4600,6 +4627,9 @@ window.appJScode=function(){
             c.parent.removeChild(c);
           }
           this.appendChild(c);
+          if(c.resize){
+            c.resize();
+          }
         };
         b.remove=function(c){
           c.style.position="absolute";
@@ -4885,6 +4915,7 @@ window.appJScode=function(){
       label: function(text,cx,cy,width,height){
         var b=$App.createElement("span");
         b.style.overflow="auto";
+        b.style.display="flex";
         b.$standardPositionValue="relative";
         var innerDiv=document.createElement("span");
         b.innerDiv=innerDiv;
@@ -5474,4 +5505,5 @@ window.appJScode=function(){
     }else{
       $main=null;
     }
+
 }

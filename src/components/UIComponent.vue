@@ -42,7 +42,10 @@
         </div>
         <div @click="handleClick" style="cursor: pointer; position: absolute; left: 0; right: 0; top: 0; bottom: 0"></div>
       </div>
-      <Button icon="pi pi-trash" @click="clickRemove($event)" v-show="selectedComponent===component"/>
+      <span style="display:inline-block" v-if="selectedComponent===component">
+        <Button icon="pi pi-copy" @click="clickDuplicate()"/>
+        <Button icon="pi pi-trash" @click="clickRemove($event)"/>
+      </span>
     </div>
     <template v-else>
       <div>
@@ -72,7 +75,10 @@
           </div>
           <div v-else-if="type==='Else'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Ansonsten:
           </div>
-          <Button icon="pi pi-trash" @click="clickRemove($event)" v-show="selectedComponent===component"/>
+          <span style="display:inline-block" v-if="selectedComponent===component">
+            <Button icon="pi pi-copy" @click="clickDuplicate()"/>
+            <Button icon="pi pi-trash" @click="clickRemove($event)"/>
+          </span>
         </div>
         <div v-show="!hideContent" style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
           <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
@@ -159,6 +165,10 @@
       }
     },
     methods: {
+      clickDuplicate(){
+        this.$emit("duplicate",this.selectedComponent);
+
+      },
       toggleHideContent(){
         this.hideContent=!this.hideContent;
       }, 

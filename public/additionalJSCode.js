@@ -541,7 +541,7 @@ function additionalJSCode(){
       this.$el.component=this;
     }
     add(comp){
-      this.$el.addElement(comp.$el,comp.x,comp.y,comp.width,comp.height);
+      this.$el.canvas.add(comp.$el);
     }
     save(){
       this.$el.save();

@@ -45,11 +45,11 @@
       </tr>
       <template v-if="component.internalWidth!==undefined">
         <tr>
-          <td>Koordinatenbreite:</td>
+          <td>max. x:</td>
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.internalWidth" style="width: 95%"/></td>
         </tr>
         <tr>
-          <td>Koordinatenhöhe:</td>
+          <td>max. y:</td>
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.internalHeight" style="width: 95%"/></td>
         </tr>
       </template>
@@ -57,7 +57,7 @@
         <td>onAction auslösen?</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.onAction" style="width: 95%"/></td>
       </tr>
-      <tr v-if="component.actionCommand!==undefined">
+      <tr>
         <td>ActionCommand:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.actionCommand" style="width: 95%"/></td>
       </tr>
@@ -92,10 +92,10 @@
           <td>CSS-Klassen:</td>
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.cssClass" style="width: 95%"/></td>
         </tr>
-        <tr>
+        <!-- <tr>
           <td>Absolute Position:</td>
           <td><InputSwitch @change="emitUpdate()" v-model="component.forceAbsolute"/></td>
-        </tr>
+        </tr> -->
         <tr>
           <td>x:</td>
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.x" style="width: 95%"/></td>
