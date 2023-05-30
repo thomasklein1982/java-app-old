@@ -500,10 +500,10 @@ export class UIClazz {
         codeObject.code+="\n"+last+".setActionCommand("+this.parseInterpolatedString(scope, c.actionCommand)+");";
       }
       if(c.cssClass){
-        codeObject.code+="\n"+last+".setCSSClass("+JSON.stringify(c.cssClass)+");";
+        codeObject.code+="\n"+last+".setCSSClass("+this.parseInterpolatedString(scope,c.cssClass)+");";
       }
       if(c.cssCode){
-        codeObject.code+="\n"+last+".$el.style="+last+".$el.style+"+JSON.stringify(";"+c.cssCode)+";";
+        codeObject.code+="\n"+last+".$el.style="+last+".$el.style+';'+"+this.parseInterpolatedString(scope,c.cssCode)+";";
       }
       if(c.forceAbsolute){
         codeObject.code+="\n"+last+".setStyle('position','absolute');";

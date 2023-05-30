@@ -32,22 +32,25 @@ export class Table{
     for(var i=0;i<this.records.length;i++){
       var r=this.records[i];
       code="INSERT INTO "+this.name+" VALUES (";
-      for(var j=0;j<r.length;j++){
-        if(j>=this.attributes.length){
-          j--;
-          r.pop();
-          continue;
-        }
+      for(var j=0;j<this.attributes.length;j++){
         if(j>0){
           code+=",";
         }
         var d=r[j];
+        var typ=this.attributes[j].type;
         if(d===undefined||d===null){
-          code+="NULL";
+          if(d===undefined && i===this.records.length-1){
+            if(typ.id===Database.String.id){
+              code+="''";
+            }else{
+              code+="NULL";
+            }
+          }else{
+            code+="NULL";
+          }
         }else{
-          var typ=this.attributes[j].type;
           if(typ.id===Database.String.id){
-            code+="'"+d+"'";
+            code+=JSON.stringify(d);
           }else if(typ.id===Database.Time.id){
             if(/^\d\d(?:\:\d\d(?:\:\d\d)?)?$/.test(d)){
               code+="'"+d+"'";/*"new Date('"+d+"')";*/

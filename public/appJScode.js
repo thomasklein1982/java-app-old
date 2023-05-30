@@ -632,6 +632,7 @@ window.appJScode=function(){
         root.className="app-root";
         this.body.element.appendChild(root);
         this.canvas=new $App.Canvas(root,100,100,true);
+        this.canvas.isRootCanvas=true;
         this.world=new $App.World(this.canvas);
         let left=document.createElement("div");
         left.style="font-family: monospace; position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
@@ -1310,7 +1311,7 @@ window.appJScode=function(){
           // this.container.style.height=this.pixelHeight+"px";
           // this.container.style.top=top+"px";
           // this.container.style.left=left+"px";
-          // this.el.style.width=this.pixelWidth+"px";
+          //this.el.style.width=this.pixelWidth+"px";
           // this.el.style.height=this.pixelHeight+"px";
           // this.el.style.top=top+"px";
           // this.el.style.left=left+"px";

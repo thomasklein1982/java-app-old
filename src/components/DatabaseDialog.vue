@@ -34,7 +34,7 @@
               <div v-if="sqlExecution.result.length>0">
                 <table class="database-table">
                   <tr>
-                    <th v-for="(a,j) in sqlExecution.result[0]">{{j.toUpperCase()}}</th>
+                    <th v-for="(a,j) in sqlExecution.result[0]">{{stripQuotationMarks(j.toUpperCase())}}</th>
                   </tr>
                   <tr v-for="(ds,i) in sqlExecution.result">
                     <td v-for="(a,j) in ds">{{a===undefined? 'NULL' : a}}</td>
@@ -89,6 +89,13 @@
       }
     },
     methods: {
+      stripQuotationMarks(t){
+        if(t && t.charAt && t.charAt(0)==="'" && t.charAt(t.length-1)==="'"){
+          return t.substring(1,t.length-1);
+        }else{
+          return t;
+        }
+      },
       setVisible(v){
         this.show=v;
       },
@@ -113,7 +120,7 @@
         }
         this.sqlExecution.command=this.sqlcommand;
         try{
-          this.sqlExecution.result=alasql(this.sqlcommand);
+          this.sqlExecution.result=this.database.query(this.sqlcommand);
           this.sqlExecution.error=false;
         }catch(e){
           console.error(e);

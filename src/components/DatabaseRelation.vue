@@ -25,6 +25,7 @@ export default {
   props: {
     relation: Object
   },
+  emits: ["trash"],
   methods: {
     openEditDialog(){
       this.relation.database.changed=true;
