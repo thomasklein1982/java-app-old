@@ -4822,8 +4822,10 @@ window.appJScode=function(){
             b._rows=[];
             if(!array || array.length===0 || array[0]===null || array[0]===undefined) return;
             let obj=array[0];
+            let stripQuotationMarks=false;
             if($App.language==="java" && "$data" in obj){
               obj=obj.$data;
+              stripQuotationMarks=true;
             }
             let captions=document.createElement("tr");
             let th=document.createElement("th");
@@ -4859,6 +4861,9 @@ window.appJScode=function(){
                 }
                 if(i===0){
                   let captionTD=document.createElement("th");
+                  if(stripQuotationMarks && a.charAt(0)==="'" && a.charAt(a.length-1)==="'"){
+                    a=a.substring(1,a.length-1);
+                  }
                   captionTD.innerHTML=(a+"").toUpperCase();
                   captions.appendChild(captionTD);
                 }

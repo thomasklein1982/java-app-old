@@ -996,9 +996,82 @@ function additionalJSCode(){
     constructor(){
 
     }
+    prepareStatement(sqlSource){
+      /**muss kopiert werden in additionalJScode! */
+      let ast=alasql.parse(sqlSource);
+      /**untersucht die statements darauf, ob mehr als eine Tabelle abgefragt wird
+       * falls ja, werden alle mehrfach vorkommenden Spaltennamen per 'as' in 'Tabelle.Spalte' umbenannt
+       * Sinn: doppelt vorkommende Spaltennamen kollabieren ansonsten
+       * damit StringValue erzeugt werden kann, musste in alasql.min.ja folgender Code eingefügt werden:
+       * window.alasqlX=X;
+       * an der Stelle:
+       * X=(T.Recordset=function(e){q(this,e)},y.yy=T.yy={});window.alasqlX=X;X.extend=
+       */
+      for(let i=0;i<ast.statements.length;i++){
+        let s=ast.statements[i];
+        if(!s.columns || !s.from || s.from.length===0) continue;
+        let tables={};
+        for(let j=0;j<s.from.length;j++){
+          let t=s.from[j];
+          let label=t.as? t.as:t.tableid;
+          tables[label]=t.tableid;
+        }
+        /**spezialfall 'select *': * durch alle Spalten ersetzen: */
+        if(s.columns.length===1 && s.columns[0].columnid==='*'){
+          let spalten=[];
+          for(let j=0;j<s.from.length;j++){
+            let t=s.from[j];
+            let label=t.as? t.as:t.tableid;
+            let table=alasql.tables[t.tableid];
+            if(!table) continue;
+            for(let k=0;k<table.columns.length;k++){
+              let c=table.columns[k];
+              let spalte=label+"."+c.columnid;
+              spalten.push({
+                spalte, columnid: c.columnid, tableid: label
+              });
+            }
+          }
+          for(let j=0;j<spalten.length;j++){
+            let spalte=spalten[j];
+            s.columns[j]=new alasqlX.Column({columnid: spalte.columnid, tableid: spalte.tableid});
+          }
+        }
+        /**finde doppelte spalten: */
+        for(let j=0;j<s.columns.length;j++){
+          let c=s.columns[j];
+          if(c.as) continue;
+          let changeC=false;
+          for(let k=j+1;k<s.columns.length;k++){
+            let c2=s.columns[k];
+            if(c2.as) continue;
+            if(c2.columnid===c.columnid){
+              changeC=true;
+              let tableid=tables[c2.tableid];
+              c2.as=new window.alasqlX.StringValue({value: tableid+"."+c2.columnid});
+            }
+          }
+          if(changeC){
+            let tableid=tables[c.tableid];
+            c.as=new window.alasqlX.StringValue({value: tableid+"."+c.columnid});
+          }
+        }
+      }
+      return ast.toString();
+    }
+    query(sqlSource){
+      try{
+        let prep=this.prepareStatement(sqlSource);
+        var r=alasql(prep);
+        return r;
+      }catch(e){
+        console.log(e.message);
+        throw e;
+      }
+    }
     sql(cmd){
       try{
-        var result=alasql(cmd);
+        var result=this.query(cmd);
         var records=[];
         if(result){
           for(var i=0;i<result.length;i++){

@@ -101,6 +101,7 @@ export class Database{
     return s;
   }
   prepareStatement(sqlSource){
+    /**muss kopiert werden in additionalJScode! */
     let ast=alasql.parse(sqlSource);
     /**untersucht die statements darauf, ob mehr als eine Tabelle abgefragt wird
      * falls ja, werden alle mehrfach vorkommenden Spaltennamen per 'as' in 'Tabelle.Spalte' umbenannt
