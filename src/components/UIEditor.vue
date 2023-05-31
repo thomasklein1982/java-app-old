@@ -22,7 +22,7 @@
       </template>
     </draggable>
     <div class="ui-clazz" :style="{flex: 1}" style="overflow: auto">
-      <UIComponent :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="$emit('recompile')" @isolatedupdate="$emit('isolatedupdate')" @duplicate="duplicateSelectedComponent()"/>
+      <UIComponent :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="$emit('recompile')" @isolatedupdate="$emit('isolatedupdate')" @deselect-component="deselectComponent()"/>
     </div>
   </div>
 </template>
@@ -57,9 +57,6 @@
       };
     },
     methods: {
-      duplicateSelectedComponent(){
-        
-      },
       handleDrop(ev){
         console.log("dropped",ev);
       },
@@ -87,6 +84,10 @@
         }else{
           this.selectedComponent=c;
         }
+        this.$emit("select",this.selectedComponent);
+      },
+      deselectComponent(){
+        this.selectedComponent=null;
         this.$emit("select",this.selectedComponent);
       }
     },

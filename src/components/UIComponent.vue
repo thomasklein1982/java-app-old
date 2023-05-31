@@ -100,7 +100,8 @@
           >
             <template #item="{element}">
               <div>
-                <UIComponent @removethis="removeChildComponent(element)" @recompile="$emit('recompile')" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" :selected-component="selectedComponent"/>
+                <UIComponent @removethis="removeChildComponent(element)" @recompile="$emit('recompile')" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" @duplicate="clickDuplicate()" :selected-component="selectedComponent" @duplicate-child="duplicateSelectedChildComponent()"
+                @deselect-component="deselectComponent()"/>
                 <ConfirmPopup></ConfirmPopup>
               </div>
             </template>
@@ -165,9 +166,26 @@
       }
     },
     methods: {
+      getIndexOfChildComponent(comp){
+        for(let i=0;i<this.component.components.length;i++){
+          let c=this.component.components[i];
+          if(comp===c){
+            return i;
+          }
+        }
+        return -1;
+      },
       clickDuplicate(){
-        this.$emit("duplicate",this.selectedComponent);
-
+        this.$emit("duplicate-child");
+      },
+      duplicateSelectedChildComponent(){
+        console.log(this.selectedComponent);
+        
+        let index=this.getIndexOfChildComponent(this.selectedComponent);
+        console.log(index);
+        let copy=JSON.parse(JSON.stringify(this.selectedComponent));
+        console.log(copy);
+        this.component.components.splice(index+1,0,copy);
       },
       toggleHideContent(){
         this.hideContent=!this.hideContent;
@@ -177,6 +195,7 @@
           let c=this.component.components[i];
           if(c===comp){
             this.component.components.splice(i,1);
+            this.deselectComponent();
             return true;
           }
         }
@@ -184,6 +203,10 @@
       },
       handleClick(){
         this.$emit('clickcomponent',this.component);
+      },
+      deselectComponent(){
+        console.log("deselect");
+        this.$emit("deselect-component");
       },
       forwardClick(c){
         this.$emit('clickcomponent',c);
