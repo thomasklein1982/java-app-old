@@ -1061,7 +1061,12 @@ function additionalJSCode(){
     }
     query(sqlSource){
       try{
-        let prep=this.prepareStatement(sqlSource);
+        let prep;
+        if(sqlSource.trim().toLowerCase().startsWith("insert")){
+          prep=sqlSource;
+        }else{
+          prep=this.prepareStatement(sqlSource);
+        }
         var r=alasql(prep);
         return r;
       }catch(e){

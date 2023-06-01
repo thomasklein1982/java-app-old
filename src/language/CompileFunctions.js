@@ -24,6 +24,7 @@ import {IfStatement  } from "./compile/IfStatement";
 import {ArrayType} from "./compile/ArrayType";
 import { ForStatement } from "./compile/ForStatement";
 import { LineComment } from "./compile/LineComment";
+import { BlockComment } from "./compile/BlockComment";
 import { ThisExpression } from "./compile/ThisExpression";
 import { ReturnStatement } from "./compile/ReturnStatement";
 import { UpdateExpression } from "./compile/UpdateExpression";
@@ -51,6 +52,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement, BlockComment
   }
 }
