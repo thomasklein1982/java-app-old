@@ -81,21 +81,41 @@ export default {
                 this.$emit('print');
               }
             },
+            {
+              label: 'Kompilieren',
+              icon: 'pi pi-forward',
+              command: (ev)=>{
+                this.$emit("compile");
+              }
+            },
           ]
         },
         {
-          label: 'Formatieren',
-          icon: 'pi pi-fw pi-align-left',
-          command: (ev)=>{
-            this.$emit("prettify");
-          }
-        },
-        {
-          label: 'Umbenennen',
+          label: 'Aktion',
           icon: 'pi pi-fw pi-pencil',
-          command: (ev)=>{
-            this.$emit("rename");
-          }
+          items: [
+            {
+              label: 'Formatieren',
+              icon: 'pi pi-fw pi-align-left',
+              command: (ev)=>{
+                this.$emit("prettify");
+              }
+            },
+            {
+              label: 'Kommentar umschalten',
+              icon: 'pi pi-fw pi-comment',
+              command: (ev)=>{
+                this.$emit("toggle-comment");
+              }
+            },
+            {
+              label: 'Umbenennen',
+              icon: 'pi pi-fw pi-pencil',
+              command: (ev)=>{
+                this.$emit("rename");
+              }
+            }
+          ]
         },
         {
           label: 'Einstellungen',

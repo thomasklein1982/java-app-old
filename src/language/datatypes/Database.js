@@ -41,7 +41,16 @@ function defineDatabase(Clazz,Java){
   },Clazz,false,false,Java);
   createMethod({
     name: "areResultsEqual",
-    info: "Prüft, ob die Ergebnisse zweier Abfragen identisch sind.",
+    info: "Prüft, ob die Ergebnisse zweier Abfragen identisch sind. Dabei kommt es auf die Reihenfolge der Datensätze an.",
+    returnType: 'boolean',
+    args: [
+      {name: "array1", type: {baseType: "Record", dimension: 1}, info: "Das erste Array, das verglichen werden soll."},
+      {name: "array2", type: {baseType: "Record", dimension: 1}, info: "Das zweite Array, das verglichen werden soll."}
+    ],
+  },Clazz,false,false,Java);
+  createMethod({
+    name: "areResultsEqualIgnoreOrder",
+    info: "Prüft, ob die Ergebnisse zweier Abfragen identisch sind. Dabei kommt es nicht auf die Reihenfolge der Datensätze an.",
     returnType: 'boolean',
     args: [
       {name: "array1", type: {baseType: "Record", dimension: 1}, info: "Das erste Array, das verglichen werden soll."},

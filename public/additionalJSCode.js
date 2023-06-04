@@ -1098,6 +1098,36 @@ function additionalJSCode(){
         return e.message;
       }
     }
+    areResultsEqualIgnoreOrder(array1,array2){
+      if(!array1 || !array2) return false;
+      if(array1.values.length===0){
+        if(array2.values.length===0){
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        if(array2.values.length===0 || array2.values.length!==array1.values.length){
+          return false;
+        }
+      }
+      var r1=array1.values[0];
+      var r2=array2.values[0];
+      var attributes=[];
+      var sortFunc=(r,s)=>{
+        for(var attr in r1.$data){
+          if(r.$data[attr]<s.$data[attr]){
+            return -1;
+          }else if(r.$data[attr]>s.$data[attr]){
+            return 1;
+          }
+        }
+        return -1;
+      };
+      array1.values.sort(sortFunc);
+      array2.values.sort(sortFunc);
+      return this.areResultsEqual(array1,array2);
+    }
     areResultsEqual(array1,array2){
       if(!array1 || !array2) return false;
       if(array1.length!==array2.length){

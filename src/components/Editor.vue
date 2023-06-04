@@ -12,6 +12,8 @@
         @new="$refs.dialogNewApp.setVisible(true)"
         @prettify="prettifyCode"
         @rename="renameSelection"
+        @compile="compileProject()"
+        @toggle-comment="toggleComment()"
         @undo="currentEditor?.undo()"
         @redo="currentEditor?.redo()"
         @search="currentEditor?.openSearchPanel()"
@@ -272,6 +274,10 @@ export default {
           console.log("methode")
         }
       }
+    },
+    toggleComment(){
+      let cm=this.$refs.editor[this.activeTab];
+      cm.toggleComment();
     },
     toggleRight(){
       if(!this.rightClosed){

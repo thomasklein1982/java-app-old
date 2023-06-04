@@ -11,7 +11,7 @@ import { EditorView, basicSetup } from "codemirror";
 import { java } from "@codemirror/lang-java";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
-import {indentWithTab,undo,redo} from "@codemirror/commands";
+import {indentWithTab,undo,redo,toggleComment} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
 import {autocompletion} from "@codemirror/autocomplete";
@@ -317,6 +317,9 @@ export default {
     },
     getCode(){
       return this.editor.state.doc.toString();
+    },
+    toggleComment(){
+      toggleComment(this.editor);
     },
     openSearchPanel(){
       openSearchPanel(this.editor);
