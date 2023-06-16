@@ -50,7 +50,10 @@
     <template v-else>
       <div>
         <template v-if="isUIClazz">
-          <div class="ui-clazz-top" @click="handleClick">UI-Klasse {{component.name}}</div>
+          <div class="ui-clazz-top"  :style="{display: 'flex', 'align-items': 'center'}" >
+            <span @click="handleClick" :style="{flex: 1, alignSelf: 'stretch'}">UI-Klasse {{component.name}}</span>
+            <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
+          </div>
           <TextArea class="ui-clazz-variables" auto-resize style="width: 100%" v-model="component.variablesRaw" @change="$emit('recompile')"/>
           <div style="font-family: monospace; color: red">
             <div v-for="(e,i) in component.variablesErrors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
@@ -126,6 +129,10 @@
       isEditable: {
         type: Boolean,
         default: false
+      },
+      autoUpdate: {
+        type: Boolean,
+        default: true
       }
     },
     computed: {

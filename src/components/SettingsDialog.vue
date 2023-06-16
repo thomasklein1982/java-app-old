@@ -1,7 +1,12 @@
 <template>
   <Dialog header="Einstellungen" v-model:visible="show"  :maximizable="true" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}">
     <Button label="Neu starten" @click="restart()"/>
-    <InputSwitch v-model="settings.optimizeCompiler" label="Compiler optimieren"/>
+    <div style="padding: 0.2rem">
+      <InputSwitch id="optimizeCompiler" v-model="settings.optimizeCompiler"/><label for="optimizeCompiler">Compiler optimieren</label>
+    </div>
+    <div style="padding: 0.2rem">
+      <InputSwitch id="autoUpdateUI" v-model="settings.autoUpdateUI"/><label for="autoUpdateUI">UI-Komponenten automatisch aktualisieren</label>
+    </div>
     <div style="padding: 0.2rem" :style="{display: 'flex', 'justify-content': 'center', 'align-items':'center'}">
       <Button icon="pi pi-minus" @click="changeFontSize(-1)"/>
       <span style="padding: 0.2rem">{{myFontSize}}px</span>

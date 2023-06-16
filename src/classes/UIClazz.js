@@ -118,8 +118,19 @@ export class UIClazz {
     return {
       type: "UIClazz",
       componentName: this.name,
-      variablesValues: values,
-      
+      variablesValues: values
+    }
+  }
+
+  getComponentData(){
+    let data=this.getComponentObject();
+    data.components=this.components;
+    return data;
+  }
+
+  setComponentData(data){
+    for(let a in data){
+      this[a]=data[a];
     }
   }
 
@@ -406,10 +417,11 @@ export class UIClazz {
       let f=CompileFunctions.get(node,source);
       if(f){
         var res=f(node,source,scope);
-        return res;
       }else{
-        return {code: src};
+        var res={code: src};
       }
+      res.code="(()=>{try{return "+res.code+"}catch(e){}})()";
+      return res;
     }catch(e){
       console.error(e);
       return {code: src};

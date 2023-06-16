@@ -49,6 +49,7 @@
               <UIEditor 
                 v-if="isUIClazz(c)" 
                 :clazz="c"
+                :settings="settings"
                 @select="updateSelectedUIComponent"
                 @recompile="compileProjectAndUpdateUIPreview()"
                 @isolatedupdate="updateUIPreview()"
@@ -85,6 +86,7 @@
                 :component="selectedUIComponent"
                 :project="project"
                 :maximized="false"
+                :settings="settings"
                 @recompile="compileProjectAndUpdateUIPreview()"
                 @update="updateUIPreview()"
               />
@@ -152,7 +154,8 @@ export default {
       project: null,
       fontSize: 20,
       settings: {
-        optimizeCompiler: false
+        optimizeCompiler: false,
+        autoUpdateUI: true
       },
       breakpoints: [],
       sizeCode: 60,
@@ -218,7 +221,11 @@ export default {
     },
     isCurrentClazzUIClazz(){
       nextTick(()=>{
-        this.updateUIPreview();
+        if(this.settings.autoUpdateUI){
+          this.updateUIPreview();
+        }else{
+          this.clearUIPreview();
+        }
       });
       return this.isUIClazz(this.currentClazz);
     },
@@ -242,6 +249,9 @@ export default {
     },
     updateUIPreview(){
       this.$refs.uipreview.reload();
+    },
+    clearUIPreview(){
+      this.$refs.uipreview.clear();
     },
     compileProject(){
       this.project.compile();

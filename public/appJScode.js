@@ -1283,7 +1283,6 @@ window.appJScode=function(){
       },
       resize: function(w,h,force){
         if(!w){
-          console.error("keine breite");
           w=this.container.offsetWidth;
           h=this.container.offsetHeight;
         }

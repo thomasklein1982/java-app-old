@@ -20,6 +20,17 @@ import { UIClazz } from '../classes/UIClazz';
           this.frame.focus();
         }
       },
+      clear(){
+        if(!(this.uiClazz instanceof UIClazz)) return;
+        let frame=document.createElement('div');
+        frame.style="color: red; background-color: white; width: 100%; height: 100%; display: flex; align-items: center; text-align: center";
+        frame.innerHTML="Automatisches Aktualisieren ist deaktiviert...";
+        if(this.$refs.wrapper.firstChild){
+          this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
+        }
+        this.$refs.wrapper.appendChild(frame);
+        this.frame=null;
+      },
       reload(){
         if(!(this.uiClazz instanceof UIClazz)) return;
         let frame=document.createElement('iframe');

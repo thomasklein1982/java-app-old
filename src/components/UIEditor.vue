@@ -1,4 +1,5 @@
 <template>
+  <UIEditorCode ref="uiEditorCode" :ui-clazz="clazz"/>
   <div :style="{flex: 1, display: 'flex', 'flex-direction': 'row', overflow: 'hidden'}">
     <draggable 
       v-model="allComponents"
@@ -22,7 +23,10 @@
       </template>
     </draggable>
     <div class="ui-clazz" :style="{flex: 1}" style="overflow: auto">
-      <UIComponent :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="$emit('recompile')" @isolatedupdate="$emit('isolatedupdate')" @deselect-component="deselectComponent()"/>
+      <UIComponent :auto-update="settings.autoUpdateUI" :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="emitRecompile" @isolatedupdate="emitIsolatedUpdate" @deselect-component="deselectComponent()"/>
+      <div style="text-align: right">
+        <Button @click="showCodeDialog()" icon="pi pi-file-edit"/>
+      </div>
     </div>
   </div>
 </template>
@@ -30,11 +34,14 @@
 <script>
   import UIComponent from "./UIComponent.vue";
   import draggable from "vuedraggable";
+  import UIEditorCode from "./UIEditorCode.vue";
+
   export default{
     props: {
       clazz: {
         type: Object
-      }
+      },
+      settings: Object
     },
     computed: {
       allComponents(){
@@ -57,6 +64,17 @@
       };
     },
     methods: {
+      showCodeDialog(){
+        this.$refs.uiEditorCode.open(this.clazz);
+      },
+      emitRecompile(force){
+        if(this.settings.autoUpdateUI || force)
+          this.$emit('recompile');
+      },
+      emitIsolatedUpdate(force){
+        if(this.settings.autoUpdateUI || force)
+          this.$emit('isolatedupdate');
+      },
       handleDrop(ev){
         console.log("dropped",ev);
       },
@@ -92,7 +110,7 @@
       }
     },
     components: {
-      UIComponent, draggable
+      UIComponent, draggable, UIEditorCode
     }
   }
 </script>

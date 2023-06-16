@@ -135,7 +135,8 @@ import TemplateDialog from './TemplateDialog.vue';
       maximized: {
         type: Boolean,
         default: false
-      }
+      },
+      settings: Object
     },
     computed: {
       type(){
@@ -177,10 +178,12 @@ import TemplateDialog from './TemplateDialog.vue';
         this.emitUpdate();
       },
       emitRecompile(){
-        this.$emit("recompile");  
+        if(this.settings.autoUpdateUI){
+          this.$emit("recompile");  
+        }
       },
       emitUpdate(force){
-        if(force || !this.maximized){
+        if(this.settings.autoUpdateUI && (force || !this.maximized)){
           this.$emit("recompile");
         }
       }
