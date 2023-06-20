@@ -1,6 +1,6 @@
 <template>
   <Dialog header="Code-Editor für UI-Klassen" v-model:visible="show"  :maximizable="true" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}">
-    <TextArea style="width: 100%;" auto-resize v-model="code" />
+    <CodeMirrorEditor v-model="code"/>
     <template #footer>
       <Button label="Abbrechen" icon="pi pi-times" @click="show=false"/>
       <Button label="Übernehmen" icon="pi pi-check" @click="confirm()" />
@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import CodeMirrorEditor from './CodeMirrorEditor.vue';
+
 export default {
   computed: {
     
@@ -39,7 +41,7 @@ export default {
     }
   },
   components: {
-    
+    CodeMirrorEditor
   }
 }
 </script>

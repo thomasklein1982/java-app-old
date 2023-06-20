@@ -58,6 +58,7 @@
               <CodeMirror
                 v-else
                 :clazz="c"
+                :tab-index="i"
                 :project="project"
                 :settings="settings"
                 :font-size="fontSize"

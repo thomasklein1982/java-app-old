@@ -111,7 +111,8 @@
     },
     components: {
       UIComponent, draggable, UIEditorCode
-    }
+    },
+    emits: ['select','recompile','isolatedupdate']
   }
 </script>
 

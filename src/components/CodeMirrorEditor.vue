@@ -52,23 +52,26 @@ export default {
     let changed=true;
     let timer;
     let editorTheme=new Compartment();
+    let extensions=[
+      basicSetup,
+      EditorView.lineWrapping,
+      lintGutter(),
+      editorTheme.of(oneDark),
+      indentUnit.of("  "),
+      keymap.of([indentWithTab]),
+      EditorView.updateListener.of((v) => {
+        this.$emit('update:modelValue', this.getCode());
+        //this.project.css=this.getCode();
+      }),
+    ];
+    if(this.languagePlugins){
+      extensions.push(this.languagePlugins.language);
+      extensions.push(autocompletion({override: [this.languagePlugins.completionSource]}));
+    }
     this.editor=new EditorView({
       state: EditorState.create({
         doc: this.modelValue,
-        extensions: [
-          basicSetup,
-          EditorView.lineWrapping,
-          lintGutter(),
-          editorTheme.of(oneDark),
-          indentUnit.of("  "),
-          this.languagePlugins.language,
-          autocompletion({override: [this.languagePlugins.completionSource]}),
-          keymap.of([indentWithTab]),
-          EditorView.updateListener.of((v) => {
-            this.$emit('update:modelValue', this.getCode());
-            //this.project.css=this.getCode();
-          }),
-        ]
+        extensions
       }),
       parent: this.$refs.editor
     });

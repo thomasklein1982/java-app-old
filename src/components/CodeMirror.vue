@@ -149,7 +149,11 @@ export default {
     },
     current: Object,
     project: Object,
-    settings: Object
+    settings: Object,
+    tabIndex: {
+      type: Number,
+      default: 0
+    }
   },
   watch: {
     clazz(nv){

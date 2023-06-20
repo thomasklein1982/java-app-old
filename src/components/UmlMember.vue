@@ -13,15 +13,25 @@ export default {
   methods: {
     click(){
       let editor=this.$root.$refs.editor;
-      let index=editor.project.getClazzIndexByName(this.member.clazz.name);
-      editor.activeTab=index;
-      console.log(editor);
-      let cm=editor.$refs.editor[index];
-      cm.setSelection(this.member.node.from,this.member.node.to);
-      nextTick(()=>{
-          cm.focus()
+      for(let i=0;i<editor.$refs.editor.length;i++){
+        let cm=editor.$refs.editor[i];
+        if(cm.clazz===this.member.clazz){
+          editor.activeTab=cm.tabIndex;
+          cm.setSelection(this.member.node.from,this.member.node.to);
+          nextTick(()=>{
+            cm.focus()
+          });
         }
-      );
+      }
+      // let index=editor.project.getClazzIndexByName(this.member.clazz.name);
+      // editor.activeTab=index;
+      // console.log(editor);
+      // let cm=editor.$refs.editor[index];
+      // cm.setSelection(this.member.node.from,this.member.node.to);
+      // nextTick(()=>{
+      //     cm.focus()
+      //   }
+      // );
     }
   }
 }

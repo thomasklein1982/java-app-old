@@ -48,7 +48,6 @@ export function Block(node,source,scope){
           if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
             let vnames;
             if(res.updateLocalVariablesAfter===true){
-              console.log("ruecksprung");
               vnames=[];
               let localVariables=scope.getLocalVariables();
               for(let vname in localVariables){
