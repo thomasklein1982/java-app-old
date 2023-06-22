@@ -28,9 +28,12 @@ export function ArrayAccess(node,source,scope){
     throw source.createError("'int' erwartet, aber '"+index.type+"' gefunden.",node);
   }
   indices.push(index.code);
-  code+=".get("+index.code+")";
-  codeSet+=".checkBounds("+index.code+").set("+index.code+",";
-  codeUpdate+=".set("+index.code+","+object.code+".get("+index.code+")";
+  code="$getFromArray("+code+","+index.code+")";
+  //code+=".get("+index.code+")";
+  codeSet="$setInArray("+codeUpdate+","+index.code+",";
+  //codeSet+=".checkBounds("+index.code+").set("+index.code+",";
+  codeUpdate="$setInArray("+codeUpdate+","+index.code+",$getFromArray("+codeUpdate+","+index.code+")";
+  //codeUpdate+=".set("+index.code+","+object.code+".get("+index.code+")";
   let type=new Type(object.type.baseType,object.type.dimension-indices.length);
   node=node.nextSibling;
   if(node.name!=="]"){

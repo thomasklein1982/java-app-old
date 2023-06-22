@@ -35,6 +35,42 @@ export class Project{
       this.clazzes.push(c);
     }
   }
+  prepareCSS(cssText){
+    let s=cssText.split("asset(");
+    let t="";
+    let referencedAssets={};
+    for(let i=0;i<s.length;i++){
+      if(i%2===0){
+        t+=s[i];
+      }else{
+        let pos=s[i].indexOf(")");
+        let assetName=s[i].substring(0,pos);
+        let asset=this.getAssetByName(assetName);
+        if(asset){
+          referencedAssets[assetName]=asset;
+          //t+="var(--"+assetName+")";
+          t+="url("+asset.file.code+");"
+        }
+        t+=s[i].substring(pos+1);
+      }
+    }
+    // let prefix=":root{";
+    // for(var a in referencedAssets){
+    //   let asset=referencedAssets[a];
+    //   prefix+="--"+a+": url("+asset.file.code+");\n";
+    // }
+    // prefix+="}\n";
+    return t;
+  }
+  getAssetByName(name){
+    for(let i=0;i<this.assets.length;i++){
+      let a=this.assets[i];
+      if(a.name===name){
+        return a;
+      }
+    }
+    return null;
+  }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
   getFullAppCode(additionalCode, includeSave){
@@ -85,6 +121,7 @@ export class Project{
     if(mainClazz){
       codeMainCall="(async function(){await "+mainClazz.name+".main([]);})();"
     }
+    let css=this.prepareCSS(this.css);
     let code=`<!doctype html>
 <html>
     <head>
@@ -105,7 +142,7 @@ export class Project{
         .jimage{
           justify-self: stretch;
         }
-        ${this.css}
+        ${css}
       </style>
     </head>
     <body>

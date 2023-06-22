@@ -626,6 +626,7 @@ window.appJScode=function(){
         style.insertRule("button:active{border-radius: 0;background-color:#e0e0e0}",0);
         style.insertRule("button{border-radius: 0;background-color:#d0d0d0}",0);
         style.insertRule("button:hover{border-radius: 0;background-color:#dadada}",0);
+        style.insertRule("html{font-family: sans-serif;}",0);
         $App.headLoaded=true;
       }
       if(!dontStart && document.body){
@@ -642,7 +643,7 @@ window.appJScode=function(){
         
         var root=document.createElement("div");
         this.body.root=root;
-        root.style="font-family: sans-serif;position: fixed;width:100%;height:100%";
+        root.style="position: fixed;width:100%;height:100%";
         root.className="app-root";
         this.body.element.appendChild(root);
         this.canvas=new $App.Canvas(root,100,100,true);
@@ -2824,19 +2825,24 @@ window.appJScode=function(){
       this.input.autocapitalize="none";
       this.input.autocorrect="off";
       this.input.placeholder="gib einen Befehl ein...";
-      this.input.onchange=()=>{
+      this.input.onchange=async ()=>{
         var v=this.input.value;
         if(v.trim().length===0) return;
         if(!(this.history.length>0 && this.history[this.history.length-1]===v)){
           this.history.push(v);
           this.saveHistory();
         }
-        var w;
+        //var w;
+        let func;
         if(window.$main){
-          eval("with($main){w="+v+"}");
+          func="with($main){return "+v+";}";
+          //eval("with($main){w="+v+"}");
         }else{
-          eval("w="+v);
+          func="return "+v+";";
+          //eval("w="+v);
         }
+        func=Function("return (async function anonym(){"+func+"}());");
+        var w=await func();
         console.log(">",v);
         if(w!==undefined){
           console.log("<",w);
@@ -2845,7 +2851,6 @@ window.appJScode=function(){
         this.input.currentPosition=-1;
       };
       this.input.onkeydown=(ev)=>{
-        ev.test="Hallo";
         ev.stopPropagation();
         if(ev.keyCode===40 || ev.keyCode===38 || ev.keyCode===13){
           if(ev.keyCode===13){

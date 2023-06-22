@@ -36,7 +36,7 @@ export function AssignmentExpression(node,source,scope){
     updateLocalVariablesAfter=true;
   }
   if(v.codeSet){
-    code=v.codeSet+val.code+")";
+    code=v.codeSet+val.code+","+JSON.stringify(assignOp)+")";
   }else{
     code=v.code+assignOp+val.code;
   }

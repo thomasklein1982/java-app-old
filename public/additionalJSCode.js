@@ -6,6 +6,33 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  function $getFromArray(array,index){
+    if(array.get){
+      return array.get(index);
+    }else{
+      return array[index];
+    }
+  }
+
+  function $setInArray(array,index,value,assignOp){
+    if(assignOp==="+="){
+      value=$getFromArray(array,index)+value;
+    }else if(assignOp==="-="){
+      value=$getFromArray(array,index)-value;
+    }else if(assignOp==="*="){
+      value=$getFromArray(array,index)*value;
+    }else if(assignOp==="/="){
+      value=$getFromArray(array,index)/value;
+    }else if(assignOp==="%="){
+      value=$getFromArray(array,index)%value;
+    }
+    if(array.set){
+      array.set(index,value);
+    }else{
+      array[index]=value;
+    }
+  }
+
   function $castObject(object,destTypeName,destDimension){
     if(object===null) return object;
     let m="Objekt kann nicht gecastet werden";
