@@ -148,6 +148,13 @@ function defineJComponent(Clazz,Java){
     ],
     info: "Legt den ActionCommand-String der Komponente fest."
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'setCSS',
+    args: [
+      {name: 'cssRules', type: 'String'}
+    ]
+  },Clazz,false,false,Java);
+  
   // createAttribute({
   //   name: "value",
   //   type: Java.datatypes.String,
@@ -193,6 +200,13 @@ function defineJTextField(Clazz,Java){
       {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
+  createMethod({
+    name: 'setPlaceholder',
+    args: [
+      {name: 'placeholder', type: 'String', info: 'Der neue Platzhalter-Text der Komponente.'}
+    ],
+    info: "Legt den Platzhalter-Text der Komponente fest."
+  },Clazz,false,false,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
   
 }
@@ -204,7 +218,13 @@ function defineJTextArea(Clazz,Java){
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
-  
+  createMethod({
+    name: 'setPlaceholder',
+    args: [
+      {name: 'placeholder', type: 'String', info: 'Der neue Platzhalter-Text der Komponente.'}
+    ],
+    info: "Legt den Platzhalter-Text der Komponente fest."
+  },Clazz,false,false,Java);
 }
 
 function defineJComboBox(Clazz,Java){

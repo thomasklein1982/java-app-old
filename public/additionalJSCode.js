@@ -370,6 +370,9 @@ function additionalJSCode(){
     setStyle(name, value){
       this.$el.style[name]=value;
     }
+    setCSS(css){
+      this.$el.style=css;
+    }
     setCSSClass(className){
       this.$el.className=className;
     }
@@ -655,6 +658,9 @@ function additionalJSCode(){
       this.$el.spellcheck=false;
       this.$el.component=this;
     }
+    setPlaceholder(text){
+      this.$el.placeholder=text;
+    }
   }
 
   class JComboBox extends JComponent{
@@ -689,6 +695,9 @@ function additionalJSCode(){
       this.$el=ui.textarea(placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
+    }
+    setPlaceholder(text){
+      this.$el.placeholder=text;
     }
   }
 

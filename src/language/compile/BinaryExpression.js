@@ -84,6 +84,7 @@ function addCompiledBinaryExpressions(node,source,scope,termArray){
       throw source.createError("Syntax-Fehler.",leftNode);
     }
     let left=CompileFunctions.get(leftNode)(leftNode,source,scope);
+    left.node=leftNode;
     termArray.push(left);
   }
   termArray.push(source.getText(op));
@@ -94,6 +95,7 @@ function addCompiledBinaryExpressions(node,source,scope,termArray){
       throw source.createError("Syntax-Fehler.",rightNode);
     }
     let right=CompileFunctions.get(rightNode)(rightNode,source,scope);
+    right.node=rightNode;
     termArray.push(right);
   }
 }
