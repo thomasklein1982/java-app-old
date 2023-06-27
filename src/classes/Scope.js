@@ -13,6 +13,8 @@ export class Scope{
     this.addLocalVariablesUpdates=true;
     this.ignoreVisibilityRestrictions=false;
     this.optimizeCompiler=false;
+    this.referencedVariables={};
+    this.referencedVariablesCount=0;
     if(options){
       if(options.addLocalVariablesUpdates===false){
         this.addLocalVariablesUpdates=false;
@@ -29,6 +31,16 @@ export class Scope{
     if(method && method.params){
       this.pushParameterList(method.params);
     }
+  }
+
+  addReferencedVariable(name){
+    this.referencedVariables[name]=true;
+    this.referencedVariablesCount++;
+  }
+
+  clearReferencedVariables(){
+    this.referencedVariables={};
+    this.referencedVariablesCount=0;
   }
 
   isNodeBeyondEndPosition(node){

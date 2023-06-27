@@ -177,7 +177,7 @@ export class UIClazz {
                   type: a.type
                 }
               ],
-              jscode: "this."+a.name+"="+a.name+";\nif(arguments[1]!==true){this.rerender();}"
+              jscode: "this."+a.name+"="+a.name+";\nif(arguments[1]!==true){this.$update();}"
             },this,false,false);
           }
         }catch(e){
@@ -303,10 +303,15 @@ export class UIClazz {
     code+="\nthis.rerender();"
     code+="\nreturn this;"
     code+="\n}";
-    code+="\nrerender(){\nlet lastComponent,component=this,container;";
-    code+="\nif(this.$el.replaceChildren) this.$el.replaceChildren(); else this.$el.innerHTML='';\n";
+    code+="\nrerender(){\nlet lastComponent,component=this;";
+    code+="\nif(this.$el.replaceChildren) this.$el.replaceChildren(); else this.$el.innerHTML='';";
     code+="\n"+this.componentCode;
     code+="\n}";
+    code+="\n$update(){\n";
+    code+="\nfor(var i=0;i<this.$el.childNodes.length;i++){";
+    code+="\nvar c=this.$el.childNodes[i];";
+    code+="\nif(c.component.$update) c.component.$update.call(c.component.uiClazz,c.component);";
+    code+="\n}\n}";
     for(let i in this.methods){
       let m=this.methods[i];
       code+="\n"+m.getJavaScriptCode();
@@ -366,10 +371,12 @@ export class UIClazz {
       this.attributes[name]=a;
     }
     this.componentCode="";
-    let codeObject={code: "var container0=this;\n"};
+    let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n", nextUIControlStatementIndex:1};
     scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
-    this.appendJavaScriptCodeForComponent(scope,this,codeObject,0);
+    codeObject.code+=this.generateJavaScriptCodeForComponent(scope,this,codeObject,0,null);
+    /**insertPosition: falls >=0: index des Einfuegens, ansonsten wird angehängt */
     this.componentCode=codeObject.code;
+    console.log(this.componentCode);
   }
 
   parseInterpolatedString(scope,src){
@@ -417,6 +424,7 @@ export class UIClazz {
       let f=CompileFunctions.get(node,source);
       if(f){
         var res=f(node,source,scope);
+        res.referencedVariables=scope.referencedVariables;
       }else{
         var res={code: src};
       }
@@ -428,33 +436,52 @@ export class UIClazz {
     }
   }
 
-  appendJavaScriptCodeForComponent(scope,comp,codeObject,containerIndex){
+  generateJavaScriptCodeForComponent(scope,comp,codeObject,containerIndex,parentUIControlStatementIndex){
+    let newCode="";
     for(let i=0;i<comp.components.length;i++){
       let c=comp.components[i];
       if(c.controlComponent){
+        let updateCode;
+        newCode+="\n{\n";
+        let uiControlStatementIndex=codeObject.nextUIControlStatementIndex;
+        newCode+="\nlet uiControlStatement"+uiControlStatementIndex+"=new UIControlStatement("+JSON.stringify(c.type)+");";
+        newCode+="\ncontainer"+containerIndex+".add(uiControlStatement"+codeObject.nextUIControlStatementIndex+",$insertPosition);";
+        newCode+="\n$insertPosition++;if("+parentUIControlStatementIndex+"){uiControlStatement"+parentUIControlStatementIndex+".attachComponent(uiControlStatement"+uiControlStatementIndex+")}";
+        codeObject.nextUIControlStatementIndex++;
+        newCode+="\nuiControlStatement"+uiControlStatementIndex+".uiClazz=this;";
         if(c.type==='For'){
           scope.pushLayer();
           let min=this.parseJavaStatement(scope,c.controlComponent.min);
           let max=this.parseJavaStatement(scope,c.controlComponent.max);
           let variable=c.controlComponent.variable;
           scope.pushLocalVariable(variable,new Type(Java.datatypes.int, 0));
-          codeObject.code+="for(let "+variable+"="+min.code+";"+variable+"<="+max.code+";"+variable+"++){\n";
-          this.appendJavaScriptCodeForComponent(scope, c,codeObject,containerIndex);
-          codeObject.code+="\n}\n";
+          let code="\nfor(let "+variable+"="+min.code+";"+variable+"<="+max.code+";"+variable+"++){\n";
+          code+=this.generateJavaScriptCodeForComponent(scope, c,codeObject,containerIndex,uiControlStatementIndex);
+          code+="\n}\n";
           scope.popLayer();
+          updateCode=code;
+          newCode+=code;
         }else if(c.type==='If'){
           let condition=this.parseJavaStatement(scope,c.controlComponent.condition);
-          codeObject.code+="if("+condition.code+"){\n";
-          this.appendJavaScriptCodeForComponent(scope, c,codeObject,containerIndex);
-          codeObject.code+="\n}\n";
+          let code="if("+condition.code+"){\n";
+          code+=this.generateJavaScriptCodeForComponent(scope, c,codeObject,containerIndex,uiControlStatementIndex);
+          code+="\n}\n";
+          updateCode=code;
+          newCode+=code;
         }
+        if(updateCode){
+          newCode+="\nuiControlStatement"+uiControlStatementIndex+".$update=function(component){";
+          newCode+="\ncomponent.prepareForUpdate();";
+          newCode+=updateCode+"};";
+        }
+        newCode+="\n}";
         continue;
       }
       let last="component";
-      codeObject.code+="{\n";
-      codeObject.code+="\nlet "+last+"=";
+      newCode+="{\n";//Klammer für den Scope
+      newCode+="\nlet "+last+"=";
       if(c.type==="UIClazz"){
-        codeObject.code+="new "+c.componentName+"();";
+        newCode+="new "+c.componentName+"();";
         let uiClazz=this.project.getClazzByName(c.componentName);
         if(uiClazz){
           let variables=uiClazz.variables;
@@ -469,14 +496,14 @@ export class UIClazz {
             }
             let value=c.variablesValues[v.name];
             value=this.parseJavaStatement(scope,value);
-            codeObject.code+="\n"+last+"."+setterName+"("+value.code+",true);";
+            newCode+="\n"+last+"."+setterName+"("+value.code+",true);";
           }
         }else{
 
         }
-        codeObject.code+="\n"+last+".rerender();";
+        newCode+="\n"+last+".rerender();";
       }else{
-        codeObject.code+="new "+c.type+"(";
+        newCode+="new "+c.type+"(";
         let clazz=UIClazz.UIClazzes[c.type];
         let args=[];
         for(let j=0;j<clazz.params.length;j++){
@@ -494,48 +521,78 @@ export class UIClazz {
             args.push(JSON.stringify(c[p]));
           }
         }
-        codeObject.code+=args.join(",");
-        codeObject.code+=");";
+        newCode+=args.join(",");
+        newCode+=");";
       }
-      codeObject.code+="\ncontainer"+containerIndex+".add("+last+");";
+      newCode+="\n"+last+".uiClazz=this;";
+      newCode+="\ncontainer"+containerIndex+".add("+last+",$insertPosition);";
+      newCode+="\n$insertPosition++;if("+parentUIControlStatementIndex+"){uiControlStatement"+parentUIControlStatementIndex+".attachComponent(component)}";
+      let updateCode="";
       if(c.name){
-        codeObject.code+="\nthis."+c.name+"= "+last+";";
+        newCode+="\nthis."+c.name+"= "+last+";";
       }
-      if(c.onAction){
+      if(c.onAction==="true"){
         if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
-          codeObject.code+="\n"+last+".$el.onchange=function(){$main.onAction(this.component);}";
+          newCode+="\n"+last+".$el.onchange=function(){$main.onAction(this.component);}";
         }else{
-          codeObject.code+="\n"+last+".$el.onclick=function(){$main.onAction(this.component);}";
+          newCode+="\n"+last+".$el.onclick=function(){$main.onAction(this.component);}";
         }
       }
       if(c.actionCommand){
-        codeObject.code+="\n"+last+".setActionCommand("+this.parseInterpolatedString(scope, c.actionCommand)+");";
+        scope.clearReferencedVariables();
+        let code=".setActionCommand("+this.parseInterpolatedString(scope, c.actionCommand)+");";
+        newCode+="\n"+last+code;
+        if(scope.referencedVariablesCount>0){
+          updateCode+="\ncomponent"+code;
+        }
       }
       if(c.cssClass){
-        codeObject.code+="\n"+last+".setCSSClass("+this.parseInterpolatedString(scope,c.cssClass)+");";
+        scope.clearReferencedVariables();
+        let code=".setCSSClass("+this.parseInterpolatedString(scope,c.cssClass)+");";
+        newCode+="\n"+last+code;
+        if(scope.referencedVariablesCount>0){
+          updateCode+="\ncomponent"+code;
+        }
       }
       if(c.cssCode){
-        codeObject.code+="\n"+last+".$el.style="+last+".$el.style+';'+"+this.parseInterpolatedString(scope,c.cssCode)+";";
+        scope.clearReferencedVariables();
+        let code=".$el.style="+last+".$el.style+';'+"+this.parseInterpolatedString(scope,c.cssCode)+";";
+        newCode+="\n"+last+code;
+        if(scope.referencedVariablesCount>0){
+          updateCode+="\ncomponent"+code;
+        }
       }
       if(c.forceAbsolute){
-        codeObject.code+="\n"+last+".setStyle('position','absolute');";
-        codeObject.code+="\n"+last+".$el.updatePosition();";
+        newCode+="\n"+last+".setStyle('position','absolute');";
+        newCode+="\n"+last+".$el.updatePosition();";
       }
       if(c.value!==null && c.value!==undefined){
-        let v;
+        let code;
         if(c.valueType==="Boolean"){
-          v=c.value;
+          code=".value="+c.value+";";
         }else{
-          v=this.parseInterpolatedString(scope,c.value);
+          scope.clearReferencedVariables();
+          code=".value="+this.parseInterpolatedString(scope,c.value)+";";
+          if(scope.referencedVariablesCount>0){
+            updateCode+="\ncomponent"+code;
+          }
         }
-        codeObject.code+="\n"+last+".value="+v+";";
+        newCode+="\n"+last+code;
       }
       if(c.components){
-        codeObject.code+="\nlet container"+(containerIndex+1)+"="+last+";";
-        this.appendJavaScriptCodeForComponent(scope,c,codeObject,containerIndex+1);
+        newCode+="\nlet container"+(containerIndex+1)+"="+last+";";
+        newCode+=this.generateJavaScriptCodeForComponent(scope,c,codeObject,containerIndex+1);
+        updateCode+="\nfor(var i=0;i<component.$el.childNodes.length;i++){";
+        updateCode+="\nvar c=component.$el.childNodes[i];";
+        updateCode+="\nif(c && c.component && c.component.$update){c.component.$update.call(c.component.uiClazz,c.component);}";
+        updateCode+="\n}";
       }
-      codeObject.code+="}\n";
+      if(updateCode.length>0){
+        newCode+="\n"+last+".$update=function(component){"+updateCode+"};";
+      }
+      newCode+="}\n"; //Klammer zu für den Scope
     }
+    return newCode;
   }
 
   getRealSuperClazz(){

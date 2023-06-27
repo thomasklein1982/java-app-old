@@ -1004,7 +1004,7 @@ window.appJScode=function(){
         let fullurl=url.href;
         let p;
         let type=null;
-        if(pathname.endsWith("mp3")||pathname.endsWith("wav")||pathname.endsWith("ogg")){
+        if(pathname.startsWith("audio/") || pathname.endsWith("mp3")||pathname.endsWith("wav")||pathname.endsWith("ogg")){
           if(window.Howl){
             asset.sound=new Howl({src: fullurl});
           }else{
@@ -4652,7 +4652,7 @@ window.appJScode=function(){
           //   }
           // }
         }
-        b.add=function(c){
+        b.add=function(c,index){
           //if(!this.noAbsolutePosition){
             c.style.position="relative";
             c.style.width="auto";
@@ -4660,11 +4660,15 @@ window.appJScode=function(){
             c.style.left="0px";
             c.style.top="0px";
           //}
-          if(c.parent){
-            c.parent.removeChild(c);
+          if(c.appJSData.parent){
+            c.appsJSData.parent.removeChild(c);
           }
           c.appJSData.parent=this;
-          this.appendChild(c);
+          if((index===0 || index>0) && index<this.childNodes.length){
+            this.insertBefore(c,this.childNodes[index]);
+          }else{
+            this.appendChild(c);
+          }
           if(c.resize){
             c.resize();
           }

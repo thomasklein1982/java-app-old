@@ -72,6 +72,9 @@ export function Identifier(node,source,scope,owner){
         code="this."+code;
         type=obj.type;
         scope.addTypeAnnotation(node,type,false);
+        if(!owner){
+          scope.addReferencedVariable(name);
+        }
       }
     }
     if(node.src){

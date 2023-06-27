@@ -33,6 +33,15 @@ function additionalJSCode(){
     }
   }
 
+  function $getIndexOfComponentInParent(comp){
+    var index=0;
+    while(comp.previousElementSibling){
+      index++;
+      comp=comp.previousElementSibling;
+    }
+    return index;
+  }
+
   function $castObject(object,destTypeName,destDimension){
     if(object===null) return object;
     let m="Objekt kann nicht gecastet werden";
@@ -446,6 +455,31 @@ function additionalJSCode(){
     }
   }
 
+  class UIControlStatement{
+    constructor(type){
+      this.type=type;
+      this.$el=document.createElement("span");
+      this.$el.style.display="none";
+      this.$el.component=this;
+      this.$el.appJSData={};
+      this.attachedComponents=[];
+    }
+    prepareForUpdate(){
+      this.removeAll();
+      window.$insertPosition=$getIndexOfComponentInParent(this.$el)+1;
+    }
+    attachComponent(c){
+      this.attachedComponents.push(c);
+    }
+    removeAll(){
+      for(var i=0;i<this.attachedComponents.length;i++){
+        var parent=this.attachedComponents[i].$el.parentNode;
+        parent.removeChild(this.attachedComponents[i].$el);
+      }
+      this.attachedComponents=[];
+    }
+  }
+
   class JButton extends JComponent{
     constructor(label,x,y,width,height){
       super(x,y,width,height);
@@ -469,8 +503,8 @@ function additionalJSCode(){
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
     }
-    add(comp){
-      this.$el.add(comp.$el);
+    add(comp,index){
+      this.$el.add(comp.$el,index);
     }
     remove(comp){
       this.$el.remove(comp.$el);
@@ -483,15 +517,35 @@ function additionalJSCode(){
       }
     }
     getChildCount(){
-      return this.$el.children.length;
+      let count=0;
+      let n=this.$el.children.length;
+      for(let i=0;i<n;i++){
+        let c=this.$el.children[i];
+        if(c.component && !(c.component instanceof UIControlStatement)){
+          count++;
+        }
+      }
+      return count;
     }
     getChild(index){
-      let el=this.$el.children[index];
-      if(el && el.component){
-        return el.component;
-      }else{
-        return null;
+      let realIndex=-1;
+      let n=this.$el.children.length;
+      for(let i=0;i<n;i++){
+        let c=this.$el.children[i];
+        if(c.component && !(c.component instanceof UIControlStatement)){
+          realIndex++;
+        }
+        if(realIndex===index){
+          return c.component;
+        }
       }
+      return null;
+      // let el=this.$el.children[index];
+      // if(el && el.component){
+      //   return el.component;
+      // }else{
+      //   return null;
+      // }
     }
     getChildInGrid(row,col,colCount){
       if(row<0 || col<0) return null;
@@ -515,10 +569,14 @@ function additionalJSCode(){
     }
     getIndexOf(child){
       let n=this.getChildCount();
+      let index=0;
       for(let i=0;i<n;i++){
         let c=this.getChild(i);
         if(c===child){
-          return i;
+          return index;
+        }
+        if(!(c instanceof UIControlStatement)){
+          index++;
         }
       }
       return -1;
