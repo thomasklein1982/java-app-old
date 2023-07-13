@@ -289,6 +289,7 @@ export class UIClazz {
       let a=this.attributes[i];
       code+="\n"+a.getJavaScriptCode();
     }
+    //code+="\n"+JSON.this.components
     code+="\n}";
     code+="\nasync $constructor(){";
     for(let i in this.attributes){
@@ -376,7 +377,6 @@ export class UIClazz {
     codeObject.code+=this.generateJavaScriptCodeForComponent(scope,this,codeObject,0,null);
     /**insertPosition: falls >=0: index des Einfuegens, ansonsten wird angehängt */
     this.componentCode=codeObject.code;
-    console.log(this.componentCode);
   }
 
   parseInterpolatedString(scope,src){

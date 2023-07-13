@@ -692,6 +692,10 @@ window.appJScode=function(){
         if(this.setupData){
           this.setupApp(this.setupData);
         }
+        let hash=location.hash;
+        if(hash && hash.indexOf('console')>=0){
+          this.showConsoleOnStart=true;
+        }
         if(this.showConsoleOnStart){
           this.console.setVisible(true);
         }

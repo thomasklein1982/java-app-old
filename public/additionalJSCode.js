@@ -632,107 +632,107 @@ function additionalJSCode(){
       this.$el.canvas.add(comp.$el);
     }
     save(){
-      this.$el.save();
+      this.$el.canvas.save();
     }
     restore(){
-      this.$el.restore();
+      this.$el.canvas.restore();
     }
     reset(){
-      this.$el.reset();
+      this.$el.canvas.reset();
     }
     rotate(angle,x,y){
-      this.$el.rotate(angle,x,y);
+      this.$el.canvas.rotate(angle,x,y);
     }
     translate(x,y){
-      this.$el.translate(x,y);
+      this.$el.canvas.translate(x,y);
     }
     shear(sx,sy){
-      this.$el.shear(sx,sy);
+      this.$el.canvas.shear(sx,sy);
     }
     scale(sx,sy,x,y){
-      this.$el.scale(sx,sy,x,y);
+      this.$el.canvas.scale(sx,sy,x,y);
     }
     setTransform(m00,m10,m01,m11,m02,m12){
-      this.$el.setTransform(m00,m10,m01,m11,m02,m12);
+      this.$el.canvas.setTransform(m00,m10,m01,m11,m02,m12);
     }
     redraw(){
-      this.$el.redraw();
+      this.$el.canvas.redraw();
     }
     setOrigin(x,y){
-      this.$el.setOrigin(x,y);
+      this.$el.canvas.setOrigin(x,y);
     }
     setSize(internalWidth,internalHeight,width,height){
       this.$el.setSize(internalWidth,internalHeight,width,height);
     }
 
     setMirrored(m){
-      this.$el.setMirrored(m);
+      this.$el.canvas.setMirrored(m);
     }
     setRotation(angle){
-      this.$el.setRotation(angle);
+      this.$el.canvas.setRotation(angle);
     }
     setOpacity(o){
-      this.$el.setOpacity(o);
+      this.$el.canvas.setOpacity(o);
     }
     clear(){
-      this.$el.clear();
+      this.$el.canvas.clear();
     }
     clearRect(cx,cy,w,h){
-      this.$el.clearRect(cx,cy,w,h);
+      this.$el.canvas.clearRect(cx,cy,w,h);
     }
     setFontsize(s){
-      this.$el.setFontsize(s);
+      this.$el.canvas.setFontsize(s);
     }
     setFont(fontName){
-      this.$el.setFont(fontName);
+      this.$el.canvas.setFont(fontName);
     }
     setLinewidth(w){
-      this.$el.setLinewidth(w);
+      this.$el.canvas.setLinewidth(w);
     }
     write(text,x,y,align){
-      this.$el.write(text,x,y,align);
+      this.$el.canvas.write(text,x,y,align);
     }
     drawCircle(x,y,r){
-      this.$el.drawCircle(x,y,r);
+      this.$el.canvas.drawCircle(x,y,r);
     }
     fillCircle(x,y,r){
-      this.$el.fillCircle(x,y,r);
+      this.$el.canvas.fillCircle(x,y,r);
     }
     drawRect(cx,cy,w,h){
-      this.$el.drawRect(cx,cy,w,h);
+      this.$el.canvas.drawRect(cx,cy,w,h);
     }
     fillRect(cx,cy,w,h){
-      this.$el.fillRect(cx,cy,w,h);
+      this.$el.canvas.fillRect(cx,cy,w,h);
     }
     drawLine(x1,y1,x2,y2){
-      this.$el.drawLine(x1,y1,x2,y2);
+      this.$el.canvas.drawLine(x1,y1,x2,y2);
     }
     beginPath(x,y){
-      this.$el.beginPath(x,y);
+      this.$el.canvas.beginPath(x,y);
     }
     lineTo(x,y){
-      this.$el.lineTo(x,y);
+      this.$el.canvas.lineTo(x,y);
     }
     closePath(){
-      this.$el.closePath();
+      this.$el.canvas.closePath();
     }
     drawPath(){
-      this.$el.drawPath();
+      this.$el.canvas.drawPath();
     }
     fillPath(){
-      this.$el.fillPath();
+      this.$el.canvas.fillPath();
     }
     isPointInPath(x,y){
-      return this.$el.isPointInPath(x,y);
+      return this.$el.canvas.isPointInPath(x,y);
     }
     setColor(c){
-      this.$el.setColor(c);
+      this.$el.canvas.setColor(c);
     }
     drawImage(image,cx,cy,w,h,angle,mirrored){
-      this.$el.drawImage(image,cx,cy,w,h,angle,mirrored);
+      this.$el.canvas.drawImage(image,cx,cy,w,h,angle,mirrored);
     }
     drawImagePart(image,cx,cy,width,height,scx,scy,swidth,sheight,rotation,mirrored){
-      this.$el.drawImagePart(image,cx,cy,width,height,scx,scy,swidth,sheight,rotation,mirrored);
+      this.$el.canvas.drawImagePart(image,cx,cy,width,height,scx,scy,swidth,sheight,rotation,mirrored);
     }
   }
 

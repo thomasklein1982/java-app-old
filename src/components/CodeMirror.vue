@@ -292,13 +292,13 @@ export default {
       this.clazz.setSrcAndTree(src,state.tree);
       if(this.triggerRecompilation){
         this.project.compile(false,this.settings.optimizeCompiler);
-        //this.$emit("recompile");
       }else{
         let t1=new Date();
         await this.clazz.compile(false,this.settings.optimizeCompiler);
         let t2=new Date();
         console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
       }
+      this.focus();
       this.triggerRecompilation=true;
       //this.updateErrors(viewUpdate.view);
     },
