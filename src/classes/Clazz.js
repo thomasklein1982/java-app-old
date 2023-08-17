@@ -1,4 +1,5 @@
 import { parseJava } from "../functions/parseJava";
+import { TypeParameters } from "../language/compile/TypeParameters";
 import { Java } from "../language/java";
 import {Attribute} from "./Attribute"
 import { Method } from "./Method";
@@ -258,6 +259,7 @@ export class Clazz{
       this.generateSrcAndTree(this.src);
     }
     this.compileDeclaration();
+    this.compileDeclarationTypeParameters();
     this.compileMemberDeclarations();
     this.compileMethods(optimizeCompiler);
   }
@@ -265,7 +267,7 @@ export class Clazz{
   isUIClazz(){
     return false;
   }
-
+  
   compileDeclaration(){
     var errors=[];
     this.errors=errors;
@@ -280,6 +282,10 @@ export class Clazz{
       this.name=this.source.getText(node);
       this.node=node;
       node=node.nextSibling;
+      if(node.name==="TypeParameters"){
+        this.typeParameters=node;
+        node=node.nextSibling;
+      }
       if(node.name==="Superclass"){
         let subnode=node.firstChild;
         if(subnode.name!=="extends"){
@@ -307,7 +313,16 @@ export class Clazz{
       }
     }
   }
-
+  compileDeclarationTypeParameters(){
+    if(this.typeParameters){
+      try{
+        this.typeParameters=TypeParameters(this.typeParameters,this.source,new Scope(this.project));
+      console.log(this.typeParameters);
+      }catch(e){
+        this.errors.push(e);
+      }
+    }
+  }
   compileMethodDeclarations(){
     this.methods={};
     this.constructor=null;

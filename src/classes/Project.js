@@ -270,6 +270,7 @@ export class Project{
     /**Methoden-Deklarationen: */
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
+      c.compileDeclarationTypeParameters(this);
       c.compileMethodDeclarations(this);
       c.resolveSuperClazz(this);
     }

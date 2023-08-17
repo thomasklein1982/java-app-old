@@ -379,6 +379,10 @@ export class UIClazz {
     this.componentCode=codeObject.code;
   }
 
+  compileDeclarationTypeParameters(){
+    
+  }
+
   parseInterpolatedString(scope,src){
     if(!src) return '""';
     let parts=[];
@@ -428,7 +432,7 @@ export class UIClazz {
       }else{
         var res={code: src};
       }
-      res.code="(()=>{try{return "+res.code+"}catch(e){}})()";
+      res.code="(async ()=>{try{return "+res.code+"}catch(e){}})()";
       return res;
     }catch(e){
       console.error(e);
