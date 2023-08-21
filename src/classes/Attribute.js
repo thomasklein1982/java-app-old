@@ -36,7 +36,7 @@ export class Attribute{
   }
 
   getSignatureString(){
-    return this.name+" : "+this.type.toString();
+    return this.name+" : "+this.type?.toString();
   }
 
   getSingleAttributes(){
@@ -67,7 +67,7 @@ export class Attribute{
       node=node.nextSibling;
     }
     if(node.name.indexOf("Type")>=0){
-      this.type=Type.compile(node,source,this.clazz.project,errors);
+      this.type=Type.compile(node,source,this.clazz,errors);
       node=node.nextSibling;
     }
     /**beliebig viele Variablennamen, mit Komma getrennt */

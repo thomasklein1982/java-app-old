@@ -22,7 +22,8 @@ export function MethodInvocation(node,source,scope){
   let code="";
   let owner={
     clazz: null,
-    static: false
+    static: false,
+    typeArguments: null
   };
   if(node.name==="MethodName" && node.nextSibling.type.isError){
     /**seltsamerweise scheinen manchmal auch identifier hier zu landen?!? (UIClazz) */
@@ -47,7 +48,8 @@ export function MethodInvocation(node,source,scope){
       }else{
         owner={
           clazz: id.object.type.baseType,
-          static: false
+          static: false,
+          typeArguments: id.object.type.typeArguments
         };
       }
     }else{
@@ -56,7 +58,8 @@ export function MethodInvocation(node,source,scope){
       code+=fa.code;
       owner={
         clazz: fa.type.baseType,
-        static: false
+        static: false,
+        typeArguments: fa.type.typeArguments
       };
     }
     node=node.nextSibling;
@@ -88,7 +91,7 @@ export function MethodInvocation(node,source,scope){
   if(node.name!=="ArgumentList"){
   }
   let updateLocalVariablesAfter=!method.isBuiltIn();
-  al=ArgumentList(node,source,scope,method.params);
+  al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments));
   if(al.updateLocalVariablesAfter){
     updateLocalVariablesAfter=true;
   }
@@ -102,15 +105,17 @@ export function MethodInvocation(node,source,scope){
     code+=al.code;
   }
   code="await "+code;
+  let returnType=null;
   if(method.type){
+    returnType=method.getRealReturnType(owner.typeArguments);
     let startLine=undefined;
     if(method.bodyNode){
       startLine=source.getLine(method.bodyNode.from).number;
-      code="$m("+code+",\"Die Methode "+method.name+" muss einen Wert vom Typ "+method.type.toString()+" zurückgeben.\","+startLine+")";
+      code="$m("+code+",\"Die Methode "+method.name+" muss einen Wert vom Typ "+returnType.toString()+" zurückgeben.\","+startLine+")";
     }
-    scope.addTypeAnnotation(node,method.type,false);
+    scope.addTypeAnnotation(node,returnType,false);
   }
   return {
-    method,arguments: al, code, type: method.type? method.type: null, updateLocalVariablesAfter
+    method,arguments: al, code, type: returnType, updateLocalVariablesAfter
   }
 }

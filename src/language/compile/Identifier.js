@@ -55,7 +55,7 @@ export function Identifier(node,source,scope,owner){
     //Top-Level
     obj=scope.getLocalVariable(name);
     if(!obj){
-      obj=scope.getClazzByName(name);
+      obj=scope.getTypeByName(name);
       type=null;
       scope.addTypeAnnotation(node,new Type(obj,0),true);
     }else{

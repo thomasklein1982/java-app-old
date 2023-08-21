@@ -22,6 +22,7 @@ export class Clazz{
     this.attributes={};
     this.methods={};
     this.constructor=null;
+    this.typeParameters=null;
     this.node=null;
     this.references=[];
     this._isBuiltIn=project===undefined;
@@ -63,7 +64,7 @@ export class Clazz{
       let c=this.constructor;
       code+="\n"+c.getJavaScriptCode(attributesInitCode+"\n");
     }else{
-      code+="\nasync $constructor(){\n"+attributesInitCode+"\nreturn this;}";
+      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesInitCode+"\nreturn this;}";
     }
     for(let i in this.methods){
       let m=this.methods[i];
@@ -71,6 +72,33 @@ export class Clazz{
     }
     code+="\n}";
     return code;
+  }
+
+  getTypeParameterByName(name){
+    if(this.typeParameters){
+      for(let i=0;i<this.typeParameters.length;i++){
+        if(this.typeParameters[i].name===name){
+          return this.typeParameters[i];
+        }
+      }
+    }
+    return null;
+  }
+
+  getPrimitiveTypeByName(name){
+    return Java.datatypes[name];
+  }
+
+  getClazzByName(name){
+    let tp=this.getTypeParameterByName(name);
+    if(tp) return tp;
+    return this.project.getClazzByName(name);
+  }
+
+  getTypeByName(name){
+    let tp=this.getTypeParameterByName(name);
+    if(tp) return tp;
+    return this.project.getTypeByName(name);
   }
 
   getAllAttributeNames(names){
@@ -223,10 +251,19 @@ export class Clazz{
 
   getRuntimeInfos(){
     let superClazz=this.getRealSuperClazz();
+    let typeParameters=null;
+    if(this.typeParameters){
+      typeParameters=[];
+      for(let i=0;i<this.typeParameters.length;i++){
+        let tp=this.typeParameters[i];
+        typeParameters.push(tp.name);
+      }
+    }
     let infos={
       attributes: this.getAllDynamicAttributeNamesAndTypes(),
       name: this.name,
-      superClazzName: superClazz? superClazz.name : null
+      superClazzName: superClazz? superClazz.name : null,
+      typeParameters
     };
     return infos;
   }
@@ -255,13 +292,17 @@ export class Clazz{
   }
 
   compile(fromSource,optimizeCompiler){
+    this.compileDeclarations(fromSource);
+    this.compileMethods(optimizeCompiler);
+  }
+
+  compileDeclarations(fromSource){
     if(fromSource){
       this.generateSrcAndTree(this.src);
     }
     this.compileDeclaration();
     this.compileDeclarationTypeParameters();
-    this.compileMemberDeclarations();
-    this.compileMethods(optimizeCompiler);
+    this.compileMemberDeclarations(true,true);
   }
 
   isUIClazz(){
@@ -271,6 +312,7 @@ export class Clazz{
   compileDeclaration(){
     var errors=[];
     this.errors=errors;
+    this.typeParametersNode=null;
     var node=this.source.tree.topNode.firstChild;
     if(node.type.name!=="ClassDeclaration"){
       errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",node));
@@ -283,7 +325,7 @@ export class Clazz{
       this.node=node;
       node=node.nextSibling;
       if(node.name==="TypeParameters"){
-        this.typeParameters=node;
+        this.typeParametersNode=node;
         node=node.nextSibling;
       }
       if(node.name==="Superclass"){
@@ -305,25 +347,32 @@ export class Clazz{
     return errors;
   }
 
-  resolveSuperClazz(project){
+  resolveSuperClazz(){
     if(this.superClazz){
-      let c=project.getClazzByName(this.superClazz);
+      let c=this.project.getClazzByName(this.superClazz);
       if(c){
         this.superClazz=c;
       }
     }
   }
   compileDeclarationTypeParameters(){
-    if(this.typeParameters){
+    if(this.typeParametersNode){
       try{
-        this.typeParameters=TypeParameters(this.typeParameters,this.source,new Scope(this.project));
-      console.log(this.typeParameters);
+        let tp=TypeParameters(this.typeParametersNode,this.source,new Scope(this.project));
+        this.typeParameters=tp;
+        if(tp.length===0){
+          this.errors.push(source.createError("Du musst in den eckigen Klammern mindestens einen generischen Datentypen deklarieren.",this.typeParametersNode));
+          this.typeParameters=null;
+        }
       }catch(e){
         this.errors.push(e);
       }
+    }else{
+      this.typeParameters=null;
     }
   }
   compileMethodDeclarations(){
+    return this.compileMemberDeclarations(false,true);
     this.methods={};
     this.constructor=null;
     let errors=this.errors;
@@ -379,6 +428,7 @@ export class Clazz{
   }
 
   compileAttributeDeclarations(){
+    return this.compileMemberDeclarations(true,false);
     this.attributes={};
     var node=this.clazzBody;
     if(!node) return;
@@ -411,10 +461,14 @@ export class Clazz{
   /**
    * Kompiliert alle Member-Deklarationen
    */
-  compileMemberDeclarations(){
-    this.attributes={};
-    this.methods={};
-    this.constructor=null;
+  compileMemberDeclarations(attributes,methods){
+    if(attributes){
+      this.attributes={};
+    }
+    if(methods){
+      this.methods={};
+      this.constructor=null;
+    }
     let errors=this.errors;
     var node=this.clazzBody;
     if(!node) return;
@@ -422,7 +476,7 @@ export class Clazz{
     let scope=new Scope(this.project);
     node=node.firstChild.nextSibling;
     while(node.nextSibling){
-      if(node.name==="FieldDeclaration"){
+      if(attributes && node.name==="FieldDeclaration"){
         var a=new Attribute(this);
         errors=errors.concat(a.compile(node,this.source,scope));
         let attr=a.getSingleAttributes();
@@ -438,7 +492,7 @@ export class Clazz{
             }
           }
         }
-      }else if(node.name==='MethodDeclaration'){
+      }else if(methods && node.name==='MethodDeclaration'){
         let m=new Method(this,false);
         errors=errors.concat(m.compileDeclaration(node,this.source));
         if(m.name){
@@ -450,7 +504,7 @@ export class Clazz{
             this.methods[m.name]=m;
           }
         }
-      }else if(node.name=="ConstructorDeclaration"){
+      }else if(methods && node.name=="ConstructorDeclaration"){
         if(this.constructor){
           errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
         }else{

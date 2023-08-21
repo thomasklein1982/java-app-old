@@ -27,14 +27,30 @@ export class Method{
   createParamsString(){
     
   }
+  getRealParameterList(typeArguments){
+    let params=this.params.getCopy(typeArguments);
+    return params;
+  }
+  getRealReturnType(typeArguments){
+    if(!this.type) return null;
+    if(!this.type.baseType.isGeneric) return this.type;
+    for(let i=0;i<typeArguments.length;i++){
+      let a=typeArguments[i];
+      if(a.param.name===this.type.baseType.name){
+        return new Type(a.baseType,this.type.dimension);
+      }
+    } 
+  }
   getJavaScriptCode(additionalJSCode){
     let code;
     if(this.isConstructor){
       code="async $constructor";
+      code+=this.params.getJavaScriptCode("typeArguments,")+"{\nthis.$typeArguments=typeArguments;";
     }else{
       code=this.modifiers.getJavaScriptCode()+" async "+this.name;
+      code+=this.params.getJavaScriptCode()+"{";
     }
-    code+=this.params.getJavaScriptCode()+"{";
+    
     if(additionalJSCode) code+=additionalJSCode;
     if(this.block){
       code+="\n"+this.block.code;
@@ -80,7 +96,7 @@ export class Method{
     }
     if(!this.isConstructor){
       if(node.name.indexOf("Type")>=0){
-        this.type=Type.compile(node,source,this.clazz.project,errors);
+        this.type=Type.compile(node,source,this.clazz,errors);
       }else if(node.name==='void'){
         this.type=null;
       }

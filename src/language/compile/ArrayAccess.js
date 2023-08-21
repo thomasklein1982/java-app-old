@@ -34,7 +34,12 @@ export function ArrayAccess(node,source,scope){
   //codeSet+=".checkBounds("+index.code+").set("+index.code+",";
   codeUpdate="$setInArray("+codeUpdate+","+index.code+",$getFromArray("+codeUpdate+","+index.code+")";
   //codeUpdate+=".set("+index.code+","+object.code+".get("+index.code+")";
-  let type=new Type(object.type.baseType,object.type.dimension-indices.length);
+  let returnType=object.type.baseType;
+  if(returnType.isGeneric && object.owner){
+    let typeArguments=object.owner.type.typeArguments;
+    returnType=typeArguments[returnType.genericIndex].baseType;
+  }  
+  let type=new Type(returnType,object.type.dimension-indices.length);
   node=node.nextSibling;
   if(node.name!=="]"){
     throw source.createError("']' erwartet.",node);

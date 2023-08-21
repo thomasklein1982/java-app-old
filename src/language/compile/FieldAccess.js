@@ -67,7 +67,8 @@ export function FieldAccess(node,source,scope){
     }else{
       owner={
         type: ident.type,
-        static: false
+        static: false,
+        object: ident.object
       };
     }
   }
@@ -99,7 +100,15 @@ export function FieldAccess(node,source,scope){
     code+=object.code;
     //throw (source.createError(null,node));
   }
+  let returnType=object.type.baseType;
+  if(returnType.isGeneric && owner.object){
+    let typeArguments=owner.object.type.typeArguments;
+    returnType=typeArguments[returnType.genericIndex].baseType;
+    returnType=new Type(returnType,object.type.dimension);
+  }else{
+    returnType=object.type;
+  }
   return {
-    code,type: object.type
+    code,type: returnType, owner: owner.object
   };
 }

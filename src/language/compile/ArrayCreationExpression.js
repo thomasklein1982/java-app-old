@@ -16,6 +16,7 @@ export function ArrayCreationExpression(node,source,scope){
 
   }
   let type=TypeName(node,source,scope);
+  //if(scope.method.clazz.getTypeParameterByName(type.type.baseType.name))
   code+="{name: "+JSON.stringify(type.code)+", initialValue: "+type.type.baseType.initialValue+"},";
   node=node.nextSibling;
   let dimensions=[];

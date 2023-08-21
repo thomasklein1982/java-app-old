@@ -3072,7 +3072,7 @@ window.appJScode=function(){
           }
           try{
             let obj=source[a];
-            if(obj && obj.$hideFromConsole){
+            if(obj && (obj.$hideFromConsole || a.startsWith("$"))){
               continue;
             }
             if(obj===window){

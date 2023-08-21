@@ -6,6 +6,15 @@ export class ParameterList{
     this.parameters=[];
     this.minCount=-1;
   }
+  getCopy(typeArguments){
+    let params=new ParameterList(this.method);
+    for(let i=0;i<this.parameters.length;i++){
+      let p=this.parameters[i];
+      let n=p.getCopy(typeArguments,params);
+      params.parameters.push(n);
+    }
+    return params;
+  }
   get count(){
     return this.parameters.length;
   }
@@ -18,8 +27,11 @@ export class ParameterList{
       this.parameters.push(p);
     }
   }
-  getJavaScriptCode(){
-    let code="(";
+  getJavaScriptCode(additionalCodeBefore){
+    if(!additionalCodeBefore){
+      additionalCodeBefore="";
+    }
+    let code="("+additionalCodeBefore;
     for(let i=0;i<this.parameters.length;i++){
       if(i>0) code+=",";
       let p=this.parameters[i];
@@ -76,6 +88,23 @@ export class Parameter{
     this.name=null;
   }
 
+  getCopy(typeArguments,copyList){
+    let p=new Parameter(copyList);
+    p.name=this.name;
+    if(this.type.baseType.isGeneric){
+      for (let i = 0; i < typeArguments.length; i++) {
+        let a = typeArguments[i];
+        if(a.param.name===this.type.baseType.name){
+          p.type=a;
+          break;
+        }
+      }
+    }else{
+      p.type=this.type;
+    }
+    return p;
+  }
+
   getJavaScriptCode(){
     return this.name;
   }
@@ -95,7 +124,7 @@ export class Parameter{
     
     node=node.firstChild;
     if(node.name.indexOf("Type")>=0){
-      this.type=Type.compile(node,source,this.list.method.clazz.project,errors);
+      this.type=Type.compile(node,source,this.list.method.clazz,errors);
     }else{
 
     }

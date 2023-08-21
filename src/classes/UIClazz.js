@@ -105,6 +105,18 @@ export class UIClazz {
      */
   }
 
+  getPrimitiveTypeByName(name){
+    return Java.datatypes[name];
+  }
+
+  getClazzByName(name){
+    return this.project.getClazzByName(name);
+  }
+
+  getTypeByName(name){
+    return this.project.getTypeByName(name);
+  }
+
   isUIClazz(){
     return true;
   }
@@ -613,6 +625,10 @@ export class UIClazz {
 
   compileAttributeDeclarations(){
     
+  }
+
+  compileMemberDeclarations(){
+
   }
 
   compileMethods(){

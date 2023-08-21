@@ -2,7 +2,7 @@ import { Type } from "../../classes/Type";
 
 export function TypeName(node,source,scope){
   let name=source.src.substring(node.from,node.to);
-  let clazz=scope.getClazzByName(name);
+  let clazz=scope.getTypeByName(name);
   if(!clazz){
     throw (source.createError("Es gibt keinen Datentypen namens '"+name+"'.",node));
   }

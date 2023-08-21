@@ -4,7 +4,6 @@ import { Java } from "../java";
 import { TypeName } from "./TypeName";
 
 export function TypeBound(node,source,scope){
-  console.log(node);
   let superclazz;
   node=node.firstChild;
   if(node.name==="extends"){

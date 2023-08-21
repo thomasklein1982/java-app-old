@@ -4,6 +4,7 @@ import { ArgumentList } from "./ArgumentList";
 import { Identifier } from "./Identifier";
 import { PrimitiveType } from "../../classes/PrimitiveType";
 import { TypeName } from "./TypeName";
+import { GenericType } from "./GenericType";
 
 /**
  * 
@@ -48,9 +49,36 @@ export function ObjectCreationExpression(node,source,scope){
   if(node.name!=='TypeName'){
 
   }
-  
-  let typename=TypeName(node,source,scope);
-  let clazz=typename.type.baseType;
+  let clazz,typename,typeArguments;
+  if(node.name==="TypeName"){
+    typename=TypeName(node,source,scope);
+    clazz=typename.type.baseType;
+    typeArguments=[];
+  }else if(node.name==="GenericType"){
+    typename=GenericType(node,source,scope);
+    clazz=typename.type.baseType;
+    let typeParameters=clazz.typeParameters;
+    let typeArguments=typename.type.typeArguments;
+    if(!typeParameters){
+      throw source.createError("Die Klasse '"+clazz.name+"' deklariert keine Generics.");
+    }
+    if(typeArguments.length>0 && typeParameters.length!==typeArguments.length){
+      throw source.createError("Falsche Anzahl an Datentypen.",node);
+    }
+    for(let i=0;i<typeParameters.length;i++){
+      let p=typeParameters[i];
+      let a=typeArguments[i];
+    }
+    typeArguments=[];
+    typeArguments.$hideFromConsole=true;
+    for(let i=0;i<typename.type.typeArguments.length;i++){
+      typeArguments[i]={
+        baseType: typename.type.typeArguments[i].baseType.name,
+        dimension: typename.type.typeArguments[i].dimension
+      };
+    }
+    console.log("new generic type",clazz,typeArguments);
+  }
   if(clazz instanceof PrimitiveType){
     throw source.createError("Zu dem primitiven Datentyp '"+clazz.name+"' kann kein Objekt erzeugt werden.",node);
   }
@@ -61,7 +89,7 @@ export function ObjectCreationExpression(node,source,scope){
   let al=ArgumentList(node,source,scope,clazz.getConstructorParameters());
   code="new "+typename.code;
   if(!clazz.isNative()){
-    code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";
+    code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+JSON.stringify(typeArguments)+","+al.code.substring(1,al.code.length-1)+"])";
   }else{
     code+=al.code;
   }

@@ -207,9 +207,7 @@ export class Project{
       if(c instanceof UIClazz){
         c.compile();
       }else{
-        c.generateSrcAndTree(c.src);
-        c.compileDeclaration();
-        c.compileMemberDeclarations();
+        c.compileDeclarations(true);
       }
     }
   }
@@ -218,6 +216,9 @@ export class Project{
     if(i>=0){
       return this.clazzes[i];
     }else{
+      if(Java.clazzes[name]){
+        return Java.clazzes[name];
+      }
       return null;
     }
   }
@@ -270,15 +271,9 @@ export class Project{
     /**Methoden-Deklarationen: */
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      c.compileDeclarationTypeParameters(this);
-      c.compileMethodDeclarations(this);
-      c.resolveSuperClazz(this);
-    }
-
-    /**Attributs-Deklarationen: */
-    for(let i=0;i<this.clazzes.length;i++){
-      let c=this.clazzes[i];
-      c.compileAttributeDeclarations(this);
+      c.compileDeclarationTypeParameters();
+      c.compileMemberDeclarations(true,true);
+      c.resolveSuperClazz();
     }
 
     /**UI-Klassen: Variablen*/

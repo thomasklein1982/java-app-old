@@ -74,7 +74,7 @@ export class Scope{
     if(this.getLocalVariable(name)){
       throw "Es gibt bereits eine lokale Variable namens '"+name+"'.";
     }
-    let c=this.getClazzByName(name);
+    let c=this.getTypeByName(name);
     if(c){
       throw "Eine Variable darf nicht denselben Namen wie eine Klasse haben.";
     }
@@ -207,8 +207,13 @@ export class Scope{
     return m;
   }
 
-  getClazzByName(name){
-    let c=this.project.getClazzByName(name);
+  getTypeByName(name){
+    let c;
+    if(this.method && this.method.clazz){
+      c=this.method.clazz.getClazzByName(name);
+    }else{
+      c=this.project.getClazzByName(name);
+    }
     if(!c){
       return this.getPrimitiveTypeByName(name);
     }

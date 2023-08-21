@@ -1,6 +1,7 @@
 import { PrimitiveType } from "./PrimitiveType";
 import {Clazz} from "./Clazz";
 import { Java } from "../language/java";
+import { CompileFunctions } from "../language/CompileFunctions";
 
 export class Type{
   constructor(baseType,dimension){
@@ -12,6 +13,7 @@ export class Type{
     }
     this.baseType=baseType;
     this.dimension=dimension;
+    
   }
   toString(){
     let t=this.baseType? this.baseType.name:"Unbekannter Datentyp";
@@ -22,7 +24,16 @@ export class Type{
     }
     return t;
   }
-  static compile(node,source,project,errors){
+  static compile(node,source,clazz,errors){
+    try{
+      let f=CompileFunctions.get(node,source);
+      let res=f(node,source,clazz);
+      let type=res.type;
+      return type;
+    }catch(e){
+      errors.push(e);
+    }
+    return;
     let name,dimension,isPrimitive;
     let startNode=node;
     if(node.name==="PrimitiveType"){
@@ -65,10 +76,13 @@ export class Type{
         dimension++;
       }
     }
-    let basetype=project.getTypeByName(name);
+    let basetype=clazz.getTypeByName(name);
     if(!basetype){
       errors.push(source.createError("Es gibt keinen Datentyp '"+name+"'.",startNode));
       basetype=null;
+    }
+    if(basetype.typeParameters){
+      console.log("type parameter",node);
     }
     return new Type(basetype,dimension);
   }
