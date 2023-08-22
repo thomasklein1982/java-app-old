@@ -551,7 +551,7 @@ export class UIClazz {
         if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
           newCode+="\n"+last+".$el.onchange=function(){$main.onAction(this.component);}";
         }else{
-          newCode+="\n"+last+".$el.onclick=function(){$main.onAction(this.component);}";
+          newCode+="\n"+last+".$el.onclick=function(ev){ev.stopPropagation();$main.onAction(this.component);}";
         }
       }
       if(c.actionCommand){

@@ -25,6 +25,13 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'collides',
+    args: [
+      {name: 'comp', type: 'JComponent'}
+    ],
+    returnType: 'boolean'
+  },Clazz,false,false);
+  createMethod({
     name: 'setVisible',
     args: [
       {name: 'v', type: 'boolean'}
@@ -38,6 +45,30 @@ function defineJComponent(Clazz,Java){
     name: 'isVisible',
     returnType: 'boolean'
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'changeX',
+    args: [
+      {name: 'dx', type: 'double'}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'changeY',
+    args: [
+      {name: 'dy', type: 'double'}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'changeWidth',
+    args: [
+      {name: 'dw', type: 'double'}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'changeHeight',
+    args: [
+      {name: 'dh', type: 'double'}
+    ]
+  },Clazz,false,false);
   createMethod({
     name: 'setX',
     args: [

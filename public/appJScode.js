@@ -27,7 +27,7 @@ window.appJScode=function(){
     })
   
     window.$App={
-      version: 40,
+      version: 41,
       language: window.language? window.language:'js',
       setupData: null,
       lazyLoading: false,
@@ -501,9 +501,10 @@ window.appJScode=function(){
           }
         });
       }else if(tagname==="button"){
-        el.addEventListener("click",function(){
+        el.addEventListener("click",function(ev){
           if(window.onAction){
             try{
+              ev.stopPropagation();
               window.onAction(this);
             }catch(e){
               $App.handleException(e);
@@ -633,7 +634,6 @@ window.appJScode=function(){
         this.resizeObserver=new ResizeObserver((entries)=>{
           for(const entry of entries){
             const boxSize=entry.borderBoxSize;
-            console.realLog(entry,boxSize);
             entry.target.resize();
           }
         });
@@ -1052,6 +1052,7 @@ window.appJScode=function(){
     
     /**Canvas: */
     $App.Canvas=function Canvas(parent,width,height,isRoot){
+      this.isRoot=isRoot===true;
       if(isRoot){
         this.container=document.createElement("div");
       }else{
@@ -1235,6 +1236,13 @@ window.appJScode=function(){
         el.appJSData.cy=cy;
         el.appJSData.width=width;
         el.appJSData.height=height;
+        if(this.isRoot){
+          el.style.left="0";
+          el.style.top="0";
+          el.style.width="100%";
+          el.style.height="100%";
+          return;
+        }
         if(!align){
           align=$App.Canvas.$getAlignment("center");
         }
@@ -2996,7 +3004,7 @@ window.appJScode=function(){
             for(var a in this.object){
               var item;
               var obj=this.object[a];
-              if(typeof obj==="function" || obj && obj.$hideFromConsole){
+              if(a.startsWith("$")||typeof obj==="function" || obj && obj.$hideFromConsole){
                 continue;
               }
               if(this.hasSubItems && (a in this.subItems)){
@@ -4610,6 +4618,7 @@ window.appJScode=function(){
       },
       panel: function (template,cx,cy,width,height){
         var b=$App.createElement("div");
+        b.className="panel";
         b.style.flexDirection="column";
         if(!template){
           b.noAbsolutePosition=true;

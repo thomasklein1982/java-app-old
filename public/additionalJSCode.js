@@ -337,7 +337,6 @@ function additionalJSCode(){
       this.width=width;
       this.height=height;
       this.$el=null;
-      this.standardDisplayValue=null;
       this.actionCommand="";
     }
     setActionCommand(ac){
@@ -345,6 +344,11 @@ function additionalJSCode(){
     }
     getActionCommand(){
       return this.actionCommand;
+    }
+    collides(comp){
+      let r1=this.$el.getBoundingClientRect();
+      let r2=comp.$el.getBoundingClientRect();
+      return !(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top);
     }
     setVisible(v){
       this.visible=v;
@@ -366,39 +370,50 @@ function additionalJSCode(){
     }
     setValue(v){
       this.value=v;
+      this.$el.value=v;
     }
     getValue(){
       return this.value;
     }
-    get value(){
-      return this.$el.value+"";
-    }
-    set value(label){
-      this.$el.value=label;
-    }
     setX(v){
+      this.x=v;
       this.$el.cx=v;
     }
     getX(){
       return this.$el.cx;
     }
+    changeX(dx){
+      this.setX(this.getX()+dx);
+    }
+    changeY(dy){
+      this.setY(this.getY()+dy);
+    }
     setY(v){
+      this.y=v;
       this.$el.cy=v;
     }
     getY(){
       return this.$el.cy;
     }
     setWidth(v){
+      this.width=v;
       this.$el.width=v;
     }
     getWidth(){
       return this.$el.width;
     }
     setHeight(v){
+      this.height=v;
       this.$el.height=v;
     }
     getHeight(){
       return this.$el.height;
+    }
+    changeWidth(dw){
+      this.setWidth(this.getWidth()+dw);
+    }
+    changeHeight(dh){
+      this.setHeight(this.getHeight()+dh);
     }
     getStyle(name){
       return this.$el.style[name];
@@ -1446,10 +1461,16 @@ function additionalJSCode(){
       }
       this.capacity=initialCapacity;
       this.elements=[];
-      this.size=0;
+      this.$size=0;
+    }
+    $isIndexOutOfBounds(index){
+      return (index<0 || index>this.$size);
+    }
+    $getIndexOutOfBoundsException(index){
+      return new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.$size+".");
     }
     $grow(){
-      if(this.size>=this.capacity){
+      if(this.$size>=this.capacity){
         this.capacity*=2;
         return true;
       }
@@ -1459,12 +1480,12 @@ function additionalJSCode(){
       if(element===undefined){
         this.elements.push(index);
       }else{
-        if(index<0 || index>this.size){
-          throw new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.size+".");
+        if(this.$isIndexOutOfBounds(index)){
+          throw this.$getIndexOutOfBoundsException(index);
         }
         this.elements.splice(index,0,element);
       }
-      this.size++;
+      this.$size++;
       this.$grow();
       return true;
     }
@@ -1475,8 +1496,8 @@ function additionalJSCode(){
           return false;
         }
       }else{
-        if(index<0 || index>this.size){
-          throw new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.size+".");
+        if(this.$isIndexOutOfBounds(index)){
+          throw this.$getIndexOutOfBoundsException(index);
         }
       }
       this.elements.splice(index,1);
@@ -1484,7 +1505,7 @@ function additionalJSCode(){
     }
     clear(){
       this.elements=[];
-      this.size=0;
+      this.$size=0;
     }
     addAll(index,collection){
       let append=false;
@@ -1496,7 +1517,7 @@ function additionalJSCode(){
         throw new Exception("NullPointerException: Die übergebene Kollektion ist null.");
       }
       if(collection.elements.length===0) return false;
-      this.size+=collection.elements.length;
+      this.$size+=collection.elements.length;
       if(append){
         this.elements=this.elements.concat(collection.elements);
       }else{
@@ -1506,10 +1527,67 @@ function additionalJSCode(){
       return true;
     }
     get(index){
-      if(index<0 || index>this.size){
-        throw new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.size+".");
+      if(this.$isIndexOutOfBounds(index)){
+        throw this.$getIndexOutOfBoundsException(index);
       }
       return this.elements[index];
+    }
+    set(index,element){
+      if(this.$isIndexOutOfBounds(index)){
+        throw this.$getIndexOutOfBoundsException(index);
+      }
+      this.elements[index]=element;
+    }
+    toArray(){
+      let array=[];
+      for(let i=0;i<this.$size;i++){
+        array.push(this.elements[i]);
+      }
+      return new $App.Array(this.$elementType,1,array);
+    }
+    size(){
+      return this.$size;
+    }
+    isEmpty(){
+      return this.$size===0;
+    }
+    contains(element){
+      return (this.indexOf(element)>=0);
+    }
+    indexOf(element){
+      return this.elements.indexOf(element);
+    }
+    lastIndexOf(element){
+      return this.elements.lastIndexOf(element);
+    }
+    removeRange(fromIndex,toIndex){
+      if(this.$isIndexOutOfBounds(fromIndex)){
+        throw this.$getIndexOutOfBoundsException(fromIndex);
+      }
+      if(this.$isIndexOutOfBounds(toIndex)){
+        throw this.$getIndexOutOfBoundsException(toIndex);
+      }
+      if(fromIndex>toIndex){
+        throw new Exception("IndexOutOfBoundsException: Der erste Index darf nicht größer sein als der zweite.");
+      }
+      this.elements.splice(fromIndex,toIndex-fromIndex);
+      this.$size-=toIndex-fromIndex;
+    }
+    removeAll(collection){
+      let changed=false;
+      for(let i=0;i<this.elements.length;i++){
+        let e=this.elements[i];
+        if(collection.contains(e)){
+          this.elements.splice(i,1);
+          changed=true;
+          this.$size--;
+          i--;
+        }
+      }
+      return changed;
+    }
+    sort(comparator){
+      this.elements.sort(comparator);
     }
   }
 }
