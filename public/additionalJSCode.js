@@ -373,7 +373,7 @@ function additionalJSCode(){
       this.$el.value=v;
     }
     getValue(){
-      return this.value;
+      return this.$el.value;
     }
     setX(v){
       this.x=v;
