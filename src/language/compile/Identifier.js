@@ -14,7 +14,7 @@ import { Type } from "../../classes/Type";
  * @param {Object} owner 
  * @returns 
  */
-export function Identifier(node,source,scope,owner){
+export function Identifier(node,source,scope,infos){
   let name;
   let local=false;
   if(node.src){
@@ -29,6 +29,7 @@ export function Identifier(node,source,scope,owner){
   let obj;
   let code=name;
   let type=null;
+  let owner=infos?.owner;
   if(owner && owner.type){
     if(owner.type.dimension>0){
       //Array!

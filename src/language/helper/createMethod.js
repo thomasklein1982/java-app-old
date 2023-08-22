@@ -20,8 +20,14 @@ export function createMethod(data,clazz,isStatic,isConstructor){
   m.params=new ParameterList(m);
   let minCount=-1;
   if(data.args){
+    m.params.reverseOrder=data.reverseArgsOrder;
     for(let j=0;j<data.args.length;j++){
       let a=data.args[j];
+      // if(data.reverseArgsOrder){
+      //   a=data.args[data.args.length-1-j];
+      // }else{
+      //   a=data.args[j];
+      // }
       let p=new Parameter(m.params);
       if(a.type instanceof Type){
         p.type=a.type;
@@ -47,15 +53,19 @@ export function createMethod(data,clazz,isStatic,isConstructor){
     m.isExtraFunction=true;
   }
   if(data.returnType){
-    let baseType=data.returnType;
-    if(baseType.baseType){
-      baseType=baseType.baseType;
-    }
-    baseType=Java.datatypes[baseType];
-    if(data.returnType.dimension>0){
-      m.type=new Type(baseType,data.returnType.dimension);
+    if(data.returnType instanceof Type){
+      m.type=data.returnType;
     }else{
-      m.type=new Type(baseType,0);
+      let baseType=data.returnType;
+      if(baseType.baseType){
+        baseType=baseType.baseType;
+      }
+      baseType=Java.datatypes[baseType];
+      if(data.returnType.dimension>0){
+        m.type=new Type(baseType,data.returnType.dimension);
+      }else{
+        m.type=new Type(baseType,0);
+      }
     }
   }else{
     m.type=null;

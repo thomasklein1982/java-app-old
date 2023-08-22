@@ -10,6 +10,7 @@ export class Scope{
     this.endPosition=endPosition;
     this.stack=[];
     this.typeAnnotations={};
+    this.assignmentTargetObjectStack=[];
     this.addLocalVariablesUpdates=true;
     this.ignoreVisibilityRestrictions=false;
     this.optimizeCompiler=false;
@@ -31,6 +32,18 @@ export class Scope{
     if(method && method.params){
       this.pushParameterList(method.params);
     }
+  }
+
+  pushAssignmentTargetObject(obj){
+    this.assignmentTargetObjectStack.push(obj);
+  }
+
+  popAssignmentTargetObject(){
+    return this.assignmentTargetObjectStack.pop();
+  }
+
+  getTopAssignmentTargetObject(){
+    return this.assignmentTargetObjectStack[this.assignmentTargetObjectStack.length-1];
   }
 
   addReferencedVariable(name){

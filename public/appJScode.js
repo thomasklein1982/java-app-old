@@ -2996,7 +2996,7 @@ window.appJScode=function(){
             for(var a in this.object){
               var item;
               var obj=this.object[a];
-              if(typeof obj==="function"){
+              if(typeof obj==="function" || obj && obj.$hideFromConsole){
                 continue;
               }
               if(this.hasSubItems && (a in this.subItems)){

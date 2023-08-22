@@ -1,7 +1,7 @@
 <template>
   <div class="umlclazz">
     <div @click="click()" class="clazzname">
-      {{clazz.name}}
+      {{clazz.name}}<template v-if="clazz.typeParameters">&lt;<span v-for="(t,i) in clazz.typeParameters">{{(i>0? ',':'')+ t.name }}</span>&gt;</template>
     </div>
     <div class="attributes">
       <UmlMember :member="a" v-for="(a,i) in attributes" :key="'attr'+i"></UmlMember>

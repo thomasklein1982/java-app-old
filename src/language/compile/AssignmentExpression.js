@@ -24,7 +24,8 @@ export function AssignmentExpression(node,source,scope){
   }
   let assignOp=source.getText(node);
   node=node.nextSibling;
-  let val=CompileFunctions.get(node,source)(node,source,scope);
+  let f=CompileFunctions.get(node,source);
+  let val=f(node,source,scope,{assignTarget: v.object});
   if(!val.type){
     throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
   }

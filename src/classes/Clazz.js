@@ -70,6 +70,7 @@ export class Clazz{
       let m=this.methods[i];
       code+="\n"+m.getJavaScriptCode();
     }
+    code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nconsole.error('getInfos',infos,this.$typeArguments);\nreturn infos;}";
     code+="\n}";
     return code;
   }

@@ -4,7 +4,6 @@ import { Java } from "../java";
 import { TypeParameters } from "./TypeParameters";
 
 export function GenericType(node,source,scope){
-  console.log(node);
   node=node.firstChild;
   let f=CompileFunctions.get(node,source);
   let res=f(node,source,scope);
@@ -12,7 +11,7 @@ export function GenericType(node,source,scope){
   let baseType=type.baseType;
   let tparams=baseType.typeParameters;
   if(!tparams){
-    throw source.createError("Der Datentyp '"+baseType.name+"' deklariert keine Generics.",node);
+    throw source.createError("Der Datentyp '"+baseType.name+"' deklariert keine generischen Datentypen. Entferne die spitzen Klammern <>.",node.nextSibling);
   }
   node=node.nextSibling;
   let targs=TypeParameters(node,source,scope);

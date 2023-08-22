@@ -12,10 +12,14 @@ import { GenericType } from "./GenericType";
  * @param {Source} source 
  * @param {Scope} scope 
  */
-export function ObjectCreationExpression(node,source,scope){
+export function ObjectCreationExpression(node,source,scope,infos){
   let code;
   let root=node;
   node=node.firstChild;
+  let assignTarget=null;
+  if(infos && infos.assignTarget){
+    assignTarget=infos.assignTarget;
+  }
   if(node.name!=='new'){
     let dot=node.nextSibling;
     if(dot.name==="."){
@@ -42,56 +46,80 @@ export function ObjectCreationExpression(node,source,scope){
     }
     if(node.name==="Identifier"){
       Identifier(node,source,scope);
-      console.log(source.getText(node));
     }
   }
   node=node.nextSibling;
   if(node.name!=='TypeName'){
 
   }
-  let clazz,typename,typeArguments;
+  let clazz,typename;
+  let runtimeTypeArguments={$hideFromConsole: true};
+  let useTypeArguments=false;
   if(node.name==="TypeName"){
     typename=TypeName(node,source,scope);
     clazz=typename.type.baseType;
-    typeArguments=[];
+    if(typename.type.baseType.typeParameters){
+      throw source.createError("Die Klasse '"+clazz.name+"' deklariert generische Typen. Du musst diese Typen innerhalb spitzer Klammern <> angeben.",node);
+    }
   }else if(node.name==="GenericType"){
+    useTypeArguments=true;
     typename=GenericType(node,source,scope);
     clazz=typename.type.baseType;
     let typeParameters=clazz.typeParameters;
-    let typeArguments=typename.type.typeArguments;
+    let typeArguments=typename.type.typeArguments;//die typen, die hier angegeben sind
     if(!typeParameters){
-      throw source.createError("Die Klasse '"+clazz.name+"' deklariert keine Generics.");
+      throw source.createError("Die Klasse '"+clazz.name+"' deklariert keine generischen Typen. Entferne die spitzen Klammern <>.",node);
     }
     if(typeArguments.length>0 && typeParameters.length!==typeArguments.length){
-      throw source.createError("Falsche Anzahl an Datentypen.",node);
+      throw source.createError("Falsche Anzahl an generischen Typen.",node);
     }
-    for(let i=0;i<typeParameters.length;i++){
-      let p=typeParameters[i];
+    if(assignTarget){
+      if(typeArguments.length===0){
+        typeArguments=assignTarget.type.typeArguments;
+      }else{
+        /**pruefen, ob typen gleich sind: */
+        let shouldTypeArguments=assignTarget.type.typeArguments;
+        let argNode=node?.firstChild?.nextSibling?.firstChild;
+        for(let i=0;i<shouldTypeArguments.length;i++){
+          let soll=shouldTypeArguments[i];
+          let ist=typeArguments[i];
+          if(soll.baseType.name!==ist.baseType.name){
+            throw source.createError("Datentyp '"+ist.baseType.name+"' gefunden, aber Datentyp '"+soll.baseType.name+"' gefunden.",argNode);
+          }
+          argNode=argNode?.nextSibling?.nextSibling;
+        }
+      }
+    }
+    for(let i=0;i<typeArguments.length;i++){
       let a=typeArguments[i];
-    }
-    typeArguments=[];
-    typeArguments.$hideFromConsole=true;
-    for(let i=0;i<typename.type.typeArguments.length;i++){
-      typeArguments[i]={
-        baseType: typename.type.typeArguments[i].baseType.name,
-        dimension: typename.type.typeArguments[i].dimension
+      let infos={
+        name: a.baseType.name
       };
+      if(a.baseType instanceof PrimitiveType){
+        infos.initialValue=a.baseType.initialValue;
+      }else{
+        infos.initialValue=null;
+      }
+      runtimeTypeArguments[typeParameters[i].name]=infos;
     }
-    console.log("new generic type",clazz,typeArguments);
   }
   if(clazz instanceof PrimitiveType){
     throw source.createError("Zu dem primitiven Datentyp '"+clazz.name+"' kann kein Objekt erzeugt werden.",node);
   }
   node=node.nextSibling;
-  if(node.name!=='ArgumentList'){
-    
+  if(!node){
+    throw source.createError("'(' erwartet.")
   }
   let al=ArgumentList(node,source,scope,clazz.getConstructorParameters());
   code="new "+typename.code;
   if(!clazz.isNative()){
-    code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+JSON.stringify(typeArguments)+","+al.code.substring(1,al.code.length-1)+"])";
+    code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1,al.code.length-1)+"])";
   }else{
-    code+=al.code;
+    if(useTypeArguments){
+      code+="("+JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1);
+    }else{
+      code+=al.code;
+    }
   }
   return {
     code,

@@ -15,6 +15,7 @@ import { defineObject } from "./datatypes/object";
 import { defineMatrix, defineVector } from "./datatypes/Matrix";
 import { defineSystem } from "./datatypes/system";
 import { definePrintStream } from "./datatypes/printStream";
+import { defineArrayList } from "./datatypes/ArrayList";
 
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
@@ -81,12 +82,14 @@ System.cannotBeInstantiated=true;
 let PrintStream=new Clazz("PrintStream");
 PrintStream.cannotBeInstantiated=true;
 
+let ArrayList=new Clazz("ArrayList");
+
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList
 }
 
 export const Java={
@@ -116,3 +119,4 @@ defineMatcher(Matcher,Java);
 defineFile(File);
 defineMatrix(Matrix);
 defineVector(Vector);
+defineArrayList(ArrayList);

@@ -47,9 +47,9 @@ export function MethodInvocation(node,source,scope){
         };
       }else{
         owner={
-          clazz: id.object.type.baseType,
+          clazz: id.object.type?.baseType,
           static: false,
-          typeArguments: id.object.type.typeArguments
+          typeArguments: id.object.type?.typeArguments
         };
       }
     }else{

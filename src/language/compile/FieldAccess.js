@@ -76,7 +76,7 @@ export function FieldAccess(node,source,scope){
     throw source.createError("Dieses Attribut hat keinen Besitzer.",node);
   }
   let type=owner.type;
-  if(!type.baseType){
+  if(!type?.baseType){
     type=new Type(type,0);
   }
   scope.addTypeAnnotation(node,type,owner.static);
@@ -86,7 +86,7 @@ export function FieldAccess(node,source,scope){
     code+=".";
     node=node.nextSibling;
     if(node.name==="Identifier" || node.name==="TypeName"){
-      object=Identifier(node,source,scope,owner);
+      object=Identifier(node,source,scope,{owner});
       code+=object.code;
       let type=object.type;
       if(!type.baseType){

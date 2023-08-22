@@ -1437,4 +1437,79 @@ function additionalJSCode(){
       this._groupCount=(new RegExp(pattern._regex+"|")).exec('').length-1;
     }
   }
+
+  class ArrayList{
+    constructor(typeArguments,initialCapacity){
+      this.$elementType=typeArguments["T"];
+      if(initialCapacity===undefined){
+        initialCapacity=10;
+      }
+      this.capacity=initialCapacity;
+      this.elements=[];
+      this.size=0;
+    }
+    $grow(){
+      if(this.size>=this.capacity){
+        this.capacity*=2;
+        return true;
+      }
+      return false;
+    }
+    add(index,element){
+      if(element===undefined){
+        this.elements.push(index);
+      }else{
+        if(index<0 || index>this.size){
+          throw new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.size+".");
+        }
+        this.elements.splice(index,0,element);
+      }
+      this.size++;
+      this.$grow();
+      return true;
+    }
+    remove(index){
+      if(typeof index===this.$elementType.name){
+        index=this.elements.indexOf(index);
+        if(index<0){
+          return false;
+        }
+      }else{
+        if(index<0 || index>this.size){
+          throw new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.size+".");
+        }
+      }
+      this.elements.splice(index,1);
+      return true;
+    }
+    clear(){
+      this.elements=[];
+      this.size=0;
+    }
+    addAll(index,collection){
+      let append=false;
+      if(collection===undefined){
+        collection=index;
+        append=true;
+      }
+      if(collection===null){
+        throw new Exception("NullPointerException: Die übergebene Kollektion ist null.");
+      }
+      if(collection.elements.length===0) return false;
+      this.size+=collection.elements.length;
+      if(append){
+        this.elements=this.elements.concat(collection.elements);
+      }else{
+        this.elements.splice.apply(this.elements,[index,0].concat(collection.elements));
+      }
+      while(this.$grow()){};
+      return true;
+    }
+    get(index){
+      if(index<0 || index>this.size){
+        throw new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.size+".");
+      }
+      return this.elements[index];
+    }
+  }
 }

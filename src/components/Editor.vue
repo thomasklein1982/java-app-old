@@ -256,6 +256,7 @@ export default {
     },
     compileProject(){
       this.project.compile();
+      this.currentEditor?.updateLinter();
     },
     updateSelectedUIComponent(c){
       this.selectedUIComponent=c;

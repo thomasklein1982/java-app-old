@@ -5,9 +5,12 @@ export class ParameterList{
     this.method=method;
     this.parameters=[];
     this.minCount=-1;
+    this.reverseOrder=false;
   }
   getCopy(typeArguments){
     let params=new ParameterList(this.method);
+    params.minCount=this.minCount;
+    params.reverseOrder=this.reverseOrder;
     for(let i=0;i<this.parameters.length;i++){
       let p=this.parameters[i];
       let n=p.getCopy(typeArguments,params);
