@@ -3,6 +3,7 @@ import { TypeParameters } from "../language/compile/TypeParameters";
 import { Java } from "../language/java";
 import {Attribute} from "./Attribute"
 import { Method } from "./Method";
+import { options } from "./Options";
 import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
@@ -21,7 +22,6 @@ export class Clazz{
     this.clazzBody=null;
     this.attributes={};
     this.methods={};
-    this.constructor=null;
     this.typeParameters=null;
     this.node=null;
     this.references=[];
@@ -33,6 +33,14 @@ export class Clazz{
       });
     }else{
       this.typeSnippet=null;
+    }
+  }
+  getConstructor(){
+    for(let i=0;i<this.methods.length;i++){
+      let m=this.methods[i];
+      if(m.isConstructor()){
+        return m;
+      }
     }
   }
   isNative(){
@@ -60,15 +68,18 @@ export class Clazz{
       }
     }
     code+="\n}";
-    if(this.constructor){
-      let c=this.constructor;
-      code+="\n"+c.getJavaScriptCode(attributesInitCode+"\n");
-    }else{
-      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesInitCode+"\nreturn this;}";
-    }
+    let hasConstructor=false;
     for(let i in this.methods){
       let m=this.methods[i];
-      code+="\n"+m.getJavaScriptCode();
+      if(m.isConstructor()){
+        code+="\n"+m.getJavaScriptCode(attributesInitCode+"\n");
+        hasConstructor=true;
+      }else{
+        code+="\n"+m.getJavaScriptCode();
+      }
+    }
+    if(!hasConstructor){
+      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesInitCode+"\nreturn this;}";
     }
     code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nconsole.error('getInfos',infos,this.$typeArguments);\nreturn infos;}";
     code+="\n}";
@@ -287,7 +298,6 @@ export class Clazz{
     this.name=null;
     this.superClazz=null;
     this.attributes={};
-    this.constructor=null;
     this.methods={};
     this.source=new Source(src,tree);
   }
@@ -374,89 +384,10 @@ export class Clazz{
   }
   compileMethodDeclarations(){
     return this.compileMemberDeclarations(false,true);
-    this.methods={};
-    this.constructor=null;
-    let errors=this.errors;
-    var node=this.clazzBody;
-    if(!node) return;
-    /**Klassenkoerper parsen: */
-    let scope=new Scope(this.project);
-    node=node.firstChild.nextSibling;
-    while(node.nextSibling){
-      if(node.name==="FieldDeclaration"){
-      }else if(node.name==='MethodDeclaration'){
-        let m=new Method(this,false);
-        errors=errors.concat(m.compileDeclaration(node,this.source));
-        if(m.name){
-          let name=m.name;
-          if(name==="toString"){
-            name="$"+name;
-          }
-          if(this.methods[m.name]){
-            errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
-          }else if(this.attributes[m.name]){
-            errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
-          }else{
-            this.methods[name]=m;
-          }
-        }
-      }else if(node.name=="ConstructorDeclaration"){
-        if(this.constructor){
-          errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
-        }else{
-          let c=new Method(this,true);
-          errors=errors.concat(c.compileDeclaration(node,this.source));
-          this.constructor=c;
-        }
-      }else if(node.name!=="LineComment"){
-        errors.push(this.source.createError("Attributs- oder Methoden- oder Konstruktordeklaration erwartet.",node));
-      }
-      node=node.nextSibling;
-    }
-    if(node.type.isError || !node.name==="}"){
-      errors.push(this.source.createError("Hier fehlt eine '}'",node));
-    }
-    node=node.parent;
-    while(node){
-      if(node.nextSibling){
-        errors.push(this.source.createError("Nach Abschluss der Klasse darf kein weiterer Code folgen",node.nextSibling));
-        break;
-      }
-      node=node.parent;
-    }
-    this.errors=errors;
-    return errors;
   }
 
   compileAttributeDeclarations(){
     return this.compileMemberDeclarations(true,false);
-    this.attributes={};
-    var node=this.clazzBody;
-    if(!node) return;
-    /**Klassenkoerper parsen: */
-    let scope=new Scope(this.project);
-    node=node.firstChild.nextSibling;
-    while(node.nextSibling){
-      if(node.name==="FieldDeclaration"){
-        var a=new Attribute(this);
-        this.errors=this.errors.concat(a.compile(node,this.source,scope));
-        let attr=a.getSingleAttributes();
-        for(var i=0;i<attr.length;i++){
-          let sa=attr[i];
-          if(sa.name){
-            if(this.attributes[sa.name]){
-              this.errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
-            }else if(this.methods[sa.name]){
-              this.errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
-            }else{
-              this.attributes[sa.name]=sa;
-            }
-          }
-        }
-      }
-      node=node.nextSibling;
-    }
-    return this.errors;
   }
 
   /**
@@ -466,9 +397,10 @@ export class Clazz{
     if(attributes){
       this.attributes={};
     }
+    let hasConstructor=false;
     if(methods){
       this.methods={};
-      this.constructor=null;
+
     }
     let errors=this.errors;
     var node=this.clazzBody;
@@ -493,25 +425,44 @@ export class Clazz{
             }
           }
         }
-      }else if(methods && node.name==='MethodDeclaration'){
-        let m=new Method(this,false);
-        errors=errors.concat(m.compileDeclaration(node,this.source));
-        if(m.name){
-          if(this.methods[m.name]){
-            errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
-          }else if(this.attributes[m.name]){
-            errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
+      }else if(methods){
+        if(node.name==='MethodDeclaration'){
+          let m=new Method(this,false);
+          errors=errors.concat(m.compileDeclaration(node,this.source));
+          if(m.name){
+            if(this.methods[m.name]){
+              errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
+            }else if(this.attributes[m.name]){
+              errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
+            }else{
+              this.methods[m.name]=m;
+            }
+          }
+        }else if(node.name=="ConstructorDeclaration"){
+          /**falls die option voidOptional true ist, werden normale Methoden auch als Konstruktor geparst. Dann hängt es am Namen, ob es sich um einen Konstruktor handelt */
+          if(!options.voidOptional && hasConstructor){
+            errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
           }else{
+            let m=new Method(this,true);
+            errors=errors.concat(m.compileDeclaration(node,this.source));
+            let isConstructor=m.isConstructor();
+            if(hasConstructor){
+              if(isConstructor){
+                errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
+              }
+            }else{
+              hasConstructor=isConstructor;
+            }
             this.methods[m.name]=m;
           }
-        }
-      }else if(methods && node.name=="ConstructorDeclaration"){
-        if(this.constructor){
-          errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
-        }else{
-          let c=new Method(this,true);
-          errors=errors.concat(c.compileDeclaration(node,this.source));
-          this.constructor=c;
+          // if(hasConstructor){
+          //   errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
+          // }else{
+          //   let m=new Method(this,true);
+          //   errors=errors.concat(m.compileDeclaration(node,this.source));
+          //   hasConstructor=true;
+          //   this.methods[m.name]=m;
+          // }
         }
       }else if(node.name!=="LineComment"){
         errors.push(this.source.createError("Attributs- oder Methoden- oder Konstruktordeklaration erwartet.",node));
@@ -534,7 +485,8 @@ export class Clazz{
   }
 
   getConstructorParameters(){
-    return this.constructor? this.constructor.params: null;
+    let c=this.getConstructor();
+    return c? c.params: null;
   }
 
   /**
@@ -544,10 +496,6 @@ export class Clazz{
     for(let mi in this.methods){
       let m=this.methods[mi];
       m.compileBody(this.source,optimizeCompiler);
-    }
-    if(this.constructor){
-      let c=this.constructor;
-      c.compileBody(this.source,optimizeCompiler);
     }
   }
 }

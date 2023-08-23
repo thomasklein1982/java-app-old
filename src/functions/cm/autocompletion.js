@@ -48,17 +48,13 @@ export function createAutocompletion(){
     if(n.type.name==="FormalParameters") return;
     while(n){
       if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
-        if(n.name==="ConstructorDeclaration"){
-          method=clazz.constructor;
-        }else{
-          n=n.firstChild;
-          while(n && n.name!=="Definition"){
-            n=n.nextSibling;
-          }
-          if(n){
-            let mname=context.state.doc.sliceString(n.from,n.to);
-            method=clazz.methods[mname];
-          }
+        n=n.firstChild;
+        while(n && n.name!=="Definition"){
+          n=n.nextSibling;
+        }
+        if(n){
+          let mname=context.state.doc.sliceString(n.from,n.to);
+          method=clazz.methods[mname];
         }
         break;
       }
@@ -248,6 +244,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
       while(clazz){
         for (let name in clazz.methods) {
           let m=clazz.methods[name];
+          if(m.isConstructor()) continue;
           if(m.isStatic()===isStatic){
             options.push(autocomplete.snippetCompletion(m.name+createParamsString(m,true),{
               label: m.name+"(...)",

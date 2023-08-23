@@ -4,6 +4,7 @@ import { CompileFunctions } from "../CompileFunctions";
 import { PrimitiveType } from "./PrimitiveType";
 
 export function AssignmentExpression(node,source,scope){
+  
   let code;
   node=node.firstChild;
   let updateLocalVariablesAfter=false;

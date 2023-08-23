@@ -7,7 +7,6 @@
       <UmlMember :member="a" v-for="(a,i) in attributes" :key="'attr'+i"></UmlMember>
     </div>
     <div class="methods">
-      <UmlMember v-if="clazz.constructor" :member="clazz.constructor"/>
       <template v-for="(m,i) in methods" :key="'ms'+i">
         <UmlMember :member="m"></UmlMember>
       </template>
@@ -42,14 +41,17 @@ export default {
     },
     methods(){
       let methods=[];
+      console.log("get methods");
       for(let a in this.clazz.methods){
         let m=this.clazz.methods[a];
         if(!m) continue;
         methods.push(m);
       }
       methods=methods.sort(function(a,b){
-        if(a.isConstructor){
+        if(a.isConstructor()){
           return -1;
+        }else if(b.isConstructor()){
+          return 1;
         }else{
           if(!a.name || !b.name){
             return 1;

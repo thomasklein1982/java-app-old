@@ -5,17 +5,17 @@ import { Type } from "../../classes/Type";
 import { Java } from "../java";
 
 export function createMethod(data,clazz,isStatic,isConstructor){
-  let m=new Method(clazz,isConstructor);
-  m.name=data.name;
+  let m=new Method(clazz);
   if(isConstructor){
-    clazz.constructor=m;
+    m.name=clazz.name;
   }else{
-    let name=m.name;
-    if(name==="toString"){
-      name="$"+name;
-    }
-    clazz.methods[name]=m;
+    m.name=data.name;
   }
+  let name=m.name;
+  if(name==="toString"){
+    name="$"+name;
+  }
+  clazz.methods[name]=m;
   m.comment=data.info;
   m.params=new ParameterList(m);
   let minCount=-1;

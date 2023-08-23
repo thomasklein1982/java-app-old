@@ -117,6 +117,8 @@ pos2=text.lastIndexOf("}");
 text=text.substring(pos+1,pos2);
 additionalJSCode=text;
 
+
+
 window.onmessage=function(message){
   let data=message.data;
   let app=window.app;

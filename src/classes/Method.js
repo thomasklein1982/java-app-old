@@ -1,14 +1,15 @@
 import { createParamsString } from "../functions/snippets";
 import { Block } from "../language/compile/Block";
 import { Modifiers } from "./Modifiers";
+import { options } from "./Options";
 import { ParameterList } from "./Parameters";
 import { Scope } from "./Scope";
 import { Type } from "./Type";
 
 export class Method{
-  constructor(clazz,isConstructor){
-    this.isConstructor=isConstructor;
+  constructor(clazz, isConstructorNode){
     this.clazz=clazz;
+    this.isConstructorNode=isConstructorNode;
     this.name=null;
     this.params=null;
     this.type=null;
@@ -20,6 +21,10 @@ export class Method{
     this.typeAnnotations={};
     this.jsName=null;
     this.node=null;
+  }
+  isConstructor(){
+    if(!this.clazz) throw "Die Methode kennt ihre Klasse nicht!";
+    return this.name===this.clazz.name;
   }
   isBuiltIn(){
     return this.bodyNode===null;
@@ -43,7 +48,7 @@ export class Method{
   }
   getJavaScriptCode(additionalJSCode){
     let code;
-    if(this.isConstructor){
+    if(this.isConstructor()){
       code="async $constructor";
       code+=this.params.getJavaScriptCode("typeArguments,")+"{\nthis.$typeArguments=typeArguments;";
     }else{
@@ -55,7 +60,7 @@ export class Method{
     if(this.block){
       code+="\n"+this.block.code;
     }
-    if(this.isConstructor){
+    if(this.isConstructor()){
       code+="\nreturn this;\n}";
     }else{
       code+="\nreturn undefined;\n}";
@@ -94,7 +99,8 @@ export class Method{
       errors=errors.concat(m.compile(node,source));
       node=node.nextSibling;
     }
-    if(!this.isConstructor){
+    this.type=null;
+    if(!this.isConstructorNode){
       if(node.name.indexOf("Type")>=0){
         this.type=Type.compile(node,source,this.clazz,errors);
       }else if(node.name==='void'){
@@ -107,7 +113,7 @@ export class Method{
     }
     if(node.name==='Definition'){
       this.name=source.getText(node);
-      if(this.isConstructor && this.name!==this.clazz.name){
+      if(!options.voidOptional && this.isConstructorNode && this.name!==this.clazz.name){
         errors.push(source.createError("Der Konstruktor muss genauso heißen wie die Klasse.",node));  
       }
     }else{
