@@ -2,7 +2,6 @@
   <div style="position: relative; padding: 0.1rem" :style="{'user-select': 'none',border: selectedComponent===component? '2pt solid gold':'2pt solid transparent'}" >
     <span style="color: red" class="pi handle pi-exclamation-circle" v-if="component.errors && component.errors.length>0"/>
     <div v-if="!isContainer" :style="{display: 'flex'}">
-      <span class="pi handle pi-arrows-alt"/>
       <div style="position: relative" :style="{flex: 1}">
         <template v-if="type==='JButton'">
           <button class="component jbutton">{{component.value}}</button>
@@ -46,6 +45,7 @@
         <Button icon="pi pi-copy" @click="clickDuplicate()"/>
         <Button icon="pi pi-trash" @click="clickRemove($event)"/>
       </span>
+      <span class="pi handle pi-arrows-alt"/>
     </div>
     <template v-else>
       <div>
@@ -60,7 +60,7 @@
           </div>
         </template>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">
-          <span class="pi handle pi-arrows-alt"/><button @click="toggleHideContent()">{{hideContent? '+':'-'}}</button>
+          <button @click="toggleHideContent()">{{hideContent? '+':'-'}}</button>
           <div v-if="type==='JPanel'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">JPanel
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
@@ -82,6 +82,7 @@
             <Button icon="pi pi-copy" @click="clickDuplicate()"/>
             <Button icon="pi pi-trash" @click="clickRemove($event)"/>
           </span>
+          <span class="pi handle pi-arrows-alt"/>
         </div>
         <div v-show="!hideContent" style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
           <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
