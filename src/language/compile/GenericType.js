@@ -6,7 +6,7 @@ import { TypeParameters } from "./TypeParameters";
 export function GenericType(node,source,scope){
   node=node.firstChild;
   let f=CompileFunctions.get(node,source);
-  let res=f(node,source,scope);
+  let res=f(node,source,scope,{genericType: true});
   let type=res.type;
   let baseType=type.baseType;
   let tparams=baseType.typeParameters;
