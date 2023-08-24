@@ -51,6 +51,13 @@ export default {
               separator:true
             },
             {
+              label: 'Details',
+              icon: 'pi pi-ellipsis-v',
+              command: (ev)=>{
+                this.$emit('details');
+              }
+            },
+            {
               label: 'CSS',
               icon: 'pi pi-palette',
               command: (ev)=>{

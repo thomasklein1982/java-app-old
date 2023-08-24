@@ -1,6 +1,7 @@
 import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
 import {database} from "./Database";
+import { options } from "./Options.js";
 import { UIClazz } from "./UIClazz.js";
 
 let start="Project Code Start";
@@ -15,6 +16,7 @@ export class Project{
       name="MyApp";
       code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
     }
+    this.name=name;
     if(code && code.splice){
       for(let i=0;i<code.length;i++){
         let c;
@@ -34,6 +36,17 @@ export class Project{
       c.src=code;
       this.clazzes.push(c);
     }
+    this.clazzes[0].setAsFirstClazz();
+    this.uiClazzCount=this.getUiClazzCount();
+  }
+  getUiClazzCount(){
+    let count=0;
+    for(var i=0;i<this.clazzes.length;i++){
+      var c=this.clazzes[i];
+      if((c instanceof UIClazz)) count++;
+    }
+    this.uiClazzCount=count;
+    return count;
   }
   prepareCSS(cssText){
     let s=cssText.split("asset(");
@@ -119,7 +132,12 @@ export class Project{
     let mainClazz=this.getMainClazz();
     let codeMainCall="";
     if(mainClazz){
-      codeMainCall="(async function(){await "+mainClazz.name+".main([]);})();"
+      codeMainCall="(async function(){await "+mainClazz.name+".main([]);})();";
+    }else{
+      if(options.mainOptional){
+        let mainClazz=this.clazzes[0];
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
+      }
     }
     let css=this.prepareCSS(this.css);
     let code=`<!doctype html>
@@ -188,9 +206,7 @@ export class Project{
       }
     }
 
-    if(mainClazz){
-      code+="\nasync function onStart(){if($main.onStart){$main.onStart();}}\n";
-    }
+    code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
     let clazzInfos={};
     /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */
     for(let i=0;i<this.clazzes.length;i++){
@@ -316,6 +332,9 @@ export class Project{
     this.compile();
   }
   getName(){
+    if(this.name){
+      return this.name;
+    }
     return this.clazzes[0].name;
   }
   updateAssetsSaveString(){
@@ -380,6 +399,9 @@ export class Project{
         c.src=src;
       }
       this.clazzes.push(c);
+    }
+    if(this.clazzes.length>0){
+      this.clazzes[0].setAsFirstClazz();
     }
     await this.compile(true);
   }

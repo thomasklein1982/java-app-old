@@ -352,21 +352,16 @@ function additionalJSCode(){
     }
     setVisible(v){
       this.visible=v;
+      this.$el.visible=v;
     }
     isVisible(){
-      return this.visible;
+      return this.$el.visible;
     }
     setEnabled(v){
       this.$el.disabled=!v;
     }
     isEnabled(){
       return this.$el.disabled;
-    }
-    get visible(){
-      return this.$el.visible;
-    }
-    set visible(v){
-      this.$el.visible=v;
     }
     setValue(v){
       this.value=v;

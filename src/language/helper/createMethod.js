@@ -62,8 +62,6 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       }
       if((baseType.substring)){
         baseType=Java.datatypes[baseType];
-      }else{
-        console.log("returntype",baseType);
       }
       if(data.returnType.dimension>0){
         m.type=new Type(baseType,data.returnType.dimension);

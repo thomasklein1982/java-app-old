@@ -55,21 +55,23 @@ export function Identifier(node,source,scope,infos){
   }else{
     //Top-Level
     obj=scope.getLocalVariable(name);
-    if(!obj){
-      obj=scope.getTypeByName(name);
-      type=null;
-      scope.addTypeAnnotation(node,new Type(obj,0),true);
-    }else{
+    if(obj){
       local=true;
       type=obj.type;
       scope.addTypeAnnotation(node,type,false);
-    }
-    if(!obj){
+    }else{
       obj=scope.getAttribute(name,false);
       if(obj && obj.error){
-        throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);
+        obj=scope.getTypeByName(name);
+        if(obj){
+          type=null;
+          scope.addTypeAnnotation(node,new Type(obj,0),true);
+        }else{
+          throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);
+        }
         //throw source.createError(obj.error,node);
       }else{
+        /**Attribut: */
         code="this."+code;
         type=obj.type;
         scope.addTypeAnnotation(node,type,false);
@@ -77,6 +79,7 @@ export function Identifier(node,source,scope,infos){
           scope.addReferencedVariable(name);
         }
       }
+      
     }
     if(node.src){
       throw source.createError("Ein Ausdruck darf nicht mit '.' enden.",node.node);

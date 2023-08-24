@@ -20,6 +20,7 @@ export function ArgumentList(node,source,scope,parameters){
   }
   let paramNodes=[];
   let i=0;
+  console.log("alist");
   node=node.nextSibling;
   while(node && node.name!==")"){
     if(!parameters || i>=pcount){
@@ -61,7 +62,7 @@ export function ArgumentList(node,source,scope,parameters){
     
     p.type.autoCastValue(arg);
     if(!arg.type || !arg.type.isSubtypeOf(p.type)){
-      let text=source.getText(node);
+      let text=source.getText(pnode);
       throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.type+".",pnode);
     }
     if(reverseOrder){

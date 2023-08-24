@@ -22,12 +22,17 @@
         @resources="$refs.dialogResources.setVisible(true)"
         @database="$refs.dialogDatabase.setVisible(true)"
         @assets="$refs.dialogAssets.setVisible(true)"
+        @details="$refs.dialogProjectDetails.setVisible(true)"
         @css="$refs.dialogCSS.setVisible(true)"
         @settings="$refs.dialogSettings.setVisible(true)"
         @print="$refs.printPreview.open()"
       />
       <LinksDialog
         ref="dialogResources"
+      />
+      <ProjectDetailsDialog
+        ref="dialogProjectDetails"
+        :project="project"
       />
       <SettingsDialog
         ref="dialogSettings"
@@ -131,6 +136,7 @@ import { download, saveLocally, upload } from '../functions/helper.js';
 import { STORAGE_PROJECT } from '../consts/strings.js';
 import { uploadProject } from "../functions/uploadProject.js";
 import LinksDialog from "./LinksDialog.vue";
+import ProjectDetailsDialog from "./ProjectDetailsDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
 import DatabaseDialog from "./DatabaseDialog.vue";
 import CSSDialog from "./CSSDialog.vue";
@@ -449,7 +455,8 @@ export default {
     UIPreview,
     CSSDialog,
     SettingsDialog,
-    PrintPreview
+    PrintPreview,
+    ProjectDetailsDialog
   }
 }
 </script>

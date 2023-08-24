@@ -1,5 +1,6 @@
 import { parseJava } from "../functions/parseJava";
 import { TypeParameters } from "../language/compile/TypeParameters";
+import { createAttribute } from "../language/helper/createAttribute";
 import { Java } from "../language/java";
 import {Attribute} from "./Attribute"
 import { Method } from "./Method";
@@ -15,6 +16,7 @@ export class Clazz{
     this.name=name;
     this.cannotBeInstantiated=false;
     this.description="";
+    this.hasClazzDeclaration=true;
     this.project=project;
     this.superClazz=null;
     this.errors=null;
@@ -25,6 +27,7 @@ export class Clazz{
     this.typeParameters=null;
     this.node=null;
     this.references=[];
+    this.isFirstClazz=false;
     this._isBuiltIn=project===undefined;
     if(this.name){
       this.typeSnippet=autocomplete.snippetCompletion(this.name, {
@@ -35,8 +38,11 @@ export class Clazz{
       this.typeSnippet=null;
     }
   }
+  setAsFirstClazz(){
+    this.isFirstClazz=true;
+  }
   getConstructor(){
-    for(let i=0;i<this.methods.length;i++){
+    for(let i in this.methods){
       let m=this.methods[i];
       if(m.isConstructor()){
         return m;
@@ -67,6 +73,20 @@ export class Clazz{
         attributesInitCode+="\nthis."+a.name+"="+a.initialValue+";";
       }
     }
+    /**Falls option aktiv, wird in der Hauptklasse für jede UI-Klasse 1 Attribut mit einer Instanz der UI-Klasse erzeugt: */
+    let onStartPrecode="";
+    if(this.isFirstClazz && options.instantiateUIClasses){
+      for(var i=0;i<this.project.clazzes.length;i++){
+        var c=this.project.clazzes[i];
+        if(!(c instanceof UIClazz)) continue;
+        let name=c.name;
+        onStartPrecode+="\nthis."+name+"=(await $App.asyncFunctionCall(new "+c.name+"(),'$constructor',[{$hideFromConsole:true},]));";
+        console.log("ui count",this.project.getUiClazzCount());
+        if(this.project.getUiClazzCount()>1){
+          onStartPrecode+="\nthis."+name+".setVisible(false);";
+        }
+      }
+    }
     code+="\n}";
     let hasConstructor=false;
     for(let i in this.methods){
@@ -75,7 +95,7 @@ export class Clazz{
         code+="\n"+m.getJavaScriptCode(attributesInitCode+"\n");
         hasConstructor=true;
       }else{
-        code+="\n"+m.getJavaScriptCode();
+        code+="\n"+m.getJavaScriptCode(m.name==="onStart"? onStartPrecode:"");
       }
     }
     if(!hasConstructor){
@@ -323,10 +343,18 @@ export class Clazz{
   compileDeclaration(){
     var errors=[];
     this.errors=errors;
+    this.hasClazzDeclaration=true;
     this.typeParametersNode=null;
     var node=this.source.tree.topNode.firstChild;
     if(node.type.name!=="ClassDeclaration"){
-      errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",node));
+      if(!(options.classOptional && this.isFirstClazz)){
+        errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",node));
+        return errors;
+      }else{
+        this.name=this.project.getName();
+        this.clazzBody=node;
+        this.hasClazzDeclaration=false;
+      }
     }else{
       node=node.firstChild;
       while(node.nextSibling && node.name!=="Definition"){
@@ -352,7 +380,7 @@ export class Clazz{
       if(node.name!=="ClassBody"){
         errors.push(this.source.createError("'{' erwartet",node));
       }else{
-        this.clazzBody=node;
+        this.clazzBody=node.firstChild.nextSibling;
       }
     }
     return errors;
@@ -390,36 +418,20 @@ export class Clazz{
     return this.compileMemberDeclarations(true,false);
   }
 
-  /**
-   * Kompiliert alle Member-Deklarationen
-   */
-  compileMemberDeclarations(attributes,methods){
-    if(attributes){
-      this.attributes={};
-    }
+  compileMemberNodesWithClazzDeclaration(scope,node,attributes,methods){
     let hasConstructor=false;
-    if(methods){
-      this.methods={};
-
-    }
-    let errors=this.errors;
-    var node=this.clazzBody;
-    if(!node) return;
-    /**Klassenkoerper parsen: */
-    let scope=new Scope(this.project);
-    node=node.firstChild.nextSibling;
     while(node.nextSibling){
       if(attributes && node.name==="FieldDeclaration"){
         var a=new Attribute(this);
-        errors=errors.concat(a.compile(node,this.source,scope));
+        this.errors=this.errors.concat(a.compile(node,this.source,scope));
         let attr=a.getSingleAttributes();
         for(var i=0;i<attr.length;i++){
           let sa=attr[i];
           if(sa.name){
             if(this.attributes[sa.name]){
-              errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
+              this.errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
             }else if(this.methods[sa.name]){
-              errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
+              this.errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
             }else{
               this.attributes[sa.name]=sa;
             }
@@ -428,12 +440,12 @@ export class Clazz{
       }else if(methods){
         if(node.name==='MethodDeclaration'){
           let m=new Method(this,false);
-          errors=errors.concat(m.compileDeclaration(node,this.source));
+          this.errors=this.errors.concat(m.compileDeclaration(node,this.source));
           if(m.name){
             if(this.methods[m.name]){
-              errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
+              this.errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+m.name+"'.",m.node));
             }else if(this.attributes[m.name]){
-              errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
+              this.errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+m.name+"'.",m.node));
             }else{
               this.methods[m.name]=m;
             }
@@ -441,47 +453,111 @@ export class Clazz{
         }else if(node.name=="ConstructorDeclaration"){
           /**falls die option voidOptional true ist, werden normale Methoden auch als Konstruktor geparst. Dann hängt es am Namen, ob es sich um einen Konstruktor handelt */
           if(!options.voidOptional && hasConstructor){
-            errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
+            this.errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
           }else{
             let m=new Method(this,true);
-            errors=errors.concat(m.compileDeclaration(node,this.source));
+            this.errors=this.errors.concat(m.compileDeclaration(node,this.source));
             let isConstructor=m.isConstructor();
             if(hasConstructor){
               if(isConstructor){
-                errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
+                this.errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
               }
             }else{
               hasConstructor=isConstructor;
             }
             this.methods[m.name]=m;
           }
-          // if(hasConstructor){
-          //   errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
-          // }else{
-          //   let m=new Method(this,true);
-          //   errors=errors.concat(m.compileDeclaration(node,this.source));
-          //   hasConstructor=true;
-          //   this.methods[m.name]=m;
-          // }
         }
       }else if(node.name!=="LineComment"){
-        errors.push(this.source.createError("Attributs- oder Methoden- oder Konstruktordeklaration erwartet.",node));
+        this.errors.push(this.source.createError("Attributs- oder Methoden- oder Konstruktordeklaration erwartet.",node));
       }
       node=node.nextSibling;
     }
     if(node.type.isError || !node.name==="}"){
-      errors.push(this.source.createError("Hier fehlt eine '}'",node));
+      this.errors.push(this.source.createError("Hier fehlt eine '}'",node));
     }
     node=node.parent;
     while(node){
       if(node.nextSibling){
-        errors.push(this.source.createError("Nach Abschluss der Klasse darf kein weiterer Code folgen",node.nextSibling));
+        this.errors.push(this.source.createError("Nach Abschluss der Klasse darf kein weiterer Code folgen",node.nextSibling));
         break;
       }
       node=node.parent;
     }
-    this.errors=errors;
-    return errors;
+  }
+
+  compileMemberNodesWithoutClazzDeclaration(scope,node,attributes,methods){
+    //TODO: WIP
+    console.log("*** compile without class declaration****")
+    let source=this.source;
+    while(node){
+      if(node.name.indexOf("Comment")>=0){
+        node=node.nextSibling;
+        continue;
+      }
+      /**check if attribute or method: */
+      console.log(node.name,source.getText(node));
+      let type;
+      let text=source.getText(node);
+      let pos=text.indexOf("=");
+      if(pos>0){
+        text=text.substring(0,pos);
+      }
+      pos=text.indexOf("(");
+      if(pos>0){
+        /**methode? */
+        type="method";
+      }else if(node.name==="LocalVariableDeclaration"){
+        let next=node.nextSibling;
+        if(next && source.src.charAt(next.from)==="("){
+          type="method2";
+        }else{
+          type="attribute";
+        }
+      }else{
+        type="error";
+      }
+      console.log("ich denke: "+type);
+      if(type==="error"){
+        errors.push(source.createError("Attributs- oder Methodendeklaration erwartet.",node));
+      }
+      node=node.nextSibling;
+    }
+  }
+
+  /**
+   * Kompiliert alle Member-Deklarationen
+   */
+  compileMemberDeclarations(attributes,methods){
+    if(attributes){
+      this.attributes={};
+      if(options.instantiateUIClasses){
+        for(var i=0;i<this.project.clazzes.length;i++){
+          var c=this.project.clazzes[i];
+          if(!(c instanceof UIClazz)) continue;
+          let name=c.name;
+          let a=createAttribute({
+            name,
+            type: c
+          },this,false);
+          this.attributes[name]=a;
+        }
+      }
+    }
+    if(methods){
+      this.methods={};
+
+    }
+    var node=this.clazzBody;
+    if(!node) return;
+    /**Klassenkoerper parsen: */
+    let scope=new Scope(this.project);
+    if(this.hasClazzDeclaration){
+      this.compileMemberNodesWithClazzDeclaration(scope,node,attributes,methods);
+    }else{
+      this.compileMemberNodesWithoutClazzDeclaration(scope,node,attributes,methods);
+    }
+    return this.errors;
   }
 
   getConstructorParameters(){

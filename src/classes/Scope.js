@@ -2,9 +2,10 @@ import { Attribute } from "./Attribute";
 import { Clazz } from "./Clazz";
 import { Java } from "../language/java";
 import { PrimitiveType } from "./PrimitiveType";
+import { options } from "./Options";
 
 export class Scope{
-  constructor(project,method,endPosition,options){
+  constructor(project,method,endPosition,compileOptions){
     this.project=project;
     this.method=method;
     this.endPosition=endPosition;
@@ -16,14 +17,14 @@ export class Scope{
     this.optimizeCompiler=false;
     this.referencedVariables={};
     this.referencedVariablesCount=0;
-    if(options){
-      if(options.addLocalVariablesUpdates===false){
+    if(compileOptions){
+      if(compileOptions.addLocalVariablesUpdates===false){
         this.addLocalVariablesUpdates=false;
       }
-      if(options.ignoreVisibilityRestrictions===true){
+      if(compileOptions.ignoreVisibilityRestrictions===true){
         this.ignoreVisibilityRestrictions=true;
       }
-      if(options.optimizeCompiler===true){
+      if(compileOptions.optimizeCompiler===true){
         this.optimizeCompiler=true;
       }
     }

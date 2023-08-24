@@ -1237,6 +1237,7 @@ window.appJScode=function(){
         el.appJSData.width=width;
         el.appJSData.height=height;
         if(this.isRoot){
+          el.style.position="absolute";
           el.style.left="0";
           el.style.top="0";
           el.style.width="100%";
