@@ -403,6 +403,5 @@ export class Project{
     if(this.clazzes.length>0){
       this.clazzes[0].setAsFirstClazz();
     }
-    await this.compile(true);
   }
 }

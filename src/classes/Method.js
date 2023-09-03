@@ -1,10 +1,14 @@
+import { compileScript } from "@vue/compiler-sfc";
 import { createParamsString } from "../functions/snippets";
 import { Block } from "../language/compile/Block";
+import { LocalVariableDeclaration } from "../language/compile/LocalVariableDeclaration";
 import { Modifiers } from "./Modifiers";
 import { options } from "./Options";
 import { ParameterList } from "./Parameters";
 import { Scope } from "./Scope";
 import { Type } from "./Type";
+import { CompileFunctions } from "../language/CompileFunctions";
+import { FormalParameters } from "../language/compile/FormalParameters";
 
 export class Method{
   constructor(clazz, isConstructorNode){
@@ -90,6 +94,118 @@ export class Method{
     return t;
   }
 
+  compileDeclarationWithoutClazz(node,source,scope){
+    this.node=node;
+    var m=new Modifiers();
+    this.modifiers=m;
+    if(node.name==="LocalVariableDeclaration"){
+      console.log(node,source.getText(node));
+      let snode=node.firstChild;
+      if(snode.name==="void"){
+        this.type=null;
+      }else{
+        if(snode.name.indexOf("Type")<0){
+          throw (source.createError("Datentyp oder Schlüsselwort 'void' erwartet",snode));
+        }
+        let f=CompileFunctions.get(snode,source);
+        let res=f(snode,source,scope);
+        this.type=res.type;
+      }
+      snode=snode.nextSibling;
+      this.name=source.getText(snode);
+      
+      if(!node.nextSibling || node.nextSibling.name!=="ExpressionStatement"){
+        throw(source.createError("'(' erwartet",node));
+      }
+      node=node.nextSibling;
+      let nextNode=node.nextSibling;
+      
+      if(!node.firstChild || node.firstChild.name!=="LambdaExpression"){
+        throw(source.createError("'(' erwartet",node));
+      }
+      node=node.firstChild;
+      snode=node.firstChild;
+      if(snode.name==='FormalParameters'){
+        let list=new ParameterList(this);
+        let errors=list.compile(snode,source);
+        if(errors.length>0) throw errors[0];
+        this.params=list;
+      }
+      snode=snode.nextSibling;
+      console.error(node,source.getText(node));
+      if(snode.type.isError && snode.firstChild){
+        if(snode.firstChild.name!=="{"){
+          throw (source.createError("'{' erwartet",snode));
+        }
+        let bra=node.firstChild.nextSibling.nextSibling;
+        if(!bra){
+          //methoden-inhalt
+          node=this.node?.nextSibling?.nextSibling;
+          if(!node){
+            throw (source.createError("'}' erwartet",snode));
+          }
+          this.bodyNode={
+            firstChild: {
+              name: "{",
+              nextSibling: node,
+              type: {
+                isError: false
+              }
+            },
+            from: node.from
+          };
+          let openCount=1;
+          console.log("methoden-inhalt von ",this.name);
+          node=node.prevSibling;
+          while(node.nextSibling){
+            node=node.nextSibling;
+            console.log(node,source.getText(node));
+            if(node.name==="{"){
+              openCount++;
+            }
+            if(node.name==="}" || node.type.isError && node.firstChild && node.firstChild.name==="}"){
+              openCount--;
+              if(openCount===0){
+                nextNode=node.nextSibling;
+                node.isBlockEnd=true;
+                this.bodyNode.to=node.to;
+                return nextNode;
+              }
+            }
+          }
+          throw (source.createError("'}' erwartet",snode.nextSibling? snode.nextSibling:snode));
+        }else{
+          //leerer Methodenrumpf
+          if(bra.firstChild.name!=="}"){
+            throw (source.createError("'}' erwartet",snode.nextSibling? snode.nextSibling:snode));
+          }
+        }
+        return nextNode;
+        //gibt keinen nextSibling mehr
+      }else{
+        //es folgt ein Block
+        node=this.node.nextSibling.nextSibling;
+        if(!node || node.name!=="Block"){
+          throw (source.createError("'{' erwartet",node?node:this.node));
+        }
+        this.bodyNode=node;
+        return node.nextSibling;
+      }
+
+      // this.type=lv.type;
+      // this.name=lv.name;
+      return null;
+    }
+    console.log("method compiled: "+this.name,this);
+    return null;
+  }
+
+  /**
+   * 
+   * @param {*} node 
+   * @param {*} source 
+   * @returns 
+   */
   compileDeclaration(node,source){
     let errors=[];
     node=node.firstChild;
@@ -141,6 +257,13 @@ export class Method{
       this.bodyNode=node;
     }
     return errors;
+  }
+
+  containsPosition(pos){
+    if(this.clazz){
+      pos-=this.clazz.getPositionShift();
+    }
+    return (this.bodyNode.from<=pos && pos<=this.bodyNode.to);
   }
 
   getScopeAtPosition(pos){

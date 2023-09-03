@@ -1,4 +1,4 @@
-export class Options{
+class Options{
   /**
    * 
    * @param {*} classOptional class ...{} bei Hauptklasse optional
@@ -14,6 +14,9 @@ export class Options{
     this.autocast=autocast;
     this.instantiateUIClasses=instantiateUIClasses;
   }
+  isEasyMode(){
+    return this.classOptional||this.voidOptional||this.mainOptional;
+  }
   static createFromHash(){
     let options=new Options(false,false,false,false,false);
     let hash=location.hash;
@@ -24,8 +27,14 @@ export class Options{
           options[a]=true;
         }
       }
+      if(hash.indexOf("easy")>=0){
+        options.classOptional=true;
+        options.voidOptional=true;
+        options.mainOptional=true;
+        options.autocast=true;
+        options.instantiateUIClasses=true;
+      }
     }
-    console.log(options);
     return options;
   }
 }

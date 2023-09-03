@@ -12,6 +12,11 @@
       <span style="padding: 0.2rem">{{myFontSize}}px</span>
       <Button icon="pi pi-plus" @click="changeFontSize(1)"/>
     </div>
+    <div style="padding: 0.2rem" :style="{display: 'flex', 'justify-content': 'center', 'align-items':'center'}">
+      <Button icon="pi pi-minus" @click="changeBodyFontSize(-1)"/>
+      <span style="padding: 0.2rem">{{bodyFontSize}}px</span>
+      <Button icon="pi pi-plus" @click="changeBodyFontSize(1)"/>
+    </div>
   </Dialog>
 </template>
 
@@ -27,13 +32,22 @@ export default {
   data(){
     return {
       show: false,
-      myFontSize: this.fontSize
+      myFontSize: this.fontSize,
+      bodyFontSize: 20
     };
   },
   methods: {
     changeFontSize(ds){
       this.myFontSize+=ds;
       this.$emit("changefontsize",this.myFontSize);
+    },
+    changeBodyFontSize(ds){
+      this.bodyFontSize+=ds;
+      if(this.bodyFontSize<4){
+        this.bodyFontSize=4;
+      }
+      document.body.style.fontSize=this.bodyFontSize+"px";
+      document.body.parentElement.style.fontSize=document.body.style.fontSize;
     },
     setVisible(v){
       this.show=v;

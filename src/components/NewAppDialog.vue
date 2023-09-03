@@ -113,6 +113,12 @@ export default {
         code[0]=code[0].replace("\n  UI ui;","");
         code[0]=code[0].replace("ui = new UI( );","");
       }
+      if(options.classOptional){
+        let pos=code[0].indexOf("{");
+        let pos2=code[0].lastIndexOf("}");
+        code[0]=code[0].substring(pos+1,pos2);
+        code[0]=code[0].trim();
+      }
       this.$emit("newapp",name,code);
       this.setVisible(false);
     },

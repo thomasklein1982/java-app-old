@@ -80,6 +80,7 @@ export class UIClazz {
     this.variablesErrors=[];
     this.components=[];
     this.componentCode="";
+    this.hasClazzDeclaration=true;
     this.rerenderMethod=createMethod({
       name: "rerender",
       params: []
@@ -164,7 +165,7 @@ export class UIClazz {
     }
     let tree=parseJava(source);
     let node=tree.topNode.firstChild;
-    source=new Source(source,tree);
+    source=new Source(source,tree,this);
     let code=[];
     while(node){
       if(node.name==="LocalVariableDeclaration"){
@@ -436,7 +437,7 @@ export class UIClazz {
         throw "Kein Java-Ausdruck";
       }
       node=node.firstChild;
-      let source=new Source(src,tree);
+      let source=new Source(src,tree,this);
       let f=CompileFunctions.get(node,source);
       if(f){
         var res=f(node,source,scope);

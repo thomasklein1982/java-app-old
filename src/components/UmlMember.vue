@@ -15,9 +15,10 @@ export default {
       let editor=this.$root.$refs.editor;
       for(let i=0;i<editor.$refs.editor.length;i++){
         let cm=editor.$refs.editor[i];
-        if(cm.clazz===this.member.clazz){
+        if(cm.clazz===this.member.clazz && this.member.node){
           editor.activeTab=cm.tabIndex;
-          cm.setSelection(this.member.node.from,this.member.node.to);
+          let offset=this.member.clazz.getPositionShift();
+          cm.setSelection(this.member.node.from+offset,this.member.node.to+offset);
           nextTick(()=>{
             cm.focus()
           });

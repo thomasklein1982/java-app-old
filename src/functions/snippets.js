@@ -2,6 +2,7 @@ import  * as autocomplete  from "@codemirror/autocomplete";
 import {syntaxTree} from "@codemirror/language"
 import { Clazz } from "../classes/Clazz";
 import { Java } from "../language/java";
+import { options } from "../classes/Options";
 
 
 
@@ -47,10 +48,12 @@ function createSnippets(data){
     App: {}
   }
 
+  let prefix=options.voidOptional?"":"void ";
+
   for(let ev in data.eventHandlers){
     ev=data.eventHandlers[ev];
-    snippets.eventListeners.push(autocomplete.snippetCompletion("void "+ev.name+createParamsString(ev.args)+"{\n\t${}\n}", {
-      label: "void "+ev.name,
+    snippets.eventListeners.push(autocomplete.snippetCompletion(prefix+ev.name+createParamsString(ev.args)+"{\n\t${}\n}", {
+      label: prefix+ev.name,
       info: replaceHTML(ev.info),
       type: "function"
     }));
@@ -103,40 +106,40 @@ function createSnippets(data){
   }));
 
   
-  let unicode="😀😁😆😈😉😌😍😎😐😒😖😘😡😢😧😩😭😱"
-  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
-    label: "unicode smileys",
-    info: "Fügt eine Auswahl von Unicode-Smileys ein: "+unicode,
-    type: "macro"
-  }));
+  // let unicode="😀😁😆😈😉😌😍😎😐😒😖😘😡😢😧😩😭😱"
+  // snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+  //   label: "unicode smileys",
+  //   info: "Fügt eine Auswahl von Unicode-Smileys ein: "+unicode,
+  //   type: "macro"
+  // }));
 
-  unicode="🐝🕷🕸️😾👸👹👻👼👽👾👿⛄💀💃🧚🧛🧜🧝🧞🐅🦄🐕🦇🐉🦖🐬🐟";
-  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
-    label: "unicode kreaturen",
-    info: "Fügt eine Auswahl von Unicode-Kreaturen ein: "+unicode,
-    type: "macro"
-  }));
+  // unicode="🐝🕷🕸️😾👸👹👻👼👽👾👿⛄💀💃🧚🧛🧜🧝🧞🐅🦄🐕🦇🐉🦖🐬🐟";
+  // snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+  //   label: "unicode kreaturen",
+  //   info: "Fügt eine Auswahl von Unicode-Kreaturen ein: "+unicode,
+  //   type: "macro"
+  // }));
 
-  unicode="🕸️🌸💮🏵️🌺🌹🌻🌼🌷🌲🌴🌵🌿🍀🍄☁️⛅🌤️🌧️🌨️🌩️🌪️🔥❄️💧🎄";
-  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
-    label: "unicode natur",
-    info: "Fügt eine Auswahl von Unicode-Symbolen zum Thema Natur ein: "+unicode,
-    type: "macro"
-  }));
+  // unicode="🕸️🌸💮🏵️🌺🌹🌻🌼🌷🌲🌴🌵🌿🍀🍄☁️⛅🌤️🌧️🌨️🌩️🌪️🔥❄️💧🎄";
+  // snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+  //   label: "unicode natur",
+  //   info: "Fügt eine Auswahl von Unicode-Symbolen zum Thema Natur ein: "+unicode,
+  //   type: "macro"
+  // }));
 
-  unicode="🚀🚁🚂🚃🚍🚑🚒🚓🚔🚘🚜🚢✈";
-  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
-    label: "unicode fahrzeuge",
-    info: "Fügt eine Auswahl von Unicode-Fahrzeugen ein: "+unicode,
-    type: "macro"
-  }));
+  // unicode="🚀🚁🚂🚃🚍🚑🚒🚓🚔🚘🚜🚢✈";
+  // snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+  //   label: "unicode fahrzeuge",
+  //   info: "Fügt eine Auswahl von Unicode-Fahrzeugen ein: "+unicode,
+  //   type: "macro"
+  // }));
 
-  unicode="❤🔥⛰️💥💫✨✔️👍⚡";
-  snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
-    label: "unicode symbole",
-    info: "Fügt eine Auswahl von Unicode-Symbolen ein: "+unicode,
-    type: "macro"
-  }));
+  // unicode="❤🔥⛰️💥💫✨✔️👍⚡";
+  // snippets.inMethod.push(autocomplete.snippetCompletion("//"+unicode, {
+  //   label: "unicode symbole",
+  //   info: "Fügt eine Auswahl von Unicode-Symbolen ein: "+unicode,
+  //   type: "macro"
+  // }));
 
   return snippets;
 }

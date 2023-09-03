@@ -2,12 +2,14 @@
   <div style="width: 100%;overflow: hidden;" :style="{position: $root.printMode? '':'fixed', height: $root.printMode? '':'100%'}">
     <StartScreen 
       v-if="screen==='start'"
+      :is-easy="isEasy"
       @open-project="openProject"
     />
     <Editor
       v-show="screen==='editor'"
       :paused="paused"
       :current="current"
+      :is-easy="isEasy"
       ref="editor"
     />
     
@@ -18,15 +20,17 @@
 import StartScreen from "./components/StartScreen.vue";
 import Editor from "./components/Editor.vue";
 import { nextTick } from '@vue/runtime-core';
+import { options } from "./classes/Options";
 
 export default{
   data(){
     return {
       screen: 'start',
-      version: 202,
+      version: 203,
       paused: false,
       printMode: false,
-      current: {line: -1, name: null}
+      current: {line: -1, name: null},
+      isEasy: options.isEasyMode()
     }
   },
   methods: {

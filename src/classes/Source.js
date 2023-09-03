@@ -1,9 +1,16 @@
 import { Error } from "./Error";
 
 export class Source{
-  constructor(src,tree){
+  constructor(src,tree,clazz){
     this.src=src;
+    this.clazz=clazz;
     this.tree=tree;
+  }
+  getPositionShift(){
+    if(this.clazz){
+      return this.clazz.getPositionShift();
+    }
+    return 0;
   }
   getLineNumber(index){
     let line=1;

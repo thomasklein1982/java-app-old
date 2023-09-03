@@ -7,6 +7,7 @@
     <template v-if="!$root.printMode">
       <EditorMenubar
         :right-closed="rightClosed"
+        :is-easy="isEasy"
         @download="downloadProject"
         @upload="uploadProject"
         @new="$refs.dialogNewApp.setVisible(true)"
@@ -151,7 +152,8 @@ import PrintPreview from "./PrintPreview.vue";
 export default {
   props: {
     current: Object,
-    paused: Boolean
+    paused: Boolean,
+    isEasy: Boolean
   },
   data(){
     return {
@@ -363,6 +365,9 @@ export default {
       this.database.clear();
       await p.initialize();
       this.openProject(p);
+      nextTick(()=>{
+        this.prettifyCode();
+      });
     },
     downloadProject(){
       if(this.project){

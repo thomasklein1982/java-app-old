@@ -62,7 +62,11 @@ export class Scope{
   }
 
   addTypeAnnotation(node,type,isStatic){
-    this.typeAnnotations[node.to]={
+    let pos=node.to;
+    if(this.method && this.method.clazz){
+      pos+=this.method.clazz.getPositionShift();
+    }
+    this.typeAnnotations[pos]={
       type,isStatic
     };
     

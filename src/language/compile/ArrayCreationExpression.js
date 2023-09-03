@@ -18,7 +18,6 @@ export function ArrayCreationExpression(node,source,scope){
   let type=TypeName(node,source,scope);
   //if(scope.method.clazz.getTypeParameterByName(type.type.baseType.name))
   let baseType=type.type.baseType;
-  console.log("array creation",baseType);
   code+="this.$getType({name: "+JSON.stringify(type.code)+", initialValue: "+type.type.baseType.initialValue+", isGeneric: "+baseType.isGeneric+"}),";
   node=node.nextSibling;
   let dimensions=[];

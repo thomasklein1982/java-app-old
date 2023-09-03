@@ -24,9 +24,11 @@ function getRealNodeBefore(node,pos){
 
 export function createAutocompletion(){
   return (context)=>{
+    let clazz=getClazzFromState(context.state);
+    if(!clazz) return;
+    let pos=context.pos;
     let project=app.$refs.editor.project;
     console.log("autocomplete");
-    let pos=context.pos;
     let lastTypedCharacter=context.state.doc.sliceString(context.pos-1,context.pos);
     if(["{","}",",",";","[","]","(",")"].indexOf(lastTypedCharacter)>=0) return;
     let nodeBefore = context.state.tree.resolveInner(pos, -1);
@@ -41,90 +43,76 @@ export function createAutocompletion(){
     }
     //innerhalb einer Methode?
     //console.log("autocomplete: check method");
-    let method=null;
-    let clazz=getClazzFromState(context.state);
-    if(!clazz) return;
-    let n=nodeBefore.parent.parent;
-    if(n.type.name==="FormalParameters") return;
-    while(n){
-      if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
-        n=n.firstChild;
-        while(n && n.name!=="Definition"){
-          n=n.nextSibling;
-        }
-        if(n){
-          let mname=context.state.doc.sliceString(n.from,n.to);
-          method=clazz.methods[mname];
-        }
-        break;
-      }
-      n=n.parent;
-    }
+    let method=clazz.getMethodByPosition(pos);
+    // let n=nodeBefore.parent.parent;
+    // if(n.type.name==="FormalParameters") return;
+    // while(n){
+    //   if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
+    //     n=n.firstChild;
+    //     while(n && n.name!=="Definition"){
+    //       n=n.nextSibling;
+    //     }
+    //     if(n){
+    //       let mname=context.state.doc.sliceString(n.from,n.to);
+    //       method=clazz.methods[mname];
+    //     }
+    //     break;
+    //   }
+    //   n=n.parent;
+    // }
     
-    //console.log("autocomplete: check method 2",method.name);
+    // //console.log("autocomplete: check method 2",method.name);
 
-    if(nodeBefore.name==="}"){
-      if(nodeBefore.parent.name==="Block"){
-        let n=nodeBefore.parent.parent;
-        if(n.name==="ConstructorDeclaration" || n.name==="MethodDeclaration" || n.name==="FieldDeclaration"){
-          method=null;
-        }
-      }
-    }
+    // if(nodeBefore.name==="}"){
+    //   if(nodeBefore.parent.name==="Block"){
+    //     let n=nodeBefore.parent.parent;
+    //     if(n.name==="ConstructorDeclaration" || n.name==="MethodDeclaration" || n.name==="FieldDeclaration"){
+    //       method=null;
+    //     }
+    //   }
+    // }
     let from;
     if(!method){
-      if(clazz.hasStaticMainMethod()){
-        console.log(nodeBefore.name);
+      let options=[];
+      from=nodeBefore.from;
+      if(clazz.isMainClazz()){
         //if(nodeBefore.name==="{") return;
-        from=nodeBefore.from;
+        
         // if(nodeBefore.name==="void"){
         //   from=nodeBefore.from;
         // }else{
         //   from=pos;
         // }
-        let options=[];
+        
         for(let i=0;i<snippets.eventListeners.length;i++){
           options.push(snippets.eventListeners[i]);
         }
-        /**Datentypen und Klassen: */
-        for(let dt in Java.datatypes){
-          let d=Java.datatypes[dt];
-          if(d && d.typeSnippet){
-            options.push(d.typeSnippet);
-          }
-        }
-        for(let i=0;i<project.clazzes.length;i++){
-          let c=project.clazzes[i];
-          let s=autocomplete.snippetCompletion(c.name,{
-            label: c.name
-          });
-          options.push(s);
-        }
-        return {
-          from,
-          options,
-          span: /^[\w$]*$/
-        }
       }else{
-        if(nodeBefore.name==="void"){
-          from=nodeBefore.from;
-        }else{
-          from=pos;
-        }
-        let options=[
-          autocomplete.snippetCompletion("public static void main(String[] args){\n\tnew "+clazz.name+"();\n}", {
-            label: "main",
-            info: "Statische main-Methode.",
-            type: "function"
-          })
-        ];
-        return {
-          from,
-          options: options,
-          span: /^[\w$]*$/
+        autocomplete.snippetCompletion("public static void main(String[] args){\n\tnew "+clazz.name+"();\n}", {
+          label: "main",
+          info: "Statische main-Methode.",
+          type: "function"
+        })
+      }
+      /**Datentypen und Klassen: */
+      for(let dt in Java.datatypes){
+        let d=Java.datatypes[dt];
+        if(d && d.typeSnippet){
+          options.push(d.typeSnippet);
         }
       }
-      return;
+      for(let i=0;i<project.clazzes.length;i++){
+        let c=project.clazzes[i];
+        let s=autocomplete.snippetCompletion(c.name,{
+          label: c.name
+        });
+        options.push(s);
+      }
+      return {
+        from,
+        options,
+        span: /^[\w$]*$/
+      }
     }
     //console.log("autocomplete: look for annotations");
     
@@ -170,7 +158,7 @@ export function createAutocompletion(){
         options,
         span: /^[\w$]*$/
       }
-    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<" || nodeBefore.name==="," || nodeBefore.name==="ArithOp" || nodeBefore.name==="CompareOp"){
+    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<" || nodeBefore.name==="," || nodeBefore.name==="ArithOp" || nodeBefore.name==="CompareOp" || nodeBefore.name==="return"){
       from=context.pos;
       let scope=method.getScopeAtPosition(from);
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true, scope};

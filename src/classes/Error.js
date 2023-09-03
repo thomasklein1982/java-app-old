@@ -1,9 +1,15 @@
 export class Error{
   constructor(message,node,source){
-    this.from=node.from;
-    this.to=node.to;
+    if(node){
+      this.from=node.from+source.getPositionShift();
+      this.to=node.to+source.getPositionShift();
+      
+    }else{
+      this.from=0;
+      this.to=0;
+    }
     this.line=source.getLine(node.from);
-    this.col=node.from-this.line.startIndex;
+    this.col=this.from-this.line.startIndex;
     if(!message){
       message="Syntax-Fehler";
     }

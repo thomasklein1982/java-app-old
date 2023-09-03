@@ -1,3 +1,4 @@
+import { options } from "../../classes/Options";
 import { Scope } from "../../classes/Scope";
 import { Source } from "../../classes/Source";
 import { CompileFunctions } from "../CompileFunctions";
@@ -31,13 +32,14 @@ export function Block(node,source,scope){
   }
   scope.pushLayer();
   let open=true;
-  while(node.nextSibling){
+  while(node.nextSibling && !node.isBlockEnd){
     node=node.nextSibling;
     if(scope.isNodeBeyondEndPosition(node)){
       return scope;
     }
-    if(node.name==='}'){
+    if(node.name==='}' || options.classOptional && node.type.isError && node.firstChild && node.firstChild.name==="}"){
       open=false;
+      break;
     }else{
       try{
         let f=CompileFunctions.get(node,source);

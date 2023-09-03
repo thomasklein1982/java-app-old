@@ -20,7 +20,6 @@ export function ArgumentList(node,source,scope,parameters){
   }
   let paramNodes=[];
   let i=0;
-  console.log("alist");
   node=node.nextSibling;
   while(node && node.name!==")"){
     if(!parameters || i>=pcount){

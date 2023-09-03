@@ -21,6 +21,7 @@ export class Clazz{
     this.superClazz=null;
     this.errors=null;
     this.src="class "+this.name+"{\n  \n}";
+    /**der erste Kindknoten des ClassBody: */
     this.clazzBody=null;
     this.attributes={};
     this.methods={};
@@ -101,7 +102,7 @@ export class Clazz{
     if(!hasConstructor){
       code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesInitCode+"\nreturn this;}";
     }
-    code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nconsole.error('getInfos',infos,this.$typeArguments);\nreturn infos;}";
+    code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nreturn infos;}";
     code+="\n}";
     return code;
   }
@@ -112,6 +113,16 @@ export class Clazz{
         if(this.typeParameters[i].name===name){
           return this.typeParameters[i];
         }
+      }
+    }
+    return null;
+  }
+
+  getMethodByPosition(pos){
+    for(let i in this.methods){
+      let m=this.methods[i];
+      if(m.containsPosition(pos)){
+        return m;
       }
     }
     return null;
@@ -281,6 +292,10 @@ export class Clazz{
     return false;
   }
 
+  isMainClazz(){
+     return (this.hasStaticMainMethod()||options.mainOptional&&this.isFirstClazz);
+  }
+
   getRuntimeInfos(){
     let superClazz=this.getRealSuperClazz();
     let typeParameters=null;
@@ -308,9 +323,25 @@ export class Clazz{
     return this.name;
   }
 
+  getPositionShift(){
+    if(!this.hasClazzDeclaration){
+      return -12;
+    }else{
+      return 0;
+    }
+  }
+
   generateSrcAndTree(src){
-    var tree=parseJava(src);
-    this.setSrcAndTree(src,tree);
+    let code;
+    if(!this.hasClazzDeclaration){
+      code="class $Main{"+src+"}";
+    }else{
+      code=src;
+    }
+    var tree=parseJava(code);
+    this.setSrcAndTree(code,tree);
+    /**schlechte loesung */
+    this.src=src;
   }
 
   setSrcAndTree(src,tree){
@@ -319,7 +350,7 @@ export class Clazz{
     this.superClazz=null;
     this.attributes={};
     this.methods={};
-    this.source=new Source(src,tree);
+    this.source=new Source(src,tree,this);
   }
 
   compile(fromSource,optimizeCompiler){
@@ -346,14 +377,16 @@ export class Clazz{
     this.hasClazzDeclaration=true;
     this.typeParametersNode=null;
     var node=this.source.tree.topNode.firstChild;
-    if(node.type.name!=="ClassDeclaration"){
+    if(!node || node.type.name!=="ClassDeclaration"){
       if(!(options.classOptional && this.isFirstClazz)){
-        errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",node));
+        errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",this.source.tree.topNode));
         return errors;
       }else{
-        this.name=this.project.getName();
-        this.clazzBody=node;
         this.hasClazzDeclaration=false;
+        console.log("neu parsen mit Klasse aussen rum");
+        this.generateSrcAndTree(this.src);
+        this.clazzBody=this.source.tree.topNode.firstChild.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
+        this.name=this.project.getName();
       }
     }else{
       node=node.firstChild;
@@ -486,45 +519,6 @@ export class Clazz{
     }
   }
 
-  compileMemberNodesWithoutClazzDeclaration(scope,node,attributes,methods){
-    //TODO: WIP
-    console.log("*** compile without class declaration****")
-    let source=this.source;
-    while(node){
-      if(node.name.indexOf("Comment")>=0){
-        node=node.nextSibling;
-        continue;
-      }
-      /**check if attribute or method: */
-      console.log(node.name,source.getText(node));
-      let type;
-      let text=source.getText(node);
-      let pos=text.indexOf("=");
-      if(pos>0){
-        text=text.substring(0,pos);
-      }
-      pos=text.indexOf("(");
-      if(pos>0){
-        /**methode? */
-        type="method";
-      }else if(node.name==="LocalVariableDeclaration"){
-        let next=node.nextSibling;
-        if(next && source.src.charAt(next.from)==="("){
-          type="method2";
-        }else{
-          type="attribute";
-        }
-      }else{
-        type="error";
-      }
-      console.log("ich denke: "+type);
-      if(type==="error"){
-        errors.push(source.createError("Attributs- oder Methodendeklaration erwartet.",node));
-      }
-      node=node.nextSibling;
-    }
-  }
-
   /**
    * Kompiliert alle Member-Deklarationen
    */
@@ -552,11 +546,8 @@ export class Clazz{
     if(!node) return;
     /**Klassenkoerper parsen: */
     let scope=new Scope(this.project);
-    if(this.hasClazzDeclaration){
-      this.compileMemberNodesWithClazzDeclaration(scope,node,attributes,methods);
-    }else{
-      this.compileMemberNodesWithoutClazzDeclaration(scope,node,attributes,methods);
-    }
+    this.compileMemberNodesWithClazzDeclaration(scope,node,attributes,methods);
+    
     return this.errors;
   }
 

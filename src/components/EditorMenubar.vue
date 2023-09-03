@@ -1,7 +1,7 @@
 <template>
   <Menubar :model="items" class="noprint">
     <template #start>
-      <img alt="logo" src="/icon-white-transparent.png" height="40" >
+      <span style="position: relative"><img alt="logo" src="/icon-white-transparent.png" height="40" ><span v-if="isEasy" style="font-size: 60%; color: yellow; writing-mode: vertical-lr;">Easy!</span></span>
     </template>
     <template #end>
       <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-star" @click="$emit('resources')"/>
@@ -17,7 +17,8 @@
 <script>
 export default {
   props: {
-    rightClosed: Boolean
+    rightClosed: Boolean,
+    isEasy: Boolean
   },
   data(){
     return {
