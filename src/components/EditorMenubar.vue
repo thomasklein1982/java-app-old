@@ -1,15 +1,17 @@
 <template>
   <Menubar :model="items" class="noprint">
     <template #start>
-      <span style="position: relative"><img alt="logo" src="/icon-white-transparent.png" height="40" ><span v-if="isEasy" style="font-size: 60%; color: yellow; writing-mode: vertical-lr;">Easy!</span></span>
+      <template v-if="isEasy">
+        <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span v-if="isEasy" style="font-size: 60%; color: yellow; writing-mode: vertical-lr;">Easy!</span></span>
+      </template>
+      <template v-else>
+        <img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" >
+      </template>
     </template>
     <template #end>
-      <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-star" @click="$emit('resources')"/>
-      <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-search" @click="$emit('search')"/>
-      <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-exclamation-circle" @click="$emit('lint')"/>
-      <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-undo" @click="$emit('undo')"/>
-      <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" icon="pi pi-refresh" @click="$emit('redo')"/>
-      <Button class="p-button-secondary" style="margin-right: 0.5rem" label="" :icon="rightClosed? 'pi pi-eye-slash': 'pi pi-eye'" @click="$emit('toggleright')"/>
+      <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-undo" @click="$emit('undo')"/>
+      <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-refresh" @click="$emit('redo')"/>
+      <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" :icon="rightClosed? 'pi pi-eye-slash': 'pi pi-eye'" @click="$emit('toggleright')"/>
     </template>
   </Menubar>  
 </template>
@@ -18,14 +20,19 @@
 export default {
   props: {
     rightClosed: Boolean,
-    isEasy: Boolean
+    isEasy: Boolean,
+    allowTrash: Boolean
   },
   data(){
     return {
-      items: [
+      
+    };
+  },
+  computed: {
+    items(){
+      return [
         {
           label: 'Projekt',
-          icon: 'pi pi-fw pi-file',
           items: [
             {
               label: 'Neu',
@@ -100,8 +107,21 @@ export default {
         },
         {
           label: 'Aktion',
-          icon: 'pi pi-fw pi-pencil',
           items: [
+            {
+              label: 'Ausführen',
+              icon: 'pi pi-fw pi-play',
+              command: (ev)=>{
+                this.$emit("play");
+              }
+            },
+            {
+              label: 'Ausführen (Vollbild)',
+              icon: 'pi pi-fw pi-play',
+              command: (ev)=>{
+                this.$emit("fullscreen");
+              }
+            },
             {
               label: 'Formatieren',
               icon: 'pi pi-fw pi-align-left',
@@ -117,23 +137,57 @@ export default {
               }
             },
             {
-              label: 'Umbenennen',
-              icon: 'pi pi-fw pi-pencil',
+              label: 'Suchen/Ersetzen',
+              icon: 'pi pi-fw pi-search',
               command: (ev)=>{
-                this.$emit("rename");
+                this.$emit("search");
+              }
+            },
+            {
+              label: 'Fehler anzeigen',
+              icon: 'pi pi-fw pi-exclamation-circle',
+              command: (ev)=>{
+                this.$emit("lint");
+              }
+            },
+            {
+              label: 'Löschen',
+              icon: 'pi pi-fw pi-trash',
+              disabled: !this.allowTrash,
+              command: (ev)=>{
+                this.$emit("trash");
               }
             }
+            // {
+            //   label: 'Umbenennen',
+            //   icon: 'pi pi-fw pi-pencil',
+            //   command: (ev)=>{
+            //     this.$emit("rename");
+            //   }
+            // }
           ]
         },
         {
-          label: 'Einstellungen',
-          icon: 'pi pi-cog',
-          command: (ev)=>{
-            this.$emit("settings");
-          }
+          label: "Extras",
+          items: [
+            {
+              label: 'Links',
+              icon: 'pi pi-star',
+              command: (ev)=>{
+                this.$emit("resources");
+              }
+            },
+            {
+              label: 'Einstellungen',
+              icon: 'pi pi-cog',
+              command: (ev)=>{
+                this.$emit("settings");
+              }
+            }
+          ]
         }
-      ]
-    };
+      ];
+    }
   },
   methods: {
     updateItems(){

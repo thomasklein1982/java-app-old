@@ -17,6 +17,13 @@
 <script>
 import {options} from '../classes/Options';
 export default {
+  watch: {
+    template(nv,ov){
+      if(!nv){
+        this.template=ov;
+      }
+    }
+  },
   computed: {
     nameerror(){
       if(this.name.length===0){
@@ -49,7 +56,7 @@ export default {
             'class NAME {\n  UI ui;\n  void onStart( ) {\n    ui = new UI( );\n  }\n  \n  void onAction( JComponent trigger ) {\n    \n  }\n\n  public static void main(String[] args){\n    new NAME();\n  }\n}',
             {
               type: "UI",
-              code: '{"name":"UI","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
+              code: '{"name":"Screen","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
             }
           ]
         },
@@ -119,6 +126,16 @@ export default {
         code[0]=code[0].substring(pos+1,pos2);
         code[0]=code[0].trim();
       }
+      for(let i=0;i<code.length;i++){
+        code[0]=js_beautify(code[0],{
+          "indent_size": 2,
+          "max_preserve_newlines": 2,
+          "indent_empty_lines": true,
+          "space_in_paren": true,
+          "space_in_empty_paren": true
+        });
+      }
+      
       this.$emit("newapp",name,code);
       this.setVisible(false);
     },

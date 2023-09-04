@@ -169,6 +169,7 @@ export class Project{
 </html>`;
     return code;
   }
+  
   getMainClazz(){
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];

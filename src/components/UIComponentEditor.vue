@@ -43,19 +43,27 @@
           <CodeMirrorEditor :language="component.valueType" v-model="component.value"/>
         </td>
       </tr>
-      <template v-if="component.internalWidth!==undefined">
+      <template v-if="component.maxX!==undefined">
+        <tr>
+          <td>min. x:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.minX" style="width: 95%"/></td>
+        </tr>
         <tr>
           <td>max. x:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.internalWidth" style="width: 95%"/></td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.maxX" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>min. y:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.minY" style="width: 95%"/></td>
         </tr>
         <tr>
           <td>max. y:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.internalHeight" style="width: 95%"/></td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.maxY" style="width: 95%"/></td>
         </tr>
       </template>
       <tr v-if="component.onAction!==undefined">
         <td>onAction auslösen?</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.onAction" style="width: 95%"/></td>
+        <td><InputSwitch v-model="component.onAction"/></td>
       </tr>
       <tr>
         <td>ActionCommand:</td>

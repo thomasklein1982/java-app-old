@@ -402,7 +402,7 @@ function defineJPanel(Clazz,Java){
 function defineCanvas(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'double', name: 'internalWidth'}, {type: 'double', name: 'internalHeight'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'double', name: 'minX'},{type: 'double', name: 'maxX'},{type: 'double', name: 'minY'}, {type: 'double', name: 'maxY'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JCPanel;

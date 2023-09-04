@@ -10,11 +10,17 @@ import { VitePWA } from "vite-plugin-pwa";
 // https://thomaskl.uber.space/Webapps/vite-sw-inject/
 // 
 export default defineConfig({
+  esbuild: {
+    supported: {
+      'top-level-await': true
+    },
+  },
   plugins: [
     vue(),
     VitePWA({
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,ttf,eot,woff,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,ttf,eot,woff,woff2}'],
+        maximumFileSizeToCacheInBytes: 3000000,
       },
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'icon-transparent.png','Logo.png', 'additionalJSCode.js','icon-transparent.png','assets/primeicons.c9eaf535.eot','assets/*.ttf'],  
       //assetsInclude: ["assets/*.ttf"],

@@ -5,13 +5,28 @@
     
     <p>Version {{$root.version}}</p>
     <p>Mit JavaApp kannst du Web-Apps mit Java programmieren, die auf allen Geräten laufen.</p>
-    <p v-if="isEasy">Du hast JavaApp im "Easy"-Modus gestartet. Das bedeutet, dass einige Dinge vereinfacht wurden.</p>
+    
     <p>Wähle eine der folgenden Möglichkeiten:</p>
     <div style="text-align: center">
       <Button :disabled="lastProject===null" style="margin: 0.5rem;" icon="pi pi-replay" @click="restoreApp()" label="Letzte App wiederherstellen"/>
       <Button style="margin: 0.5rem;" icon="pi pi-file" @click="$refs.dialogNewApp.setVisible(true)" label="Neue App erstellen"/>
       <Button style="margin: 0.5rem;" icon="pi pi-upload" @click="clickUploadApp()" label="App hochladen"/>
     </div>
+
+    <InlineMessage style="max-width: 60%; margin-top: 0.8rem" severity="info">
+      <template v-if="isEasy">
+        JavaApp ist im "Easy"-Modus. Das bedeutet, dass einige Dinge vereinfacht wurden.
+        <span style="display: block; text-align: center">
+          <Button severity="secondary" @click="changeMode(false)" label="In den normalen Modus wechseln"/>
+        </span>
+      </template>
+      <template v-else>
+        JavaApp ist im normalen Modus. Damit schreibst du ganz normalen Java-Code.
+        <span style="display: block; text-align: center">
+          <Button severity="secondary" @click="changeMode(true)" label="In den Easy-Modus wechseln"/>
+        </span>
+      </template>
+    </InlineMessage>
     <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
   </div>
 </template>
@@ -22,6 +37,8 @@ import { loadLocally } from "../functions/helper.js";
 import { STORAGE_PROJECT } from "../consts/strings.js";
 import { uploadProject } from "../functions/uploadProject.js";
 import NewAppDialog from "./NewAppDialog.vue";
+import InlineMessage from "primevue/inlinemessage";
+import {options} from "../classes/Options.js";
 
 export default {
   props: {
@@ -41,6 +58,14 @@ export default {
     });
   },
   methods: {
+    async changeMode(easy){
+      if(easy){
+        await options.changeToEasy();
+      }else{
+        await options.changeToNormal();
+      }
+      location.reload();
+    },
     async restoreApp(){
       var p=new Project();
       await p.fromSaveString(this.lastProject);
@@ -58,7 +83,8 @@ export default {
     }
   },
   components: {
-    NewAppDialog
+    NewAppDialog,
+    InlineMessage
   }
 }
 </script>

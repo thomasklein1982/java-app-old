@@ -140,7 +140,11 @@
       imageName(){
         let name=this.component.value;
         let pos=name.lastIndexOf("/");
-        return name.substring(pos+1);
+        name=name.substring(pos+1);
+        if(name.length>20){
+          name=name.substring(0,17)+"...";
+        }
+        return name;
       },
       showName(){
         if(this.component instanceof UIClazz){

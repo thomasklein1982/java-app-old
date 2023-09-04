@@ -35,6 +35,17 @@
           });
         }
       },
+      runInFullscreen(){
+        this.stop();
+        this.reload(true);
+        if(!this.frame) return;
+        this.frame.style.position="fixed";
+        this.frame.style.left="0";
+        this.frame.style.right="0";
+        this.frame.style.top="0";
+        this.frame.style.bottom="0";
+        this.frame.focus();
+      },
       resume(){
         if(this.frame){
           this.frame.contentWindow.postMessage({
@@ -55,7 +66,7 @@
         }
         this.frame=null;
       },
-      reload(){
+      reload(noDebugging){
         let frame=document.createElement('iframe');
         frame.style="background-color: white; width: 100%; height: 100%;";
         if(this.$refs.wrapper.firstChild){
@@ -63,7 +74,8 @@
         }
         this.$refs.wrapper.appendChild(frame);
         console.log("start app",this.breakpoints);
-        let code=this.project.getFullAppCode("$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");");
+        let prefix=noDebugging?"console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
+        let code=this.project.getFullAppCode(prefix);
         let doc=frame.contentWindow.document;
         doc.open();
         doc.write(code);

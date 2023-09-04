@@ -633,10 +633,12 @@ function additionalJSCode(){
   }
 
   class Canvas extends JPanel{
-    constructor(internalWidth,internalHeight,x,y,width,height){
+    constructor(minX,maxX,minY,maxY,x,y,width,height){
       super(x,y,width,height);
-      this.$el=ui.canvas(internalWidth,internalHeight,x,y,width,height);
+      this.$el.parentNode.removeChild(this.$el);
+      this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.component=this;
+      this.setOrigin(-minX,-minY);
     }
     add(comp){
       this.$el.canvas.add(comp.$el);

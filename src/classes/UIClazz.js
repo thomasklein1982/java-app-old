@@ -61,10 +61,12 @@ export class UIClazz {
       }
     },
     Canvas: {
-      params: ["internalWidth","internalHeight","x","y","width","height"],
+      params: ["minX","maxX","minY","maxY","x","y","width","height"],
       labels: {
-        internalWidth: "Die Breite des Koordinatensystems.",
-        internalHeight: "Die Höhe des Koordinatensystems"
+        minX: "Minimale x-Koordinate.",
+        maxX: "Maximale x-Koordinate.",
+        minY: "Minimale y-Koordinate.",
+        maxY: "Maximale y-Koordinate."
       }
     }
   };
@@ -548,7 +550,7 @@ export class UIClazz {
       if(c.name){
         newCode+="\nthis."+c.name+"= "+last+";";
       }
-      if(c.onAction==="true"){
+      if(c.onAction===true){
         if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
           newCode+="\n"+last+".$el.onchange=function(){$main.onAction(this.component);}";
         }else{
@@ -589,6 +591,7 @@ export class UIClazz {
           code=".value="+c.value+";";
         }else{
           scope.clearReferencedVariables();
+          
           code=".value="+this.parseInterpolatedString(scope,c.value)+";";
           if(scope.referencedVariablesCount>0){
             updateCode+="\ncomponent"+code;

@@ -8,6 +8,7 @@
       <EditorMenubar
         :right-closed="rightClosed"
         :is-easy="isEasy"
+        :allow-trash="activeTab>0"
         @download="downloadProject"
         @upload="uploadProject"
         @new="$refs.dialogNewApp.setVisible(true)"
@@ -27,6 +28,9 @@
         @css="$refs.dialogCSS.setVisible(true)"
         @settings="$refs.dialogSettings.setVisible(true)"
         @print="$refs.printPreview.open()"
+        @trash="trashCurrentClazz()"
+        @play="resume()"
+        @fullscreen="playInFullscreen()"
       />
       <LinksDialog
         ref="dialogResources"
@@ -59,6 +63,7 @@
                 @select="updateSelectedUIComponent"
                 @recompile="compileProjectAndUpdateUIPreview()"
                 @isolatedupdate="updateUIPreview()"
+                ref="uiEditor"
               >
               </UIEditor>
               <CodeMirror
@@ -109,11 +114,10 @@
         </SplitterPanel>
       </Splitter>
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
-        <Button v-if="currentClazz && activeTab>0" icon="pi pi-trash" @click="trashCurrentClazz()" style="margin-right: 0.5rem"/>
-        <span class="p-buttonset" v-if="!isCurrentClazzUIClazz">
-          <Button class="p-button-lg" :disabled="running && !paused" @click="resume()" icon="pi pi-play" />
+        <span class="p-buttonset" v-if="!isCurrentClazzUIClazz && running">
+          <Button class="p-button-lg" v-if="paused" @click="resume()" icon="pi pi-play" />
           <Button class="p-button-lg" v-if="paused" @click="step()" icon="pi pi-arrow-right" />
-          <Button class="p-button-lg" v-if="running" @click="stop()" icon="pi pi-times" />
+          <Button class="p-button-lg" @click="stop()" icon="pi pi-times" />
         </span>
       </span>
     </template>
@@ -177,12 +181,16 @@ export default {
   },
   watch: {
     activeTab(nv,ov){
-      console.log("change tab")
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         console.log("update linter");
         ed.updateLinter();
       }
+      // if(this.$refs.uiEditor && nv<this.$refs.uiEditor.length){
+      //   let ed=this.$refs.uiEditor[nv];
+      //   console.log("update ui editor");
+      //   ed.reset();
+      // }
     },
     sizeCode(nv,ov){
       if(nv!==ov){
@@ -390,6 +398,12 @@ export default {
         this.$refs.editor[i].clearRuntimeErrors();
       }
     },
+    playInFullscreen(){
+      this.$root.resetCurrent();
+      this.clearRuntimeErrors();
+      this.running=true;
+      this.$refs.preview.runInFullscreen();
+    },
     resume(){
       if(this.rightClosed){
         this.closeRightAfterStopping=true;
@@ -431,6 +445,9 @@ export default {
       this.project.addClazz(c);
     },
     trashCurrentClazz(){
+      if(!this.currentClazz || this.activeTab===0){
+        return;
+      }
       let a=confirm("Willst du die Klasse '"+this.currentClazz.name+"' wirklich löschen?");
       if(a){
         this.project.removeClazz(this.currentClazz);
