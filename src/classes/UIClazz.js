@@ -592,7 +592,7 @@ export class UIClazz {
         }else{
           scope.clearReferencedVariables();
           
-          code=".value="+this.parseInterpolatedString(scope,c.value)+";";
+          code=".setValue("+this.parseInterpolatedString(scope,this.project.handleAssetsInCode(c.value))+");";
           if(scope.referencedVariablesCount>0){
             updateCode+="\ncomponent"+code;
           }

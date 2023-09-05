@@ -48,8 +48,10 @@ export class Project{
     this.uiClazzCount=count;
     return count;
   }
-  prepareCSS(cssText){
-    let s=cssText.split("asset(");
+  handleAssetsInCode(code,before,after){
+    if(!before) before="";
+    if(!after) after="";
+    let s=code.split("asset(");
     let t="";
     let referencedAssets={};
     for(let i=0;i<s.length;i++){
@@ -62,7 +64,9 @@ export class Project{
         if(asset){
           referencedAssets[assetName]=asset;
           //t+="var(--"+assetName+")";
-          t+="url("+asset.file.code+");"
+          t+=before+asset.file.code+after;
+        }else{
+          t+=assetName;
         }
         t+=s[i].substring(pos+1);
       }
@@ -74,6 +78,9 @@ export class Project{
     // }
     // prefix+="}\n";
     return t;
+  }
+  prepareCSS(cssText){
+    return this.handleAssetsInCode(cssText,"url(",")");
   }
   getAssetByName(name){
     for(let i=0;i<this.assets.length;i++){

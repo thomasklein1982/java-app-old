@@ -114,10 +114,10 @@
         </SplitterPanel>
       </Splitter>
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
-        <span class="p-buttonset" v-if="!isCurrentClazzUIClazz && running">
-          <Button class="p-button-lg" v-if="paused" @click="resume()" icon="pi pi-play" />
+        <span class="p-buttonset" v-if="!isCurrentClazzUIClazz">
+          <Button class="p-button-lg" v-if="!running || paused" @click="resume()" icon="pi pi-play" />
           <Button class="p-button-lg" v-if="paused" @click="step()" icon="pi pi-arrow-right" />
-          <Button class="p-button-lg" @click="stop()" icon="pi pi-times" />
+          <Button class="p-button-lg" v-if="running" @click="stop()" icon="pi pi-times" />
         </span>
       </span>
     </template>
