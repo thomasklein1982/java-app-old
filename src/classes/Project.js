@@ -369,7 +369,8 @@ export class Project{
       clazzesSourceCode: t,
       database: db,
       css: this.css,
-      assets: this.assets
+      assets: this.assets,
+      name: this.name
     })+stop;
   }
   async fromSaveString(appcode){
@@ -392,6 +393,9 @@ export class Project{
       }
       if(o.assets){
         this.assets=o.assets;
+      }
+      if(o.name){
+        this.name=o.name;
       }
     }catch(e){
       return;
