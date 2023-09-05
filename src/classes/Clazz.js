@@ -82,7 +82,6 @@ export class Clazz{
         if(!(c instanceof UIClazz)) continue;
         let name=c.name;
         onStartPrecode+="\nthis."+name+"=(await $App.asyncFunctionCall(new "+c.name+"(),'$constructor',[{$hideFromConsole:true},]));";
-        console.log("ui count",this.project.getUiClazzCount());
         if(this.project.getUiClazzCount()>1){
           onStartPrecode+="\nthis."+name+".setVisible(false);";
         }

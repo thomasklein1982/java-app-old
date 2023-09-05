@@ -607,6 +607,9 @@ export class UIClazz {
         updateCode+="\nif(c && c.component && c.component.$update){c.component.$update.call(c.component.uiClazz,c.component);}";
         updateCode+="\n}";
       }
+      if(c.invisible){
+        newCode+="\n"+last+".setVisible(false);";
+      }
       if(updateCode.length>0){
         newCode+="\n"+last+".$update=function(component){"+updateCode+"};";
       }

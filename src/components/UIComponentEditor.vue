@@ -43,6 +43,14 @@
           <CodeMirrorEditor :language="component.valueType" v-model="component.value"/>
         </td>
       </tr>
+      <tr v-if="component.placeholder!==undefined">
+        <td>Platzhalter:</td>
+        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.placeholder" style="width: 95%"/></td>
+      </tr>
+      <tr v-if="!component.controlComponent && !isUIClazz">
+        <td>Unsichtbar:</td>
+        <td><InputSwitch @change="emitUpdate()" v-model="component.invisible"/></td>
+      </tr>
       <template v-if="component.maxX!==undefined">
         <tr>
           <td>min. x:</td>
@@ -68,10 +76,6 @@
       <tr>
         <td>ActionCommand:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.actionCommand" style="width: 95%"/></td>
-      </tr>
-      <tr v-if="component.placeholder!==undefined">
-        <td>Platzhalter:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.placeholder" style="width: 95%"/></td>
       </tr>
       <template v-if="component.template!==undefined">
         <tr>
@@ -149,6 +153,9 @@ import TemplateDialog from './TemplateDialog.vue';
     computed: {
       type(){
         return UIClazz.UIClazzes[this.component.type];
+      },
+      isUIClazz(){
+        return this.component instanceof UIClazz;
       },
       uiClazz(){
         if(this.component.type!=='UIClazz')
