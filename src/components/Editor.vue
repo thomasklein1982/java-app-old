@@ -9,6 +9,7 @@
         :right-closed="rightClosed"
         :is-easy="isEasy"
         :allow-trash="activeTab>0"
+        :current-clazz="currentClazz"
         @download="downloadProject"
         @upload="uploadProject"
         @new="$refs.dialogNewApp.setVisible(true)"
