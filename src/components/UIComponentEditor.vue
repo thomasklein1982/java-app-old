@@ -4,6 +4,7 @@
       <Button @click="showExpandedDialog=true" icon="pi pi-window-maximize"/>&nbsp;{{ componentName }}
     </div>
     <table style="width: 100%">
+      <tr><td style="width: 0"></td><td></td></tr>
       <tr v-if="!component.controlComponent">
         <td>Name:</td>
         <td><InputText spellcheck="false" v-model.trim="component.name" @change="emitRecompile()" style="width: 95%"/></td>
@@ -40,7 +41,7 @@
           <TextArea auto-resize rows="5" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
         </td>
         <td v-else>
-          <CodeMirrorEditor :language="component.valueType" v-model="component.value"/>
+          <CodeMirrorEditor style="max-width: 95%" :language="component.valueType" v-model="component.value"/>
         </td>
       </tr>
       <tr v-if="component.placeholder!==undefined">
@@ -97,7 +98,8 @@
             <InputText spellcheck="false" @change="emitUpdate()" v-model="component.cssCode" style="width: 95%"/>
           </td>
           <td v-else>
-            <TextArea spellcheck="false" @change="emitUpdate()" v-model="component.cssCode" style="width: 95%"/>
+            <CodeMirrorEditor language="css" v-model="component.cssCode" style="max-width: 95%"/>
+            
           </td>
         </tr>
         <tr>
