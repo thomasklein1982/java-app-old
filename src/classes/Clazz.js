@@ -385,7 +385,7 @@ export class Clazz{
         console.log("neu parsen mit Klasse aussen rum");
         this.generateSrcAndTree(this.src);
         this.clazzBody=this.source.tree.topNode.firstChild.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
-        this.name=this.project.getName();
+        this.name="Main";
       }
     }else{
       node=node.firstChild;
