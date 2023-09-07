@@ -25,7 +25,7 @@ export default {
       let style={};
       if(template.length===0){
         return {
-          text: ["Alle Komponenten werden absolut positioniert, d.h., nach ihren x- und y-Koordinaten mit der angegebenen Breite und Höhe."],
+          text: ["Alle Komponenten werden 'normal' platziert."],
           template: "",
           error: false,
           style
@@ -94,7 +94,7 @@ export default {
       selectedExample: null,
       examples: [
         {
-          name: "absolut",
+          name: "normal",
           template: ""
         },
         {

@@ -80,10 +80,9 @@
       </tr>
       <template v-if="component.template!==undefined">
         <tr>
-          <td rowSpan="2">Template:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.template" style="width: 95%" /></td>
+          <td rowSpan="1">Layout:</td>
+          <td ><div style="width: 95%" :style="{display: 'flex'}"><InputText spellcheck="false" @change="emitUpdate()" v-model="component.template" :style="{flex: 1}" /><Button icon="pi pi-pencil" label="" @click="$refs.templateDialog.setVisible(true,component.template)"/></div> </td>
         </tr>
-        <tr><td><Button icon="pi pi-pencil" label="Bearbeiten" @click="$refs.templateDialog.setVisible(true,component.template)"/></td></tr>
       </template>
       <template v-if="component.controlComponent">
         <tr v-for="(v,a) in component.controlComponent">
@@ -93,7 +92,7 @@
       </template>
       <template v-else>
         <tr>
-          <td>CSS-Code:</td>
+          <td>CSS-Regeln:</td>
           <td v-if="!maximized">
             <InputText spellcheck="false" @change="emitUpdate()" v-model="component.cssCode" style="width: 95%"/>
           </td>

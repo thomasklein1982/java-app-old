@@ -190,8 +190,9 @@ export default {
       // if(this.$refs.uiEditor && nv<this.$refs.uiEditor.length){
       //   let ed=this.$refs.uiEditor[nv];
       //   console.log("update ui editor");
-      //   ed.reset();
+      //   ed.deselectComponent(true);
       // }
+      this.selectedUIComponent=null;
     },
     sizeCode(nv,ov){
       if(nv!==ov){

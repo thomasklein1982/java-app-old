@@ -1,3 +1,4 @@
+import { options } from "../../classes/Options";
 import { createAttribute } from "../helper/createAttribute";
 import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
@@ -18,6 +19,12 @@ export function defineUIClazzes(Java){
 
 function defineJComponent(Clazz,Java){
   window.JComp=Clazz;
+  if(options.isEasyMode()){
+    createAttribute({
+      name: "actionCommand",
+      type: Java.datatypes.String,
+    },Clazz,false);
+  }
   createMethod({
     name: 'setValue',
     args: [
@@ -31,6 +38,16 @@ function defineJComponent(Clazz,Java){
     ],
     returnType: 'boolean'
   },Clazz,false,false);
+  createMethod({
+    name: 'show',
+    args: [
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'hide',
+    args: [
+    ]
+  },Clazz,false,false,Java);
   createMethod({
     name: 'setVisible',
     args: [

@@ -23,7 +23,7 @@
       </template>
     </draggable>
     <div class="ui-clazz" :style="{flex: 1}" style="overflow: auto">
-      <UIComponent :auto-update="settings.autoUpdateUI" :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="emitRecompile" @isolatedupdate="emitIsolatedUpdate" @deselect-component="deselectComponent()"/>
+      <UIComponent :auto-update="settings.autoUpdateUI" :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="emitRecompile" @isolatedupdate="emitIsolatedUpdate" @deselect-component="deselectComponent()" @duplicate-self="duplicateUIClazz()" @remove-self="removeUIClazz()"/>
       <div style="text-align: right">
         <Button @click="showCodeDialog()" icon="pi pi-file-edit"/>
       </div>
@@ -35,6 +35,7 @@
   import UIComponent from "./UIComponent.vue";
   import draggable from "vuedraggable";
   import UIEditorCode from "./UIEditorCode.vue";
+  import { UIClazz } from "../classes/UIClazz";
 
   export default{
     props: {
@@ -81,6 +82,21 @@
       handleAdd(ev){
         console.log("add",ev);
       },
+      duplicateUIClazz(){
+        let data=JSON.parse(JSON.stringify(this.clazz.getSaveObject()));
+        let clazz=new UIClazz(this.clazz.name,this.clazz.project);
+        clazz.restoreFromSaveObject(data);
+        let suffix=1;
+        let name=this.clazz.name;
+        while(this.clazz.project.getClazzByName(name+"_"+suffix)){
+          suffix++;
+        }
+        clazz.name=name+"_"+suffix;
+        this.clazz.project.clazzes.push(clazz);
+      },
+      removeUIClazz(){
+        this.clazz.project.removeClazz(this.clazz);
+      },
       cloneItem(item){
         
         let copy=JSON.parse(JSON.stringify(item));
@@ -108,8 +124,9 @@
       reset(){
         this.selectedComponent=null;
       },
-      deselectComponent(){
+      deselectComponent(noEvent){
         this.selectedComponent=null;
+        if(noEvent) return;
         this.$emit("select",this.selectedComponent);
       }
     },

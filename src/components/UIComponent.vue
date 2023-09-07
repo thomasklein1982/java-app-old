@@ -13,7 +13,7 @@
           <input type="text" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JImage'">
-          <div class="jimage"><span class="pi pi-image"/> {{ isEditable? imageName:'Bild' }}</div>
+          <div class="jimage"><span class="pi pi-image"/> {{ isEditable? imageName:'JImage' }}</div>
         </template>
         <template v-if="type==='JCheckBox'">
           <input type="checkbox" :checked="component.value"/> {{component.label}}
@@ -52,6 +52,8 @@
         <template v-if="isUIClazz">
           <div class="ui-clazz-top"  :style="{display: 'flex', 'align-items': 'center'}" >
             <span @click="handleClick" :style="{flex: 1, alignSelf: 'stretch'}">UI-Klasse {{component.name}}</span>
+            <Button icon="pi pi-copy" @click="clickDuplicateUIClazz()"/>
+            <Button icon="pi pi-trash" @click="clickRemoveUIClazz($event)"/>
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
           </div>
           <TextArea class="ui-clazz-variables" auto-resize style="width: 100%" v-model="component.variablesRaw" @change="$emit('recompile')"/>
@@ -189,6 +191,22 @@
       },
       clickDuplicate(){
         this.$emit("duplicate-child");
+      },
+      clickDuplicateUIClazz(){
+        this.$emit("duplicate-self");
+      },
+      clickRemoveUIClazz(event){
+        this.$confirm.require({
+          target: event.currentTarget,
+          message: 'Diese UI-Klasse löschen?',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            this.$emit("remove-self");
+          },
+          reject: () => {
+              //callback to execute when user rejects the action
+          }
+        });
       },
       duplicateSelectedChildComponent(){
         console.log(this.selectedComponent);

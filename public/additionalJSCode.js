@@ -350,6 +350,12 @@ function additionalJSCode(){
       let r2=comp.$el.getBoundingClientRect();
       return !(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top);
     }
+    show(){
+      this.setVisible(true);
+    }
+    hide(){
+      this.setVisible(false);
+    }
     setVisible(v){
       this.visible=v;
       this.$el.visible=v;
