@@ -53,7 +53,7 @@ export default {
           name: "App mit UI",
           description: "Eine leere App mit einer UI-Klasse.",
           code: [
-            'class NAME {\n  UI ui;\n  void onStart( ) {\n    ui = new UI( );\n  }\n  \n  void onAction( JComponent trigger ) {\n    \n  }\n\n  public static void main(String[] args){\n    new NAME();\n  }\n}',
+            'class NAME {\n  Screen screen;\n  void onStart( ) {\n    screen = new Screen( );\n  }\n  \n  void onAction( JComponent trigger ) {\n    \n  }\n\n  public static void main(String[] args){\n    new NAME();\n  }\n}',
             {
               type: "UI",
               code: '{"name":"Screen","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
