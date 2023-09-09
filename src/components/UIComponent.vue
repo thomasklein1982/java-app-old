@@ -10,7 +10,7 @@
           <div class="component jlabel">{{component.value}}</div>
         </template>
         <template v-if="type==='JTextField'">
-          <input type="text" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
+          <input type="text" size="1" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JImage'">
           <div class="jimage"><span class="pi pi-image"/> {{ isEditable? imageName:'JImage' }}</div>
@@ -19,7 +19,7 @@
           <input type="checkbox" :checked="component.value"/> {{component.label}}
         </template>
         <template v-if="type==='JTextArea'">
-          <textarea type="text" class="component jtextarea" :value="isEditable? component.value:'JTextArea'" :placeholder="component.placeholder"/>
+          <textarea type="text" style="min-width:0" class="component jtextarea" :value="isEditable? component.value:'JTextArea'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JComboBox'">
           <select class="component jcombobox">
@@ -51,7 +51,7 @@
       <div>
         <template v-if="isUIClazz">
           <div class="ui-clazz-top"  :style="{display: 'flex', 'align-items': 'center'}" >
-            <span @click="handleClick" :style="{flex: 1, alignSelf: 'stretch'}">UI-Klasse {{component.name}}</span>
+            <span @click="handleClick" :style="{flex: 1, alignSelf: 'stretch'}">UI-Klasse {{uiClazzName}}</span>
             <Button icon="pi pi-copy" @click="clickDuplicateUIClazz()"/>
             <Button icon="pi pi-trash" @click="clickRemoveUIClazz($event)"/>
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
@@ -69,12 +69,12 @@
           <div v-if="type==='Canvas'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Canvas
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
-          <div v-else-if="type==='UIClazz'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{component.componentName}}
+          <div v-else-if="type==='UIClazz'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{customComponentName}}
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
-          <div v-else-if="type==='For'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Wiederhole für <strong>{{component.controlComponent.variable}}</strong> = <strong>{{component.controlComponent.min}}</strong> bis <strong>{{component.controlComponent.max}}</strong>:
+          <div v-else-if="type==='For'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Wiederhole <template v-if="isEditable">für <strong>{{component.controlComponent.variable}}</strong> = <strong>{{component.controlComponent.min}}</strong> bis <strong>{{component.controlComponent.max}}</strong>:</template>
           </div>
-          <div v-else-if="type==='If'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Falls <strong>{{component.controlComponent.condition}}</strong>:
+          <div v-else-if="type==='If'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Falls <template v-if="isEditable"><strong>{{component.controlComponent.condition}}</strong>:</template>
           </div>
           <div v-else-if="type==='ElseIf'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Ansonsten falls <strong>{{component.controlComponent.condition}}</strong>:
           </div>
@@ -139,6 +139,25 @@
       }
     },
     computed: {
+      uiClazzName(){
+        let name=this.component.name;
+        if(!name) return null;
+        if(name.length>13){
+          name=name.substring(0,10)+"...";
+        }
+        return name;
+        
+      },
+      customComponentName(){
+        if(this.component.type==="UIClazz"){
+          let name=this.component.componentName;
+          if(name.length>13){
+            name=name.substring(0,10)+"...";
+          }
+          return name;
+        }
+        return null;
+      },
       imageName(){
         let name=this.component.value;
         let pos=name.lastIndexOf("/");
@@ -319,9 +338,14 @@
   }
   .jpanel-top,.jpanel-bottom{
     width: 100%;
-    min-height: 0.8cm;
-    line-height: 0.8cm;
     padding: 0.2rem;
+  }
+  .jpanel-top{
+    line-height: 0.8cm;
+  }
+  .jpanel-bottom{
+    min-height: 0.2cm;
+    line-height: 0.2cm;
   }
   .jpanel-color,.jpanel-left,.jpanel-top,.jpanel-bottom{
     background-color: #DDD;

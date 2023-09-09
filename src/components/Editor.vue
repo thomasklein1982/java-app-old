@@ -55,7 +55,7 @@
           <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
             <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+i">
               <template #header>
-                {{c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
+                {{i!==activeTab && c.name.length>10? c.name.substring(0,10)+"...":c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
               </template>
               <UIEditor 
                 v-if="isUIClazz(c)" 

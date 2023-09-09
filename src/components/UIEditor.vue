@@ -60,7 +60,21 @@
     },
     data: function(){
       return {
-        componentList: [{type: "JPanel", components: [], template: "1", onAction: false, actionCommand: ""}, {type: "JLabel", value: "JLabel", valueType: "html", onAction: false, actionCommand: ""},{type: "JButton", value: "JButton", valueType: "html", actionCommand: ""},{type: "JTextField", inputType: "text", value: "", placeholder: "JTextField", valueType: "inline-text", onAction: false, actionCommand: ""},{type: "JTextArea", value: "", placeholder: "JTextArea", valueType: "text"}, {type: "JCheckBox", value: true, label: "JCheckBox", valueType: "Boolean", onAction: true, actionCommand: ""}, {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]',valueType: "text", onAction: false, actionCommand: ""}, {type: "DataTable"}, {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png", valueType: "text", onAction: false, actionCommand: ""}, {type: "Canvas", components: [], minX: 0, maxX: 100, minY: 0, maxY: 100, onAction: false, actionCommand: ""}, {type: "For", controlComponent: {min: 1, max: 10, variable: "i"}}, {type: "If", controlComponent: {condition: "true"}}, {type: "ElseIf", controlComponent: {condition: "true"}}, {type: "Else", controlComponent: {}}],
+        componentList: [
+          {type: "JPanel", components: [], template: "1", onAction: false, actionCommand: ""}, 
+          {type: "JLabel", value: "JLabel", valueType: "html", onAction: false, actionCommand: ""},
+          {type: "JButton", value: "JButton", valueType: "html", actionCommand: ""},
+          {type: "JTextField", inputType: "text", value: "", placeholder: "JTextField", valueType: "inline-text", onAction: false, actionCommand: ""},
+          {type: "JTextArea", value: "", placeholder: "JTextArea", valueType: "text"}, 
+          {type: "JCheckBox", value: true, label: "JCheckBox", valueType: "Boolean", onAction: true, actionCommand: ""}, 
+          {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]',valueType: "text", onAction: false, actionCommand: ""}, {type: "DataTable"}, 
+          {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png", valueType: "text", onAction: false, actionCommand: ""}, 
+          {type: "Canvas", components: [], minX: 0, maxX: 100, minY: 0, maxY: 100, onAction: false, actionCommand: ""}, 
+          {type: "For", controlComponent: {min: 1, max: 10, variable: "i"}}, 
+          {type: "If", controlComponent: {condition: "true"}}, 
+          //{type: "ElseIf", controlComponent: {condition: "true"}}, 
+          //{type: "Else", controlComponent: {}}
+        ],
         selectedComponent: null
       };
     },
