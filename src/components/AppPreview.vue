@@ -1,5 +1,5 @@
 <template>
-  <div :style="{flex: 1}" style="position: relative; width: 100%; height: 100%;">
+  <div :style="{flex: 1}" style="position: relative; width: 100%; height: 100%;z-index:100">
     <div ref="wrapper" style="width: 100%; height: 100%;"></div>
     <div v-if="paused" style="position: absolute; top: 3px; right: 3px">Angehalten...</div>
   </div>

@@ -324,7 +324,7 @@ export class Clazz{
 
   getPositionShift(){
     if(!this.hasClazzDeclaration){
-      return -12;
+      return -11;
     }else{
       return 0;
     }

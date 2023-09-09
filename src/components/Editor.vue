@@ -90,8 +90,8 @@
         <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
           <Splitter :gutter-size="splitterSize" layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
             <SplitterPanel style="overflow: hidden;">
-              <UIPreview ref="uipreview" v-show="isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
-              <AppPreview v-show="!isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
+              <UIPreview ref="uipreview" v-show="!running && isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
+              <AppPreview v-show="running || !isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
               <UIComponentEditor 
@@ -114,8 +114,8 @@
           </Splitter>
         </SplitterPanel>
       </Splitter>
-      <span style="position: fixed; bottom: 0.5rem; right: 0.5rem">
-        <span class="p-buttonset" v-if="!isCurrentClazzUIClazz">
+      <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
+        <span class="p-buttonset" v-if="running || !isCurrentClazzUIClazz">
           <Button class="p-button-lg" v-if="!running || paused" @click="resume()" icon="pi pi-play" />
           <Button class="p-button-lg" v-if="paused" @click="step()" icon="pi pi-arrow-right" />
           <Button class="p-button-lg" v-if="running" @click="stop()" icon="pi pi-times" />
