@@ -43,8 +43,8 @@
               </div>
             </div>
             <div :style=previewStyle>
-              <div v-for="i in previewCellcount" style="border: 1pt dashed black">
-                <div style="background-color: white; border: 1pt solid black; width: 0.5cm; height: 0.5cm">
+              <div v-for="i in previewCellcount" style="border: 1pt dashed white">
+                <div style="background-color: white; width: 0.5cm; height: 0.5cm">
 
               </div>
               </div>

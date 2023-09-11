@@ -4771,6 +4771,14 @@ window.appJScode=function(){
           label.innerHTML=placeholdertext;
           b.appendChild(label);
           b.type="checkbox";
+          Object.defineProperty(b,"disabled",{
+            get: function(){
+              return b.childNodes[0].disabled;
+            },
+            set: function(v){
+              b.childNodes[0].disabled=v;
+            }
+          });
         }else if(type==="file"){
           var b=$App.createElement("input");
           b.type=type;

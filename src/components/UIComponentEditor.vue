@@ -84,6 +84,10 @@
           <td ><div style="width: 95%" :style="{display: 'flex'}"><InputText spellcheck="false" @change="emitUpdate()" v-model="component.template" :style="{flex: 1}" /><Button icon="pi pi-pencil" label="" @click="$refs.templateDialog.setVisible(true,component.template)"/></div> </td>
         </tr>
       </template>
+      <tr v-if="!component.disabled!==undefined">
+        <td>Deaktiviert:</td>
+        <td><InputSwitch @change="emitUpdate()" v-model="component.disabled"/></td>
+      </tr>
       <template v-if="component.controlComponent">
         <tr v-for="(v,a) in component.controlComponent">
           <td>{{ a }}</td>

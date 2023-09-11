@@ -117,8 +117,8 @@ export default {
         code[0]=code[0].replace(/void /g,"");
       }
       if(options.instantiateUIClasses){
-        code[0]=code[0].replace("\n  UI ui;","");
-        code[0]=code[0].replace("ui = new UI( );","");
+        code[0]=code[0].replace("\n  Screen screen;","");
+        code[0]=code[0].replace("screen = new Screen( );","");
       }
       if(options.classOptional){
         let pos=code[0].indexOf("{");
@@ -126,15 +126,13 @@ export default {
         code[0]=code[0].substring(pos+1,pos2);
         code[0]=code[0].trim();
       }
-      for(let i=0;i<code.length;i++){
-        code[0]=js_beautify(code[0],{
-          "indent_size": 2,
-          "max_preserve_newlines": 2,
-          "indent_empty_lines": true,
-          "space_in_paren": true,
-          "space_in_empty_paren": true
-        });
-      }
+      code[0]=js_beautify(code[0],{
+        "indent_size": 2,
+        "max_preserve_newlines": 2,
+        "indent_empty_lines": true,
+        "space_in_paren": true,
+        "space_in_empty_paren": true
+      });
       
       this.$emit("newapp",name,code);
       this.setVisible(false);

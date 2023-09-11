@@ -565,6 +565,10 @@ export class UIClazz {
           updateCode+="\ncomponent"+code;
         }
       }
+      if(c.disabled===true){
+        let code=".setEnabled(false);";
+        newCode+="\n"+last+code;
+      }
       if(c.cssClass){
         scope.clearReferencedVariables();
         let code=".setCSSClass("+this.parseInterpolatedString(scope,c.cssClass)+");";
@@ -588,7 +592,7 @@ export class UIClazz {
       if(c.value!==null && c.value!==undefined){
         let code;
         if(c.valueType==="Boolean"){
-          code=".value="+c.value+";";
+          code=".setValue("+c.value+");";
         }else{
           scope.clearReferencedVariables();
           
