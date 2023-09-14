@@ -74,27 +74,32 @@ export class Attribute{
     this.attributes=[];
     while(true){
       if(node.name==="VariableDeclarator"){
-        let vdekl=VariableDeclarator(node,source,scope,this.type);
-        let a=new Attribute(this.clazz);
-        a.type=this.type;
-        a.name=vdekl.name;
-        a.modifiers=this.modifiers;
-        a.initialValue=vdekl.initialValue;
-        a.node=node;
-        this.attributes.push(a);
-        node=node.nextSibling;
-        if(node.name===","){
+        try{
+          let vdekl=VariableDeclarator(node,source,scope,this.type);
+          let a=new Attribute(this.clazz);
+          a.type=this.type;
+          a.name=vdekl.name;
+          a.modifiers=this.modifiers;
+          a.initialValue=vdekl.initialValue;
+          a.node=node;
+          this.attributes.push(a);
           node=node.nextSibling;
-          if(node.isError){
-            errors.push(source.createError("Attributsname erwartet",node));
+          if(node.name===","){
+            node=node.nextSibling;
+            if(node.isError){
+              errors.push(source.createError("Attributsname erwartet",node));
+              return errors;
+            }
+          }else{
             break;
           }
-        }else{
-          break;
+        }catch(e){
+          errors=errors.concat(e);
+          return errors;
         }
       }else{
         errors.push(source.createError("Attributsname erwartet",node));
-        break;
+        return errors;
       }
     }
     if(node){

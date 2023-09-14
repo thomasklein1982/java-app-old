@@ -813,6 +813,9 @@ function additionalJSCode(){
     setArray(array){
       this.$el.array=array;
     }
+    getSelectedIndex(){
+      return this.$el.selectedIndex;
+    }
   }
 
   class Matrix{

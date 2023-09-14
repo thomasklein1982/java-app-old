@@ -329,7 +329,8 @@ function defineDataTable(Clazz,Java){
   createMethod({
     name: 'getSelectedIndex',
     args: [
-    ]
+    ],
+    returnType: "int"
   },Clazz,false,false,Java);
   createMethod({
     name: 'setSelectedIndex',

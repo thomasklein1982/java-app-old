@@ -8,7 +8,10 @@ export function VariableDeclarator(node,source,scope,vType){
   let name=source.getText(node);
   if(node.nextSibling){
     node=node.nextSibling;
-    if(node.name!=="AssignOp"){
+    if(node.type.isError){
+      throw source.createError("Unerwartetes Zeichen.",node);
+    }
+    if(node.name!=="AssignOp"){ 
       throw source.createError("'=' erwartet.",node);
     }
     node=node.nextSibling;

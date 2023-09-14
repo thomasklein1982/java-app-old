@@ -4855,6 +4855,7 @@ window.appJScode=function(){
         var wrapper=document.createElement("div");
         wrapper.style.overflow="auto";
         wrapper.style.maxWidth="100%";
+        b.style.overflow="hidden";
         wrapper.style.maxHeight="100%";
         b.table=document.createElement("table");
         b.table.className="datatable";
@@ -4876,6 +4877,7 @@ window.appJScode=function(){
         b._rows;
         Object.defineProperty(b, 'array', {
           set: function(array) {
+            this.value=-1;
             if(array instanceof $App.Array){
               array=array.values;
             } 
@@ -4919,7 +4921,7 @@ window.appJScode=function(){
               tr.appendChild(td);
               for(let a in obj){
                 let attr=obj[a];
-                if(typeof attr==="function"){
+                if(!a || typeof attr==="function" || a.startsWith("$")){
                   continue;
                 }
                 if(i===0){

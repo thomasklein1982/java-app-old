@@ -1,4 +1,5 @@
 import { parseJava } from "../functions/parseJava";
+import { SuperInterfaces } from "../language/compile/SuperInterfaces";
 import { TypeParameters } from "../language/compile/TypeParameters";
 import { createAttribute } from "../language/helper/createAttribute";
 import { Java } from "../language/java";
@@ -421,6 +422,10 @@ export class Clazz{
           this.superClazz=this.source.getText(subnode);
         }
         node=node.nextSibling;
+      }
+      if(node.name==="SuperInterfaces"){
+        let interfaces=SuperInterfaces(node, this.source);
+        
       }
       if(node.name!=="ClassBody" && node.name!=="InterfaceBody"){
         errors.push(this.source.createError("'{' erwartet",node));
