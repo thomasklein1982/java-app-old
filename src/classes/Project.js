@@ -246,12 +246,17 @@ export class Project{
       return null;
     }
   }
-  getClazzIndexByName(name){
+  getClazzIndexByName(name,ignoreUIClazzes){
+    let index=0;
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      if(c.name===name){
-        return i;
+      if(ignoreUIClazzes && c.isUIClazz()){
+        continue;
       }
+      if(c.name===name){
+        return index;
+      }
+      index++;
     }
     return -1;
   }

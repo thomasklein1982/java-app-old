@@ -1,10 +1,14 @@
 <template>
-  <h1>Neue Klasse hinzufügen</h1>
+  <div class="p-buttonset" :style="{display: 'grid', 'grid-template':'1fr/1fr 1fr'}">
+    <Button :severity="type==='class'?'primary':'secondary'" label="Klasse" @click="type='class'"/>
+    <Button :severity="type==='interface'?'primary':'secondary'" label="Interface" @click="type='interface'"/>
+  </div>
+  <h1>{{type==='class'? 'Neue Klasse':'Neues Interface'}} hinzufügen</h1>
   
-  <InputText clazz="nameError?'':'p-invalid'" v-model.trim="name" placeholder="Name der neuen Klasse"/>
+  <InputText clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="type==='class'? 'Name der neuen Klasse': 'Name des neuen Interface'"/>
   <small v-if="nameError" class="p-error">{{nameError}}</small>
   <small v-else>Der Name geht in Ordnung.</small>
-  <div class="p-inputgroup">
+  <div v-if="type==='class'" class="p-inputgroup">
       <span class="p-inputgroup-addon">
         <InputSwitch v-model="uiClazz"/>
       </span>
@@ -26,10 +30,18 @@ export default {
   data: function(){
     return {
       name: '',
+      type: "class",
       uiClazz: false
     };
   },
   computed: {
+    typeName(){
+      if(type==="class"){
+        return "Klasse";
+      }else{
+        return "Interface";
+      }
+    },
     disableConfirm(){
       if(this.nameError){
         return true;
@@ -62,7 +74,7 @@ export default {
   },
   methods: {
     confirm(){
-      this.$emit("confirm",{name: this.realName, ui: this.uiClazz});
+      this.$emit("confirm",{name: this.realName, ui: this.uiClazz, type: this.type});
     }
   }
 }

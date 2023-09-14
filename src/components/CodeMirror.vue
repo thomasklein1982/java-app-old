@@ -226,6 +226,9 @@ export default {
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
             if(!v.docChanged) return;
+            //TODO: aenderungen besser verarbeiten (effizienter!)
+            //window.lastUpdate=v;
+            //console.log(v);
             let updateImmediately=false;
             if(!changed){
               changed=v.docChanged;

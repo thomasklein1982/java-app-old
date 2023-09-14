@@ -251,10 +251,23 @@ export class Method{
       }
     }
     node=node.nextSibling;
-    if(!node || node.name!=="Block" && node.name!=="ConstructorBody"){
-      errors.push(source.createError("'{' erwartet.",node));
+    if(this.clazz.isInterface){
+      if(!node || node.name!==";"){
+        console.log(node.name);
+        if(node.name==="Block"){
+          errors.push(source.createError("';' erwartet. Ein Interface darf Methoden nur deklarieren, nicht aber implementieren.",node));
+        }else{
+          errors.push(source.createError("';' erwartet.",node));
+        }
+      }else{
+        this.bodyNode=null;
+      }
     }else{
-      this.bodyNode=node;
+      if(!node || node.name!=="Block" && node.name!=="ConstructorBody"){
+        errors.push(source.createError("'{' erwartet.",node));
+      }else{
+        this.bodyNode=node;
+      }
     }
     return errors;
   }

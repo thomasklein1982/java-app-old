@@ -55,7 +55,7 @@
           <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
             <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+i">
               <template #header>
-                {{i!==activeTab && c.name.length>10? c.name.substring(0,10)+"...":c.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
+                <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/>{{i!==activeTab && c?.name?.length>10? c?.name?.substring(0,10)+"...":c?.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
               </template>
               <UIEditor 
                 v-if="isUIClazz(c)" 
@@ -259,6 +259,11 @@ export default {
     },1000);
   },
   methods: {
+    getEditorIndexByClazzName(name){
+      if(!this.$refs.editor) return -1;
+      let index=this.project.getClazzIndexByName(name);
+      return index;
+    },
     changeFontSize(newFontsize){
       this.fontSize=newFontsize;
     },
@@ -439,10 +444,12 @@ export default {
       this.$root.resetCurrent();
     },
     addNewClazz(clazzData){
-      if(clazzData.ui){
+      if(clazzData.type==='interface'){
+        var c=new Clazz(clazzData.name,this.project,true);
+      }else if(clazzData.ui){
         var c=new UIClazz(clazzData.name,this.project);
       }else{
-        var c=new Clazz(clazzData.name,this.project);
+        var c=new Clazz(clazzData.name,this.project,false);
       }
       this.project.addClazz(c);
     },

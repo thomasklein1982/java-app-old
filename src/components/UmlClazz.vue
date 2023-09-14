@@ -1,7 +1,8 @@
 <template>
   <div class="umlclazz">
+    <div v-if="clazz.isInterface" style="text-align: center">&lt;&lt;interface&gt;&gt;</div>
     <div @click="click()" class="clazzname">
-      {{clazz.name}}<template v-if="clazz.typeParameters">&lt;<span v-for="(t,i) in clazz.typeParameters">{{(i>0? ',':'')+ t.name }}</span>&gt;</template>
+      <span :style="clazz.isInterface?'font-style: italic':''">{{clazz.name}}</span><template v-if="clazz.typeParameters">&lt;<span v-for="(t,i) in clazz.typeParameters">{{(i>0? ',':'')+ t.name }}</span>&gt;</template>
     </div>
     <div class="attributes">
       <UmlMember :member="a" v-for="(a,i) in attributes" :key="'attr'+i"></UmlMember>
@@ -69,10 +70,13 @@ export default {
   methods: {
     click(){
       let editor=this.$root.$refs.editor;
-      let index=editor.project.getClazzIndexByName(this.clazz.name);
+      let index=editor.getEditorIndexByClazzName(this.clazz.name);
+      //let index=editor.project.getClazzIndexByName(this.clazz.name);
+      if(index<0) return;
       editor.activeTab=index;
       console.log(editor);
       let cm=editor.$refs.editor[index];
+      if(!cm) return;
       cm.setSelection(this.clazz.node.from,this.clazz.node.to);
       nextTick(()=>{
           cm.focus()
@@ -88,18 +92,18 @@ export default {
 
 <style scoped>
   .umlclazz{
-    border: 1pt solid black;
+    border: 1pt solid white;
     border-radius: 0.1rem;
     margin-top: 0.3rem;
   }
   .clazzname{
-    border-bottom: 1pt solid black;
+    border-bottom: 1pt solid white;
     text-align: center;
     font-weight: bold;
     cursor: pointer;
   }
   .attributes{
-    border-bottom: 1pt solid black;
+    border-bottom: 1pt solid white;
   }
   .attributes,.methods{
     min-height: 1rem;
