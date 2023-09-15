@@ -22,7 +22,7 @@ export class Clazz{
     this.hasClazzDeclaration=true;
     this.project=project;
     this.superClazz=null;
-    this.implementedInterfaces={};
+    this.implementedInterfaces=[];
     this.errors=null;
     if(this.isInterface){
       this.src="interface "+this.name+"{\n  \n}";
@@ -384,6 +384,7 @@ export class Clazz{
     this.errors=errors;
     this.hasClazzDeclaration=true;
     this.typeParametersNode=null;
+    this.implementedInterfaces=null;
     var node=this.source.tree.topNode.firstChild;
     if(!node || (node.type.name!=="ClassDeclaration" && node.type.name!=="InterfaceDeclaration")){
       if(!(options.classOptional && this.isFirstClazz)){
@@ -424,8 +425,11 @@ export class Clazz{
         node=node.nextSibling;
       }
       if(node.name==="SuperInterfaces"){
-        let interfaces=SuperInterfaces(node, this.source);
-        
+        try{
+          this.implementedInterfaces=node;
+        }catch(e){
+          errors.push(e);
+        }
       }
       if(node.name!=="ClassBody" && node.name!=="InterfaceBody"){
         errors.push(this.source.createError("'{' erwartet",node));
@@ -458,6 +462,15 @@ export class Clazz{
       }
     }else{
       this.typeParameters=null;
+    }
+    if(this.implementedInterfaces){
+      let scope=new Scope(this.project);
+      try{
+        let list=SuperInterfaces(this.implementedInterfaces, this.source, scope);
+        this.implementedInterfaces=list.list;
+      }catch(e){
+        this.errors.push(e);
+      }
     }
   }
 

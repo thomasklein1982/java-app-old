@@ -447,7 +447,7 @@ export class UIClazz {
       }else{
         var res={code: src};
       }
-      res.code="(async ()=>{try{return "+res.code+"}catch(e){}})()";
+      res.code="(()=>{try{return "+res.code+"}catch(e){}})()";
       return res;
     }catch(e){
       console.error(e);
@@ -474,15 +474,15 @@ export class UIClazz {
           let max=this.parseJavaStatement(scope,c.controlComponent.max);
           let variable=c.controlComponent.variable;
           scope.pushLocalVariable(variable,new Type(Java.datatypes.int, 0));
-          let code="\nfor(let "+variable+"="+min.code+";"+variable+"<="+max.code+";"+variable+"++){\n";
+          let code="\nfor(let "+variable+"= "+min.code+";"+variable+"<= "+max.code+";"+variable+"++){\n";
           code+=this.generateJavaScriptCodeForComponent(scope, c,codeObject,containerIndex,uiControlStatementIndex);
           code+="\n}\n";
           scope.popLayer();
           updateCode=code;
-          newCode+=code;
+          newCode+="";
         }else if(c.type==='If'){
           let condition=this.parseJavaStatement(scope,c.controlComponent.condition);
-          let code="if("+condition.code+"){\n";
+          let code="if( "+condition.code+"){\n";
           code+=this.generateJavaScriptCodeForComponent(scope, c,codeObject,containerIndex,uiControlStatementIndex);
           code+="\n}\n";
           updateCode=code;

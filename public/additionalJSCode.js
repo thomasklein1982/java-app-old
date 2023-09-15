@@ -518,6 +518,11 @@ function additionalJSCode(){
       this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
+      setTimeout(()=>{
+        if(this.$update){
+          this.$update();
+        }
+      },50);
     }
     add(comp,index){
       this.$el.add(comp.$el,index);

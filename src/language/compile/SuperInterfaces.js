@@ -12,7 +12,7 @@ export function SuperInterfaces(node,source,scope){
     };
   }
   node=node.nextSibling;
-  let list=InterfaceTypeList(node,source);
+  let list=InterfaceTypeList(node,source,scope);
   return {
     list
   };
