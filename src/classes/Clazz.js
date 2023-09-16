@@ -27,6 +27,7 @@ export class Clazz{
     if(this.isInterface){
       this.src="interface "+this.name+"{\n  \n}";
     }else{
+      this.isInterface=false;
       this.src="class "+this.name+"{\n  \n}";
     }
     
@@ -292,6 +293,19 @@ export class Clazz{
       }
     }
     if(type instanceof Clazz || type instanceof UIClazz){
+      if(type.isInterface){
+        if(this.implementedInterfaces){
+          for(let i=0;i<this.implementedInterfaces.length;i++){
+            let inter=this.implementedInterfaces[i];
+            if(inter===type){
+              return true;
+            }
+          }
+          return false;
+        }else{
+          return false;
+        }
+      }
       if(type.name==="Object" || this.name===type.name){
         return true;
       }
@@ -364,6 +378,16 @@ export class Clazz{
   compile(fromSource,optimizeCompiler){
     this.compileDeclarations(fromSource);
     this.compileMethods(optimizeCompiler);
+    this.compileLastChecks();
+  }
+
+  compileLastChecks(){
+    if(this.implementedInterfaces){
+      for(let i=0;i<this.implementedInterfaces.length;i++){
+        let inter=this.implementedInterfaces[i];
+
+      }
+    }
   }
 
   compileDeclarations(fromSource){
@@ -430,6 +454,7 @@ export class Clazz{
         }catch(e){
           errors.push(e);
         }
+        node=node.nextSibling;
       }
       if(node.name!=="ClassBody" && node.name!=="InterfaceBody"){
         errors.push(this.source.createError("'{' erwartet",node));
@@ -467,7 +492,7 @@ export class Clazz{
       let scope=new Scope(this.project);
       try{
         let list=SuperInterfaces(this.implementedInterfaces, this.source, scope);
-        this.implementedInterfaces=list.list;
+        this.implementedInterfaces=list.list.types;
       }catch(e){
         this.errors.push(e);
       }

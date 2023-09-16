@@ -1,6 +1,6 @@
 <template>
   <div class="umlclazz">
-    <div v-if="clazz.isInterface" style="text-align: center">&lt;&lt;interface&gt;&gt;</div>
+    <div v-if="clazz.isInterface" style="text-align: center">&laquo;interface&raquo;</div>
     <div @click="click()" class="clazzname">
       <span :style="clazz.isInterface?'font-style: italic':''">{{clazz.name}}</span><template v-if="clazz.typeParameters">&lt;<span v-for="(t,i) in clazz.typeParameters">{{(i>0? ',':'')+ t.name }}</span>&gt;</template>
     </div>

@@ -336,6 +336,10 @@ export class UIClazz {
     return code;
   }  
 
+  getPositionShift(){
+    return 0;
+  }
+
   getConstructorParameters(){
     return [];
   }
