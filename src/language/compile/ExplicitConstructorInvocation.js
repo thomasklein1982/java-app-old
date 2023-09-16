@@ -13,7 +13,8 @@ export function ExplicitConstructorInvocation(node,source,scope){
   let al=ArgumentList(node,source,scope,superclazz.getConstructorParameters());
   let code="";
   if(!superclazz.isNative()){
-    code+="await $asyncFunctionCallVariableObject(this,new "+superclazz.name+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";
+    //TODO: Generics beachten!
+    code+="await $asyncFunctionCallVariableObject(this,new "+superclazz.name+"(),'$constructor',[null,"+al.code.substring(1,al.code.length-1)+"])";
   }else{
     code+="super"+al.code+"";
   }
