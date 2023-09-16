@@ -323,7 +323,7 @@ export class UIClazz {
     code+="\nif(this.$el.replaceChildren) this.$el.replaceChildren(); else this.$el.innerHTML='';";
     code+="\n"+this.componentCode;
     code+="\n}";
-    code+="\n$update(){\n";
+    code+="\n$update(){\nif(!this.$el) return;\n";
     code+="\nfor(var i=0;i<this.$el.childNodes.length;i++){";
     code+="\nvar c=this.$el.childNodes[i];";
     code+="\nif(c.component.$update) c.component.$update.call(c.component.uiClazz,c.component);";
@@ -610,6 +610,7 @@ export class UIClazz {
       if(c.components){
         newCode+="\nlet container"+(containerIndex+1)+"="+last+";";
         newCode+=this.generateJavaScriptCodeForComponent(scope,c,codeObject,containerIndex+1);
+        updateCode+="\nif(!component || !component.$el) return;"
         updateCode+="\nfor(var i=0;i<component.$el.childNodes.length;i++){";
         updateCode+="\nvar c=component.$el.childNodes[i];";
         updateCode+="\nif(c && c.component && c.component.$update){c.component.$update.call(c.component.uiClazz,c.component);}";

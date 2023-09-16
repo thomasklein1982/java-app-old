@@ -29,7 +29,7 @@ export function CastExpression(node,source,scope){
     destType.autoCastValue(value);
     code=value.code;
   }else{
-    code="$castObject("+value.code+", "+JSON.stringify(destType.baseType.name)+", "+destType.dimension+")";
+    code=value.code;//"$castObject("+value.code+", "+JSON.stringify(destType.baseType.name)+", "+destType.dimension+")";
   }
   return {
     code,
