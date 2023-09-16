@@ -338,12 +338,19 @@ function additionalJSCode(){
       this.height=height;
       this.$el=null;
       this.actionCommand="";
+      this.actionObject=null;
     }
     setActionCommand(ac){
       this.actionCommand=ac;
     }
     getActionCommand(){
       return this.actionCommand;
+    }
+    setActionObject(object){
+      this.actionObject=object;
+    }
+    getActionObject(){
+      return this.actionObject;
     }
     collides(comp){
       let r1=this.$el.getBoundingClientRect();
