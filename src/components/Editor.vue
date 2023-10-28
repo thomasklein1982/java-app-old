@@ -374,6 +374,8 @@ export default {
       this.$refs.preview.setBreakpoints(breakpoints);
     },
     openProject(p){
+      this.stop();
+      this.clearRuntimeErrors();
       this.project=p;
       p.compile(true);
     },
@@ -406,6 +408,7 @@ export default {
       }
     },
     clearRuntimeErrors(){
+      if(!this.$refs || !this.$refs.editor) return;
       for(let i=0;i<this.$refs.editor.length;i++){
         this.$refs.editor[i].clearRuntimeErrors();
       }
@@ -443,7 +446,9 @@ export default {
       if(this.closeRightAfterStopping && !this.rightClosed){
         this.toggleRight();
       }
-      this.$refs.preview.stop();
+      if(this.$refs && this.$refs.preview){
+        this.$refs.preview.stop();
+      }
       this.$root.paused=false;
       this.running=false;
       this.$root.resetCurrent();

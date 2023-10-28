@@ -34,11 +34,11 @@
         <td v-if="component.valueType==='Boolean'">
           <InputSwitch @change="emitUpdate()" v-model="component.value"/>
         </td>
-        <td v-else-if="component.valueType===undefined || component.valueType==='inline-text' || !maximized">
+        <td v-else-if="component.valueType===undefined || component.valueType==='inline-text'">
           <InputText spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
         </td>
-        <td v-else-if="component.valueType==='text'">
-          <TextArea auto-resize rows="5" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
+        <td v-else-if="component.valueType==='text' || !maximized">
+          <TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%; resize: none"/>
         </td>
         <td v-else>
           <CodeMirrorEditor style="max-width: 95%" :language="component.valueType" v-model="component.value"/>
@@ -48,6 +48,12 @@
         <td>Platzhalter:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.placeholder" style="width: 95%"/></td>
       </tr>
+      <template v-if="component.align!==undefined">
+        <tr>
+          <td>Ausrichtung:</td>
+          <td ><Dropdown style="width: 95%"  @change="emitUpdate()" v-model="component.align" :options="['center','top &uArr;', 'bottom &dArr;','left &lArr;','right &rArr;','left top &nwArr;', 'left bottom &swArr;', 'right top &neArr;', 'right bottom &seArr;']"/></td>
+        </tr>
+      </template>
       <tr v-if="!component.controlComponent && !isUIClazz">
         <td>Unsichtbar:</td>
         <td><InputSwitch @change="emitUpdate()" v-model="component.invisible"/></td>
@@ -133,7 +139,7 @@
     </table>
   </div>
   <TemplateDialog ref="templateDialog" @confirm="applyTemplate"/>
-  <Dialog @hide="emitUpdate(true)" v-if="!maximized" :header="componentName" v-model:visible="showExpandedDialog"  :maximizable="true" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}">
+  <Dialog @hide="emitUpdate(true)" v-if="!maximized" maximized :header="componentName" v-model:visible="showExpandedDialog"  :maximizable="true" :modal="true" >
     <UIComponentEditor maximized :project="project" :component="component"/>
   </Dialog>
 </template>

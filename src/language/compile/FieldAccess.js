@@ -58,7 +58,7 @@ export function FieldAccess(node,source,scope){
     };
   }else if(node.name==="Identifier" || node.name==="TypeName"){
     let ident=Identifier(node,source,scope);
-    code+=ident.code;
+    code+="$N("+ident.code+",'"+ident.name+"')";
     if(ident.object instanceof Clazz){
       owner={
         type: ident.object,

@@ -167,11 +167,66 @@ export class Project{
         .jimage{
           justify-self: stretch;
         }
+        #dialog-backdrop{
+          z-index: 1000;
+          position: fixed;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background-color: rgba(0,0,0,0.5);
+          display: flex;
+          place-content: center;
+          align-items: center;
+        }
+        #dialog-frame{
+          background-color: white;
+          border-radius: 0.5rem;
+          max-width: 85%;
+          max-height: 85%;
+          box-shadow: 5px 5px 5px teal;
+          min-width: 40%;
+          padding: 1rem;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        #dialog-content{
+          flex: 1;
+          overflow: auto;
+        }
+        #dialog-input{
+          width: 100%;
+          min-height: 2rem;
+        }
+        .dialog-footer{
+          margin-top: 0.2rem;
+          text-align: right;
+        }
+        .dialog-footer-button{
+          min-height: 2rem;
+        }
         ${css}
       </style>
     </head>
     <body>
       ${body}
+      <div id="dialog-backdrop" style="display: none">
+        <div id="dialog-frame">
+          <div id="dialog-content">Hallo</div>
+          <input type="text" id="dialog-input" style="display: none"></input>
+          <div class="dialog-footer" id="dialog-footer-alert" style="display: none">
+            <button class="dialog-footer-button" onclick="$clickDialogButton('alert')">OK</button>
+          </div>
+          <div class="dialog-footer" id="dialog-footer-confirm" style="display: none">
+            <button class="dialog-footer-button" onclick="$clickDialogButton('yes')">Ja</button>
+            <button class="dialog-footer-button" onclick="$clickDialogButton('no')">Nein</button>
+          </div>
+          <div class="dialog-footer" id="dialog-footer-prompt" style="display: none">
+            <button class="dialog-footer-button" onclick="$clickDialogButton('prompt')">OK</button>
+          </div>
+        </div>
+      </div>
     </body>
 </html>`;
     return code;

@@ -1,5 +1,7 @@
 function additionalJSCode(){
+
   function $u(v){if(v===undefined){throw {message: "Undefinierter Wert."}} return v;}
+  function $N(v,name){if(v===null){throw {message: "NullPointerException: Der Wert von '"+name+"' ist null, deshalb kannst du nicht auf Methoden oder Attribute zugreifen."}} return v;}
   function $v(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{return v*1;}}
   function $i(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{v*=1; return v>=0? Math.floor(v):Math.ceil(v);}}
   function $m(v,message,line){if(v===undefined){throw {message: message, line: line}}else{return v;}}
@@ -123,6 +125,93 @@ function additionalJSCode(){
   function $toDegrees(obj,x){
     return x*180/Math.PI;
   }
+
+  function $setupDialog(){
+    if($App.customDialog) return;
+    $App.customDialog={
+      backdrop: document.getElementById("dialog-backdrop"),
+      frame: document.getElementById("dialog-frame"),
+      content: document.getElementById("dialog-content"),
+      input: document.getElementById("dialog-input"),
+      footerAlert: document.getElementById("dialog-footer-alert"),
+      footerPrompt: document.getElementById("dialog-footer-prompt"),
+      footerConfirm: document.getElementById("dialog-footer-confirm"),
+      resolve: null
+    };
+  }
+
+  $clickDialogButton=function(button){
+    if(button==="alert"){
+      $App.customDialog.resolve();
+    }else if(button==="yes"){
+      $App.customDialog.resolve(true);
+    }else if(button==="no"){
+      $App.customDialog.resolve(false);
+    }else if(button==="prompt"){
+      $App.customDialog.resolve($App.customDialog.input.value);
+    }
+  }
+
+  $showDialog=function(message,input,footerAlert,footerPrompt,footerConfirm){
+    $App.handleModalDialog();
+    $App.customDialog.input.value=null;
+    $App.customDialog.content.innerHTML=message;
+    $App.customDialog.input.style.display=input;
+    $App.customDialog.footerAlert.style.display=footerAlert;
+    $App.customDialog.footerPrompt.style.display=footerPrompt;
+    $App.customDialog.footerConfirm.style.display=footerConfirm;
+    $App.customDialog.backdrop.style.display="";
+    $App.customDialog.frame.style.transition="";
+    $App.customDialog.frame.style.opacity=0;
+    $App.customDialog.frame.style.transition="opacity 0.5s";
+    setTimeout(()=>{$App.customDialog.frame.style.opacity=1},10);
+  }
+
+  App.alert=async function(message){
+    $setupDialog();
+    $showDialog(message,"none","","none","none");
+    let p=new Promise((resolve,reject)=>{
+      $App.customDialog.resolve=resolve;
+    });
+    let q=await p;
+    $App.customDialog.backdrop.style.display="none";
+  };
+
+  App.prompt=async function(message){
+    $setupDialog();
+    $App.customDialog.input.type="text";
+    $showDialog(message,"","none","","none");
+    let p=new Promise((resolve,reject)=>{
+      $App.customDialog.resolve=resolve;
+    });
+    let q=await p;
+    $App.customDialog.backdrop.style.display="none";
+    return q;
+  };
+
+  App.promptNumber=async function(message){
+    $setupDialog();
+    $App.customDialog.input.type="number";
+    $showDialog(message,"","none","","none");
+    let p=new Promise((resolve,reject)=>{
+      $App.customDialog.resolve=resolve;
+    });
+    let q=await p;
+    $App.customDialog.backdrop.style.display="none";
+    return q;
+  };
+
+  App.confirm=async function(message){
+    $setupDialog();
+    $App.handleModalDialog();
+    $showDialog(message,"none","none","none","");
+    let p=new Promise((resolve,reject)=>{
+      $App.customDialog.resolve=resolve;
+    });
+    let q=await p;
+    $App.customDialog.backdrop.style.display="none";
+    return q;
+  };
 
   function $StringFormat(StringClazz,format,object){
     let v=format;

@@ -361,16 +361,20 @@ window.appJScode=function(){
         el.style.marginRight="auto";
       }else if(align.h==="left"){
         el.style.marginRight="auto";
+        el.style.marginLeft="";
       }else{
         el.style.marginLeft="auto";
+        el.style.marginRight="";
       }
       if(align.v==="middle"){
         el.style.marginTop="auto";
         el.style.marginBottom="auto";
       }else if(align.v==="top"){
         el.style.marginBottom="auto";
+        el.style.marginTop="";
       }else{
         el.style.marginTop="auto";
+        el.style.marginBottom="";
       }
     };
 
@@ -1110,16 +1114,16 @@ window.appJScode=function(){
       if(align && align.toLowerCase){
         align=align.toLowerCase(); 
         if(align.indexOf("left")>=0){
-          ha="right";
-        }else if(align.indexOf("right")>=0){
           ha="left";
+        }else if(align.indexOf("right")>=0){
+          ha="right";
         }else{
           ha="center";
         }
         if(align.indexOf("bottom")>=0){
-          va="top";
-        }else if(align.indexOf("top")>=0){
           va="bottom";
+        }else if(align.indexOf("top")>=0){
+          va="top";
         }else{
           va="middle";
         }
@@ -4998,6 +5002,25 @@ window.appJScode=function(){
             this.appJSData.value=v;
             this.innerDiv.innerHTML=v;
             //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+          },
+          get: function(){
+            return this.appJSData.value;
+          }
+        });
+        b.value=text;
+        b.updateAlignContent();
+        b.updatePosition();
+        return b;
+      },
+      html: function(text,cx,cy,width,height){
+        var b=$App.createElement("div");
+        b.style.overflow="auto";
+        b.$standardPositionValue="relative";
+        $App.canvas.addElement(b,cx,cy,width,height);
+        Object.defineProperty(b,'value', {
+          set: function(v){
+            this.appJSData.value=v;
+            this.innerHTML=v;
           },
           get: function(){
             return this.appJSData.value;

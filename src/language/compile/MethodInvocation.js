@@ -39,7 +39,8 @@ export function MethodInvocation(node,source,scope){
   }else{
     if(node.name==="Identifier"){
       let id=Identifier(node,source,scope);
-      code+=id.code;
+      code+="$N("+id.code+",'"+id.name+"')";
+      //code+=id.code;
       if(id.object instanceof Clazz){
         owner={
           clazz: id.object,

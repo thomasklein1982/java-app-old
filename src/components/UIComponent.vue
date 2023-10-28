@@ -9,6 +9,9 @@
         <template v-if="type==='JLabel'">
           <div class="component jlabel">{{component.value}}</div>
         </template>
+        <template v-if="type==='JHtml'">
+          <div class="component jhtml">{{component.value}}</div>
+        </template>
         <template v-if="type==='JTextField'">
           <input type="text" size="1" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
@@ -37,6 +40,7 @@
           </table>
         </template>
         <div style="position: absolute; top: 0; right: 0">
+          <Badge v-if="showActionCommand" :value="'\u00BB'+component.actionCommand+'\u00AB'" severity="warning" ></Badge>
           <Badge v-if="showName" :value="component.name" severity="info" ></Badge>
         </div>
         <div @click="handleClick" style="cursor: pointer; position: absolute; left: 0; right: 0; top: 0; bottom: 0"></div>
@@ -63,13 +67,8 @@
         </template>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">
           <button @click="toggleHideContent()">{{hideContent? '+':'-'}}</button>
-          <div v-if="type==='JPanel'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">JPanel
-            <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
-          </div>
-          <div v-if="type==='Canvas'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Canvas
-            <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
-          </div>
-          <div v-else-if="type==='UIClazz'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{customComponentName}}
+          <div v-if="type==='JPanel' || type==='Canvas' || type==='UIClazz'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{containerDisplayType}}
+            <Badge v-if="showActionCommand" :value="'\u00BB'+component.actionCommand+'\u00AB'" severity="warning" ></Badge>
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
           <div v-else-if="type==='For'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Wiederhole <template v-if="isEditable">für <strong>{{component.controlComponent.variable}}</strong> = <strong>{{component.controlComponent.min}}</strong> bis <strong>{{component.controlComponent.max}}</strong>:</template>
@@ -139,6 +138,13 @@
       }
     },
     computed: {
+      containerDisplayType(){
+        if(this.type==="UIClazz"){
+          return this.customComponentName;
+        }else{
+          return this.type;
+        }
+      },
       uiClazzName(){
         let name=this.component.name;
         if(!name) return null;
@@ -166,6 +172,13 @@
           name=name.substring(0,17)+"...";
         }
         return name;
+      },
+      showActionCommand(){
+        if(!this.component.actionCommand){
+          return false;
+        }else{
+          return true;
+        }
       },
       showName(){
         if(this.component instanceof UIClazz){
@@ -328,6 +341,10 @@
   }
   .jlabel{
     border: 1pt dotted black;
+  }
+  .jhtml{
+    border: 1pt dotted black;
+    font-family: monospace;
   }
   .datatable{
     border: 1pt solid black;

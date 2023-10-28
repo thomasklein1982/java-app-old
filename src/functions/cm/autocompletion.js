@@ -136,8 +136,9 @@ export function createAutocompletion(){
       let clazzes=app.$refs.editor.project.clazzes;
       for(let i=0;i<clazzes.length;i++){
         let c=clazzes[i];
-        let m=c.constructor;
-        options.push(autocomplete.snippetCompletion(c.name+createParamsString(m,true),{
+        let params=c.getConstructorParameters();
+        if(params) params=params.parameters;
+        options.push(autocomplete.snippetCompletion(c.name+createParamsString(params,true),{
           label: c.name+"(...)",
           type: "function",
           info: c.comment
@@ -146,8 +147,9 @@ export function createAutocompletion(){
       for(let name in Java.clazzes){
         let c=Java.clazzes[name];
         if(c.cannotBeInstantiated || c.name==="null") continue;
-        let m=c.constructor;
-        options.push(autocomplete.snippetCompletion(name+createParamsString(m,true),{
+        let params=c.getConstructorParameters();
+        if(params) params=params.parameters;
+        options.push(autocomplete.snippetCompletion(name+createParamsString(params,true),{
           label: name+"(...)",
           type: "function",
           info: c.comment

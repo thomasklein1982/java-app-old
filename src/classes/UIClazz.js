@@ -569,6 +569,10 @@ export class UIClazz {
           updateCode+="\ncomponent"+code;
         }
       }
+      if(c.align!==undefined){
+        let code=".setAlignContent('"+c.align+"');";
+        newCode+="\n"+last+code;
+      }
       if(c.disabled===true){
         let code=".setEnabled(false);";
         newCode+="\n"+last+code;

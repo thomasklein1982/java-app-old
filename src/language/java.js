@@ -49,6 +49,7 @@ let JButton=new Clazz("JButton");
 let JImage=new Clazz("JImage");
 let JTextField=new Clazz("JTextField");
 let JLabel=new Clazz("JLabel");
+let JHtml=new Clazz("JHtml");
 let JTextArea=new Clazz("JTextArea");
 let JCheckBox=new Clazz("JCheckBox");
 let JComboBox=new Clazz("JCombobox");

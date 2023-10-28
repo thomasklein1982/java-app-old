@@ -62,7 +62,7 @@
       return {
         componentList: [
           {type: "JPanel", components: [], template: "1", onAction: false, actionCommand: ""}, 
-          {type: "JLabel", value: "JLabel", valueType: "html", onAction: false, actionCommand: ""},
+          {type: "JLabel", value: "JLabel", valueType: "html", onAction: false, actionCommand: "", align: "center"},
           {type: "JButton", value: "JButton", valueType: "html", actionCommand: "", disabled: false},
           {type: "JTextField", inputType: "text", value: "", placeholder: "JTextField", valueType: "inline-text", onAction: false, actionCommand: "", disabled: false},
           {type: "JTextArea", value: "", placeholder: "JTextArea", valueType: "text", disabled: false}, 
