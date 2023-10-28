@@ -99,14 +99,24 @@ export class Clazz{
     }
     code+="\n}";
     let hasConstructor=false;
+    let hasOnStart=false;
     for(let i in this.methods){
       let m=this.methods[i];
       if(m.isConstructor()){
         code+="\n"+m.getJavaScriptCode(attributesInitCode+"\n");
         hasConstructor=true;
       }else{
-        code+="\n"+m.getJavaScriptCode(m.name==="onStart"? onStartPrecode:"");
+        if(m.name==="onStart"){
+          hasOnStart=true;
+          code+="\n"+m.getJavaScriptCode(onStartPrecode);
+        }else{
+          code+="\n"+m.getJavaScriptCode();
+        }
       }
+    }
+    if(onStartPrecode && !hasOnStart){
+      //eigene onStart-Methode hinzufuegen:
+      code+="\nasync onStart(){"+onStartPrecode+"\n}";
     }
     if(!hasConstructor){
       code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesInitCode+"\nreturn this;}";
