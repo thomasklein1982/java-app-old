@@ -134,7 +134,7 @@ export function defineString(StringClazz,Java){
   createMethod({
     name: "format",
     isExtraFunction: true,
-    args: [{name: "format",type: "String", info: "Beschreibung des Formats."}, {name: "object", type: "String", info: "Objekt, das formatiert wird."}],
+    args: [{name: '"%.2f"',type: "String", info: "Beschreibung des Formats."}, {name: "number", type: "String", info: "Objekt, das formatiert wird."}],
     info: "Formatiert das Objekt.",
     returnType: 'String',
     jsName: "$StringFormat"

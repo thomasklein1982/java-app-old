@@ -108,6 +108,7 @@
         }
         clazz.name=name+"_"+suffix;
         this.clazz.project.clazzes.push(clazz);
+        this.emitRecompile();
       },
       removeUIClazz(){
         this.clazz.project.removeClazz(this.clazz);

@@ -437,7 +437,7 @@ function defineCanvas(Clazz,Java){
       {type: 'double', name: 'minX'},{type: 'double', name: 'maxX'},{type: 'double', name: 'minY'}, {type: 'double', name: 'maxY'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
-  Clazz.superClazz=Java.datatypes.JCPanel;
+  Clazz.superClazz=Java.datatypes.JPanel;
   createMethod({
     name: 'save',
     args: [
@@ -564,5 +564,4 @@ function defineCanvas(Clazz,Java){
     args: [{name: 'farbe', type: 'String'}],
     info: 'Legt die Farbe für die nachfolgenden Zeichnungen fest.'
   },Clazz,false,false,Java);
-  Clazz.superClazz=Java.datatypes.JComponent;
 }

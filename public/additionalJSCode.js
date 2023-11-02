@@ -254,7 +254,7 @@ function additionalJSCode(){
     return string.indexOf(string2)>=0;
   }
 
-  function $StringApplyRegexp(string,regexp,flags){
+  function $StringApplyRegExp(string,regexp,flags){
     if(!flags) flags="";
     try{
       var r=new RegExp(regexp,flags);
@@ -624,7 +624,12 @@ function additionalJSCode(){
       this.$el.add(comp.$el,index);
     }
     remove(comp){
-      this.$el.remove(comp.$el);
+      try{
+        this.$el.removeChild(comp.$el);
+      }catch(e){
+        return false;
+      }
+      return true;
     }
     removeAll(){
       if(this.$el.replaceChildren){
