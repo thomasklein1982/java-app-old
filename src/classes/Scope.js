@@ -58,7 +58,7 @@ export class Scope{
   }
 
   isNodeBeyondEndPosition(node){
-    return (this.endPosition!==undefined && node.from>this.endPosition);
+    return (this.endPosition!==undefined && node.from>=this.endPosition);
   }
 
   addTypeAnnotation(node,type,isStatic){

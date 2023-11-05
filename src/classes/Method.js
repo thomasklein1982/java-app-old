@@ -316,7 +316,7 @@ export class Method{
   }
 
   getScopeAtPosition(pos){
-    let scope=new Scope(this.clazz.project,this,pos);
+    let scope=new Scope(this.clazz.project,this,pos-this.nodeOffset);
     Block(this.bodyNode,this.clazz.source,scope);
     return scope;
   }

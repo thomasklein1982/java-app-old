@@ -1,3 +1,4 @@
+import { Scope } from "../../classes/Scope";
 import { CompileFunctions } from "../CompileFunctions";
 import { Block } from "./Block";
 
@@ -26,6 +27,9 @@ export function ForStatement(node,source,scope){
   code+=")";
   let block=forSpec.nextSibling;
   block=Block(block,source,scope);
+  if(block instanceof Scope){
+    return block;
+  }
   code+="{"+block.code+"}";
   scope.popLayer();
   return {

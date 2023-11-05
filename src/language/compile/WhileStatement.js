@@ -1,6 +1,7 @@
 import { Java } from "../java";
 import { ParenthesizedExpression } from "./ParenthesizedExpression";
 import { Block } from "./Block";
+import { Scope } from "../../classes/Scope";
 
 export function WhileStatement(node,source,scope){
   node=node.firstChild;
@@ -21,6 +22,9 @@ export function WhileStatement(node,source,scope){
   code+=condition.code;
   node=node.nextSibling;
   let thenBlock=Block(node,source,scope);
+  if(thenBlock instanceof Scope){
+    return thenBlock;
+  }
   if(thenBlock.errors && thenBlock.errors.length>0){
     throw thenBlock.errors[0];
   }

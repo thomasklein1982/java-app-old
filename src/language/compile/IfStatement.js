@@ -2,6 +2,7 @@ import { Java } from "../java";
 import { ParenthesizedExpression } from "./ParenthesizedExpression";
 import { Block } from "./Block";
 import { CompileFunctions } from "../CompileFunctions";
+import { Scope } from "../../classes/Scope";
 
 export function IfStatement(node,source,scope){
   node=node.firstChild;
@@ -24,6 +25,9 @@ export function IfStatement(node,source,scope){
   let thenBlock;
   scope.pushLayer();
   thenBlock=CompileFunctions.get(node,source)(node,source,scope);
+  if(thenBlock instanceof Scope){
+    return thenBlock;
+  }
   if(thenBlock.errors && thenBlock.errors.length>0){
     throw thenBlock.errors[0];
   }
@@ -35,6 +39,9 @@ export function IfStatement(node,source,scope){
     node=node.nextSibling;
     scope.pushLayer();
     let elseBlock=CompileFunctions.get(node,source)(node,source,scope);
+    if(elseBlock instanceof Scope){
+      return elseBlock;
+    }
     code+="{"+elseBlock.code+"}";
     scope.popLayer();
   }

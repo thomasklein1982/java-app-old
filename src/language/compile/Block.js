@@ -34,7 +34,12 @@ export function Block(node,source,scope){
   let open=true;
   while(node.nextSibling && !node.isBlockEnd){
     node=node.nextSibling;
+    console.log("beyond?",source.getText(node));
+    if(source.getText(node).startsWith("a")){
+      console.log("a");
+    }
     if(scope.isNodeBeyondEndPosition(node)){
+      console.log("yes");
       return scope;
     }
     if(node.name==='}' || options.classOptional && node.type.isError && node.firstChild && node.firstChild.name==="}"){
@@ -44,6 +49,10 @@ export function Block(node,source,scope){
       try{
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
+        console.log("res",res);
+        if(res instanceof Scope){
+          return res;
+        }
         if(!scope.optimizeCompiler){
           let line=source.getLineNumber(node.from);
           code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
