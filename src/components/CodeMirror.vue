@@ -226,9 +226,38 @@ export default {
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
             if(!v.docChanged) return;
-            //TODO: aenderungen besser verarbeiten (effizienter!)
-            //window.lastUpdate=v;
-            //console.log(v);
+            if(!v.changedRanges || v.changedRanges.length===0) return;
+            if(this.clazz.hasClazzDeclaration){
+              /**stelle fest, ob alle Änderungen in einer Methode stattgefunden haben: */
+              let from=v.changedRanges[0].fromA;
+              let to=v.changedRanges[0].toA;
+              let delta=v.changedRanges[0].toB-v.changedRanges[0].fromB-(to-from);
+              let method=this.clazz.getMethodByPosition(from,to);
+              if(method){
+                for(let i=1;i<v.changedRanges.length;i++){
+                  from=v.changedRanges[i].fromA;
+                  to=v.changedRanges[i].toA;
+                  if(!(method.containsPosition(from) && method.containsPosition(to))){
+                    method=null;
+                    break;
+                  }
+                  delta+=v.changedRanges[i].toB-v.changedRanges[i].fromB-(to-from);
+                }
+                if(method){
+                  /**nur aenderungen innerhalb einer Methode */
+                  //console.log("only in method",method,delta);
+                  this.update(v,{
+                    method,
+                    delta,
+                    from
+                  });
+                  this.updateLinter();
+                  return;
+                }
+              }
+            }
+            //console.log("not only in method");
+
             let updateImmediately=false;
             if(!changed){
               changed=v.docChanged;
@@ -282,7 +311,7 @@ export default {
         lintPlugin.value.run()
       }
     },
-    async update(viewUpdate){
+    async update(viewUpdate, methodInformation){
       var state=viewUpdate.state;
       /**direkt nach dem laden darf kein update erfolgen, sonst ist der tree (oft) fehlerhaft: */
       if(viewUpdate.changedRanges.length===1){
@@ -292,17 +321,24 @@ export default {
         }
       }
       var src=state.doc.toString();
-      this.clazz.setSrcAndTree(src,state.tree);
-      if(this.triggerRecompilation){
-        this.project.compile(false,this.settings.optimizeCompiler);
-      }else{
+      if(methodInformation){
         let t1=new Date();
-        await this.clazz.compile(false,this.settings.optimizeCompiler);
+        await this.clazz.recompileMethod(methodInformation,src,state.tree,this.settings.optimizeCompiler);
         let t2=new Date();
-        console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
+        console.log("recompiled method '"+methodInformation.method.name+"' in "+(t2-t1)+"ms ("+this.clazz.name+")");
+      }else{
+        this.clazz.setSrcAndTree(src,state.tree);
+        if(this.triggerRecompilation){
+          this.project.compile(false,this.settings.optimizeCompiler);
+        }else{
+          let t1=new Date();
+          await this.clazz.compile(false,this.settings.optimizeCompiler);
+          let t2=new Date();
+          console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
+        }
+        this.focus();
+        this.triggerRecompilation=true;
       }
-      this.focus();
-      this.triggerRecompilation=true;
       //this.updateErrors(viewUpdate.view);
     },
     emptyTransaction(){

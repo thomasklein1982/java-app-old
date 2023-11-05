@@ -18,7 +18,7 @@ export default {
         if(cm.clazz===this.member.clazz && this.member.node){
           editor.activeTab=cm.tabIndex;
           let offset=this.member.clazz.getPositionShift();
-          cm.setSelection(this.member.node.from+offset,this.member.node.to+offset);
+          cm.setSelection(this.member.getFrom()+offset,this.member.getTo()+offset);
           nextTick(()=>{
             cm.focus()
           });

@@ -13,6 +13,16 @@ export class Attribute{
     this.modifiers=null;
     this.node=null;
     this.initialValue=null;
+    this.errors=null;
+    this.nodeOffset=0;
+  }
+
+  getFrom(){
+    return this.node.from+this.nodeOffset;
+  }
+
+  getTo(){
+    return this.node.to+this.nodeOffset;
   }
 
   isPrivate(){
@@ -53,11 +63,32 @@ export class Attribute{
     return array;
   }
 
+  /**
+   * Verschiebt alle Fehler um delta, sofern das attribut hinter from liegt
+   * @param {*} from 
+   * @param {*} delta 
+   * @returns true, wenn das attribut dahinter liegt, sonst false
+   */
+  shiftPosition(src,from,delta){
+    if(!this.node) return;
+    if(this.node.from>=from){
+      for(let e of this.errors){
+        e.shift(src,delta);
+      }
+      this.offset+=delta;
+      return true;
+    }else{
+      return false;
+    }
+  }
+
   compile(node,source,scope){
     if(!scope){
       console.error("compile attribute without scope");
     }
+    this.nodeOffset=0;
     var errors=[];
+    this.errors=errors;
     this.node=node;
     node=node.firstChild;
     var m=new Modifiers();

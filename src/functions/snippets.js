@@ -81,6 +81,24 @@ function createSnippets(data){
     type: "macro"
   }));
 
+  snippets.inMethod.push(autocomplete.snippetCompletion("return", {
+    label: "return",
+    info: "Leitet eine Rückgabe ein.",
+    type: "keyword"
+  }));
+
+  snippets.inMethod.push(autocomplete.snippetCompletion("break", {
+    label: "break",
+    info: "Beendet die aktuelle Schleife.",
+    type: "keyword"
+  }));
+
+  snippets.inMethod.push(autocomplete.snippetCompletion("continue", {
+    label: "continue",
+    info: "Beendet den aktuellen Schleifendurchgang.",
+    type: "keyword"
+  }));
+
   snippets.inMethod.push(autocomplete.snippetCompletion("for (int i = 1; i <= max; i++) {\n\t${}\n}", {
       label: "for",
       info: "Eine for-Schleife wiederholt ihren Inhalt mehrere Male.",

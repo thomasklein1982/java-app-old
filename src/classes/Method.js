@@ -20,11 +20,19 @@ export class Method{
     this.modifiers=null;
     this.bodyNode=null;
     this.block=null;
-    this.errors=[];
     this.comment=null;
     this.typeAnnotations={};
     this.jsName=null;
     this.node=null;
+    this.errors=null;
+    this.bodyErrors=null;
+    this.nodeOffset=0;
+  }
+  getFrom(){
+    return this.node.from+this.nodeOffset;
+  }
+  getTo(){
+    return this.node.to+this.nodeOffset;
   }
   isConstructor(){
     if(!this.clazz) throw "Die Methode kennt ihre Klasse nicht!";
@@ -132,7 +140,7 @@ export class Method{
         this.params=list;
       }
       snode=snode.nextSibling;
-      console.error(node,source.getText(node));
+      //console.error(node,source.getText(node));
       if(snode.type.isError && snode.firstChild){
         if(snode.firstChild.name!=="{"){
           throw (source.createError("'{' erwartet",snode));
@@ -155,11 +163,11 @@ export class Method{
             from: node.from
           };
           let openCount=1;
-          console.log("methoden-inhalt von ",this.name);
+          //console.log("methoden-inhalt von ",this.name);
           node=node.prevSibling;
           while(node.nextSibling){
             node=node.nextSibling;
-            console.log(node,source.getText(node));
+            //console.log(node,source.getText(node));
             if(node.name==="{"){
               openCount++;
             }
@@ -196,8 +204,34 @@ export class Method{
       // this.name=lv.name;
       return null;
     }
-    console.log("method compiled: "+this.name,this);
+    //console.log("method compiled: "+this.name,this);
     return null;
+  }
+
+  /**
+   * Verschiebt alle Fehler um delta, sofern das attribut hinter from liegt
+   * @param {*} from 
+   * @param {*} delta 
+   * @returns true, wenn das attribut dahinter liegt, sonst false
+   */
+  shiftPosition(src,from,delta){
+    if(!this.node) return;
+    if(this.node.from>=from){
+      if(this.errors){
+        for(let e of this.errors){
+          e.shift(src,delta);
+        }
+      }
+      if(this.bodyErrors){
+        for(let e of this.bodyErrors){
+          e.shift(src,delta);
+        }
+      }
+      this.nodeOffset+=delta;
+      return true;
+    }else{
+      return false;
+    }
   }
 
   /**
@@ -207,7 +241,9 @@ export class Method{
    * @returns 
    */
   compileDeclaration(node,source){
+    this.nodeOffset=0;
     let errors=[];
+    this.errors=errors;
     node=node.firstChild;
     var m=new Modifiers();
     this.modifiers=m;
@@ -276,7 +312,7 @@ export class Method{
     if(this.clazz){
       pos-=this.clazz.getPositionShift();
     }
-    return (this.bodyNode.from<=pos && pos<=this.bodyNode.to);
+    return (this.bodyNode.from+this.nodeOffset<=pos && pos<=this.bodyNode.to+this.nodeOffset);
   }
 
   getScopeAtPosition(pos){
@@ -285,14 +321,19 @@ export class Method{
     return scope;
   }
 
+  recompileBody(newDeclarationNode,source,optimizeCompiler){
+    this.compileDeclaration(newDeclarationNode,source);
+    return this.compileBody(source,optimizeCompiler);
+  }
+
   compileBody(source,optimizeCompiler){
-    let errors=[];
     if(!this.bodyNode){
       return null;
     }
     let scope=new Scope(this.clazz.project,this,undefined,{optimizeCompiler: optimizeCompiler});
     this.block=Block(this.bodyNode,source,scope);
     this.typeAnnotations=scope.typeAnnotations;
+    this.bodyErrors=this.block.errors;
     return this.block;
   }
 }

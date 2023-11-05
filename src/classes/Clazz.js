@@ -23,6 +23,7 @@ export class Clazz{
     this.project=project;
     this.superClazz=null;
     this.implementedInterfaces=[];
+    this.ownErrors=null;
     this.errors=null;
     if(this.isInterface){
       this.src="interface "+this.name+"{\n  \n}";
@@ -137,11 +138,19 @@ export class Clazz{
     return null;
   }
 
-  getMethodByPosition(pos){
+  getMethodByPosition(pos, to){
     for(let i in this.methods){
       let m=this.methods[i];
       if(m.containsPosition(pos)){
-        return m;
+        if(to===undefined){
+          return m;
+        }else{
+          if(m.containsPosition(to)){
+            return m;
+          }else{
+            return null;
+          }
+        }
       }
     }
     return null;
@@ -376,13 +385,63 @@ export class Clazz{
     this.src=src;
   }
 
-  setSrcAndTree(src,tree){
+  setSrcAndTree(src,tree,keepState){
     this.src=src;
-    this.name=null;
-    this.superClazz=null;
-    this.attributes={};
-    this.methods={};
+    if(!keepState){
+      this.name=null;
+      this.superClazz=null;
+      this.attributes={};
+      this.methods={};
+    }
     this.source=new Source(src,tree,this);
+  }
+
+  recompileMethod(methodInformation,src,tree,optimizeCompiler){
+    this.setSrcAndTree(src,tree,true);
+    let method=methodInformation.method;
+    let delta=methodInformation.delta;
+    let from=methodInformation.from;
+    /**bei allen membern muessen die nodes aktualisiert werden, 
+     * die eine Methode muss neu kompiliert werden,
+     * in allen anderen Methode muessen die Fehler bestehen bleiben*/
+    if(!this.ownErrors){
+      this.ownErrors=[];
+    }
+    this.errors=this.ownErrors.concat([]);
+
+    for(let a in this.attributes){
+      a=this.attributes[a];
+      a.shiftPosition(src,from,delta);
+      if(a.errors){
+        this.errors=this.errors.concat(a.errors);
+      }
+    }
+    for(let m in this.methods){
+      m=this.methods[m];
+      m.shiftPosition(src,from,delta);
+      if(m.errors){
+        this.errors=this.errors.concat(m.errors);
+      }
+    }
+
+    let node=tree.topNode.firstChild;
+    if(node.type.name==="ClassDeclaration"){
+      node=node.firstChild;
+      while(node.nextSibling){
+        node=node.nextSibling;
+      }
+      node=node.firstChild.nextSibling;
+    }
+    this.clazzBody=node;
+    /**node ist jetzt der erste Member-Node */
+    while(node){
+      if(node.name==="MethodDeclaration" || node.name==="ConstrctorDeclaration"){   
+        if(node.from===method.node.parent.from){
+          method.recompileBody(node,this.source,optimizeCompiler);
+        }
+      }
+      node=node.nextSibling;
+    }
   }
 
   compile(fromSource,optimizeCompiler){
@@ -406,7 +465,7 @@ export class Clazz{
     }
     this.compileDeclaration();
     this.compileDeclarationTypeParameters();
-    this.compileMemberDeclarations(true,true);
+    this.compileMemberDeclarations();
   }
 
   isUIClazz(){
@@ -494,7 +553,7 @@ export class Clazz{
         }
       }catch(e){
         this.errors.push(e);
-      }
+      }compileMemberNodes
     }else{
       this.typeParameters=null;
     }
@@ -509,7 +568,7 @@ export class Clazz{
     }
   }
 
-  compileMemberNodesWithClazzDeclaration(scope,node){
+  compileMemberNodes(scope,node){
     let hasConstructor=false;
     while(node.nextSibling){
       // if(node.name==="ConstantDeclaration"){
@@ -520,7 +579,7 @@ export class Clazz{
       // }
       if(node.name==="FieldDeclaration"){
         if(this.isInterface){
-          this.errors.push(this.source.createError("Ein Interface kann keine attribute deklarieren.",node));
+          this.errors.push(this.source.createError("Ein Interface kann keine Attribute deklarieren.",node));
           continue;
         }
         var a=new Attribute(this);
@@ -596,7 +655,7 @@ export class Clazz{
    */
   compileMemberDeclarations(){
     this.attributes={};
-    if(options.instantiateUIClasses){
+    if(this.isFirstClazz && options.instantiateUIClasses){
       for(var i=0;i<this.project.clazzes.length;i++){
         var c=this.project.clazzes[i];
         if(!(c instanceof UIClazz)) continue;
@@ -613,7 +672,7 @@ export class Clazz{
     if(!node) return;
     /**Klassenkoerper parsen: */
     let scope=new Scope(this.project);
-    this.compileMemberNodesWithClazzDeclaration(scope,node);
+    this.compileMemberNodes(scope,node);
     
     return this.errors;
   }

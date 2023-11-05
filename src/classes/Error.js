@@ -18,4 +18,10 @@ export class Error{
   toString(){
     return this.line.number+":"+this.col+": "+this.message;
   }
+  shift(source,delta){
+    this.from+=delta;
+    this.to+=delta;
+    this.line=source.getLine(node.from);
+    this.col=this.from-this.line.startIndex;
+  }
 }
