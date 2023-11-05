@@ -593,10 +593,10 @@ export class UIClazz {
           updateCode+="\ncomponent"+code;
         }
       }
-      if(c.forceAbsolute){
-        newCode+="\n"+last+".setStyle('position','absolute');";
-        newCode+="\n"+last+".$el.updatePosition();";
-      }
+      // if(c.forceAbsolute){
+      //   newCode+="\n"+last+".setStyle('position','absolute');";
+      //   newCode+="\n"+last+".$el.updatePosition();";
+      // }
       if(c.value!==null && c.value!==undefined){
         let code;
         if(c.valueType==="Boolean"){

@@ -210,11 +210,11 @@ import TemplateDialog from './TemplateDialog.vue';
       },
       emitUpdate(force){
         if(this.settings.autoUpdateUI && (force || !this.maximized)){
-          this.$emit("recompile");
+          this.$emit("isolatedupdate");
         }
       }
     },
-    emits: ["update","recompile"],
+    emits: ["isolatedupdate","recompile"],
     components: {
     TemplateDialog,
     CodeMirrorEditor

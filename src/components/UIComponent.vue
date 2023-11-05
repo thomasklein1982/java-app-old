@@ -60,7 +60,7 @@
             <Button icon="pi pi-trash" @click="clickRemoveUIClazz($event)"/>
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
           </div>
-          <TextArea class="ui-clazz-variables" auto-resize style="width: 100%" v-model="component.variablesRaw" @change="$emit('recompile')"/>
+          <TextArea class="ui-clazz-variables" auto-resize style="width: 100%" v-model="component.variablesRaw" @change="emitRecompile()"/>
           <div style="font-family: monospace; color: red">
             <div v-for="(e,i) in component.variablesErrors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
           </div>
@@ -100,12 +100,12 @@
             ghost-class="drag-ghost-component"
             :style="{flex: 1,'padding-bottom': (!$root.printMode && isUIClazz)? '100%':'2rem'}"
             @end="endDrag"
-            @add="$emit('recompile')"
-            @sort="$emit('recompile')"
+            @add="emitIsolatedUpdate()"
+            @sort="emitIsolatedUpdate()"
           >
             <template #item="{element}">
               <div>
-                <UIComponent @removethis="removeChildComponent(element)" @recompile="$emit('recompile')" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" @duplicate="clickDuplicate()" :selected-component="selectedComponent" @duplicate-child="duplicateSelectedChildComponent()"
+                <UIComponent @removethis="removeChildComponent(element)" @recompile="emitRecompile()" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" @duplicate="clickDuplicate()" :selected-component="selectedComponent" @duplicate-child="duplicateSelectedChildComponent()"
                 @deselect-component="deselectComponent()"/>
                 <ConfirmPopup></ConfirmPopup>
               </div>
@@ -277,7 +277,12 @@
         this.emitIsolatedUpdate();
       },
       emitIsolatedUpdate(){
+        console.log("isolatedUpdate");
         this.$emit('isolatedupdate');
+      },
+      emitRecompile(){
+        console.log("recompile");
+        this.$emit('recompile');
       },
       clickRemove(event) {
         this.$confirm.require({
@@ -286,7 +291,7 @@
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
             this.$emit("removethis");
-            this.$emit('recompile');
+            this.emitRecompile();
           },
           reject: () => {
               //callback to execute when user rejects the action
@@ -314,7 +319,7 @@
           let list=ev.from.__draggable_component__.realList;
           if(list){
             list.splice(ev.oldIndex,1);
-            this.$emit("recompile");
+            this.emitIsolatedUpdate();
           }
         }
       }

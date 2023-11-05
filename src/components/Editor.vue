@@ -63,7 +63,7 @@
                 :settings="settings"
                 @select="updateSelectedUIComponent"
                 @recompile="compileProjectAndUpdateUIPreview()"
-                @isolatedupdate="updateUIPreview()"
+                @isolatedupdate="compileUIClazzAndUpdatePreview()"
                 ref="uiEditor"
               >
               </UIEditor>
@@ -101,7 +101,7 @@
                 :maximized="false"
                 :settings="settings"
                 @recompile="compileProjectAndUpdateUIPreview()"
-                @update="updateUIPreview()"
+                @isolatedupdate="compileUIClazzAndUpdatePreview()"
               />
               <Outline
                 v-else
@@ -271,7 +271,13 @@ export default {
       this.compileProject();
       this.updateUIPreview();
     },
+    compileUIClazzAndUpdatePreview(){
+      this.currentClazz.compile();
+      this.updateUIPreview();
+    },
     updateUIPreview(){
+      console.log("update preview")
+
       this.$refs.uipreview.reload();
     },
     clearUIPreview(){
