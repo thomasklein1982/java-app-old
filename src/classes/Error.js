@@ -21,7 +21,7 @@ export class Error{
   shift(source,delta){
     this.from+=delta;
     this.to+=delta;
-    this.line=source.getLine(node.from);
+    this.line=source.getLine(this.from);
     this.col=this.from-this.line.startIndex;
   }
 }

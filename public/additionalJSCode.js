@@ -8,6 +8,11 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  function $getElementById(uiclazz, id){
+    console.log("get element by id",uiclazz,id);
+    return new HTMLElement(document.getElementById(uiclazz.constructor.name+"-"+id));
+  }
+
   function $getFromArray(array,index){
     if(array.get){
       return array.get(index);
@@ -564,6 +569,48 @@ function additionalJSCode(){
       }else{
         return -1;
       }
+    }
+  }
+
+  class HTMLElement extends JComponent{
+    constructor(element){
+      super(0,0,0,0);
+      this.$el=element;
+      this.$lastDisplayValue=this.$el.style.display;;
+    }
+    getValue(){
+      if(!this.$el) return null;
+      if('selectedIndex' in this.$el){
+        return this.$el.selectedIndex;
+      }else if('checked' in this.$el){
+        return this.$el.checked; 
+      }else if('value' in this.$el){
+        return this.$el.value;
+      }
+      return this.$el.innerHTML;
+    }
+    setValue(v){
+      if(!this.$el) return;
+      if('selectedIndex' in this.$el){
+        this.$el.selectedIndex=v;
+      }else if('checked' in this.$el){
+        this.$el.checked=v;
+      }else if('value' in this.$el){
+        this.$el.value=v;
+      }else{
+        this.$el.innerHTML=v;
+      }
+    }
+    setVisible(v){
+      if(!v){
+        this.$lastDisplayValue=this.$el.style.display;
+        this.$el.style.display="none";
+      }else{
+        this.$el.style.display=this.$lastDisplayValue;
+      }
+    }
+    isVisible(){
+      return this.$el.style.display!=="none";
     }
   }
 

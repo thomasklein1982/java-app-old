@@ -10,6 +10,7 @@
         :is-easy="isEasy"
         :allow-trash="activeTab>0"
         :current-clazz="currentClazz"
+        :caret-position="settings.showCaretPosition? caretPosition: -1"
         @download="downloadProject"
         @upload="uploadProject"
         @new="$refs.dialogNewApp.setVisible(true)"
@@ -75,6 +76,7 @@
                 :settings="settings"
                 :font-size="fontSize"
                 :current="paused && i===activeTab ? current : null"
+                @caretupdate="updateCaretPosition"
                 ref="editor"
               />
             </TabPanel>
@@ -165,11 +167,13 @@ export default {
       useBlockEditor: false,
       activeTab: 0,
       running: false,
+      caretPosition: 0,
       project: null,
       fontSize: 20,
       settings: {
         optimizeCompiler: false,
-        autoUpdateUI: true
+        autoUpdateUI: true,
+        showCaretPosition: false
       },
       breakpoints: [],
       sizeCode: 60,
@@ -223,7 +227,7 @@ export default {
           index++;
         }
       }
-      if(index>=0){
+      if(index>=0 && this.$refs && this.$refs.editor){
         return this.$refs.editor[index];
       }else{
         return null;
@@ -315,6 +319,9 @@ export default {
           console.log("methode")
         }
       }
+    },
+    updateCaretPosition(pos){
+      this.caretPosition=pos;
     },
     toggleComment(){
       let cm=this.$refs.editor[this.activeTab];

@@ -225,8 +225,10 @@ export default {
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
+            this.$emit("caretupdate",v.state.selection.main.head);
             if(!v.docChanged) return;
             if(!v.changedRanges || v.changedRanges.length===0) return;
+            this.size=v.state.doc.length;
             if(this.clazz.hasClazzDeclaration){
               /**stelle fest, ob alle Änderungen in einer Methode stattgefunden haben: */
               let from=v.changedRanges[0].fromA;
@@ -275,7 +277,6 @@ export default {
                   }
                 }
               }
-              this.size=v.state.doc.length;
             }
             if(timer) clearTimeout(timer);
             if(updateImmediately){

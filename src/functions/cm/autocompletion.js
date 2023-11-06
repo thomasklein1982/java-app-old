@@ -41,49 +41,13 @@ export function createAutocompletion(){
     if(nodeBefore.name===";"){
       return;
     }
-    //innerhalb einer Methode?
-    //console.log("autocomplete: check method");
     let method=clazz.getMethodByPosition(pos);
-    // let n=nodeBefore.parent.parent;
-    // if(n.type.name==="FormalParameters") return;
-    // while(n){
-    //   if(n.type.name==="MethodDeclaration"||n.type.name==="ConstructorDeclaration"){
-    //     n=n.firstChild;
-    //     while(n && n.name!=="Definition"){
-    //       n=n.nextSibling;
-    //     }
-    //     if(n){
-    //       let mname=context.state.doc.sliceString(n.from,n.to);
-    //       method=clazz.methods[mname];
-    //     }
-    //     break;
-    //   }
-    //   n=n.parent;
-    // }
     
-    // //console.log("autocomplete: check method 2",method.name);
-
-    // if(nodeBefore.name==="}"){
-    //   if(nodeBefore.parent.name==="Block"){
-    //     let n=nodeBefore.parent.parent;
-    //     if(n.name==="ConstructorDeclaration" || n.name==="MethodDeclaration" || n.name==="FieldDeclaration"){
-    //       method=null;
-    //     }
-    //   }
-    // }
     let from;
     if(!method){
       let options=[];
       from=nodeBefore.from;
       if(clazz.isMainClazz()){
-        //if(nodeBefore.name==="{") return;
-        
-        // if(nodeBefore.name==="void"){
-        //   from=nodeBefore.from;
-        // }else{
-        //   from=pos;
-        // }
-        
         for(let i=0;i<snippets.eventListeners.length;i++){
           options.push(snippets.eventListeners[i]);
         }
@@ -117,6 +81,9 @@ export function createAutocompletion(){
     //console.log("autocomplete: look for annotations");
     
     let annotation;
+    if(nodeBefore.name==="Identifier" && !nodeBefore.prevSibling && nodeBefore.parent){
+      nodeBefore=nodeBefore.parent;
+    }
     if(nodeBefore.name==="Identifier" && nodeBefore.prevSibling){
       context.pos=nodeBefore.from;
       nodeBefore=nodeBefore.prevSibling;

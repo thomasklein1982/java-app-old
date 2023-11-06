@@ -50,17 +50,10 @@ export class Attribute{
   }
 
   getSingleAttributes(){
-    return this.attributes;
-    let array=[];
-    for(let i=0;i<this.name.length;i++){
-      let n=this.name[i];
-      let a=new Attribute(this.clazz);
-      a.type=this.type;
-      a.name=n;
-      a.modifiers=this.modifiers;
-      array.push(a);
+    if(!this.attributes || this.attributes.length===0){
+      return null;
     }
-    return array;
+    return this.attributes;
   }
 
   /**
@@ -87,18 +80,17 @@ export class Attribute{
       console.error("compile attribute without scope");
     }
     this.nodeOffset=0;
-    var errors=[];
-    this.errors=errors;
+    this.errors=[];
     this.node=node;
     node=node.firstChild;
     var m=new Modifiers();
     this.modifiers=m;
     if(node.name==="Modifiers"){
-      errors=errors.concat(m.compile(node,source));
+      this.errors=this.errors.concat(m.compile(node,source));
       node=node.nextSibling;
     }
     if(node.name.indexOf("Type")>=0){
-      this.type=Type.compile(node,source,this.clazz,errors);
+      this.type=Type.compile(node,source,this.clazz,this.errors);
       node=node.nextSibling;
     }
     /**beliebig viele Variablennamen, mit Komma getrennt */
@@ -113,31 +105,34 @@ export class Attribute{
           a.modifiers=this.modifiers;
           a.initialValue=vdekl.initialValue;
           a.node=node;
+          if(this.attributes.length===0){
+            a.errors=this.errors;
+          }
           this.attributes.push(a);
           node=node.nextSibling;
           if(node.name===","){
             node=node.nextSibling;
             if(node.isError){
-              errors.push(source.createError("Attributsname erwartet",node));
+              this.errors.push(source.createError("Attributsname erwartet",node));
               return errors;
             }
           }else{
             break;
           }
         }catch(e){
-          errors=errors.concat(e);
-          return errors;
+          this.errors=this.errors.concat(e);
+          return this.errors;
         }
       }else{
-        errors.push(source.createError("Attributsname erwartet",node));
-        return errors;
+        this.errors.push(source.createError("Attributsname erwartet",node));
+        return this.errors;
       }
     }
     if(node){
       if(node.type.isError || node.name!==";"){
-        errors.push(source.createError("';' erwartet",node));
+        this.errors.push(source.createError("';' erwartet",node));
       }
     }
-    return errors;
+    return this.errors;
   }
 }

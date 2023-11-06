@@ -18,7 +18,7 @@ function createUpdateLocalVariablesCode(scope){
  */
 export function Block(node,source,scope){
   let code="";
-  let errors=scope.method.clazz.errors;
+  let errors=[];
   let blockNode=node;
   node=node.firstChild;
   if(!node || node.type.isError || node.name!=='{'){
@@ -34,12 +34,7 @@ export function Block(node,source,scope){
   let open=true;
   while(node.nextSibling && !node.isBlockEnd){
     node=node.nextSibling;
-    console.log("beyond?",source.getText(node));
-    if(source.getText(node).startsWith("a")){
-      console.log("a");
-    }
     if(scope.isNodeBeyondEndPosition(node)){
-      console.log("yes");
       return scope;
     }
     if(node.name==='}' || options.classOptional && node.type.isError && node.firstChild && node.firstChild.name==="}"){
@@ -97,6 +92,6 @@ export function Block(node,source,scope){
     code+=createUpdateLocalVariablesCode(scope);
   }
   return {
-    code
+    code, errors
   }
 }

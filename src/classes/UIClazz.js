@@ -322,6 +322,8 @@ export class UIClazz {
     code+="\nrerender(){\nlet lastComponent,component=this;";
     code+="\nif(this.$el.replaceChildren) this.$el.replaceChildren(); else this.$el.innerHTML='';";
     code+="\n"+this.componentCode;
+    code+="\nlet elements=document.querySelectorAll('*[id]');";
+    code+="\nfor(let e of elements){e.id='"+this.name+"-'+e.id;}";
     code+="\n}";
     code+="\n$update(){\nif(!this.$el) return;\n";
     code+="\nfor(var i=0;i<this.$el.childNodes.length;i++){";
@@ -372,6 +374,7 @@ export class UIClazz {
   compile(){
     let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.attributes={};
+    this.methods={};
     this.compileVariables(scope);
     let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
     for(let name in namedComponents){
@@ -390,6 +393,17 @@ export class UIClazz {
       a.isNamedComponent=true;
       this.attributes[name]=a;
     }
+    this.methods.getElementByID=createMethod({
+      name: 'getElementByID',
+      args: [
+        {name: 'id', type: 'String'}
+      ],
+      info: 'Liefert das HTML-Element mit der angegebenen ID zurück',
+      returnType: 'HTMLElement',
+      jsName: "$getElementById",
+      isExtraFunction: true
+    },this,false,false);
+    
     this.componentCode="";
     let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n", nextUIControlStatementIndex:1};
     scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
@@ -603,7 +617,6 @@ export class UIClazz {
           code=".setValue("+c.value+");";
         }else{
           scope.clearReferencedVariables();
-          
           code=".setValue("+this.parseInterpolatedString(scope,this.project.handleAssetsInCode(c.value))+");";
           if(scope.referencedVariablesCount>0){
             updateCode+="\ncomponent"+code;

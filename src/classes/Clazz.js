@@ -1,3 +1,4 @@
+import { concatArrays } from "../functions/helper";
 import { parseJava } from "../functions/parseJava";
 import { SuperInterfaces } from "../language/compile/SuperInterfaces";
 import { TypeParameters } from "../language/compile/TypeParameters";
@@ -23,7 +24,7 @@ export class Clazz{
     this.project=project;
     this.superClazz=null;
     this.implementedInterfaces=[];
-    this.ownErrors=null;
+    this.attributeErrors=null;
     this.errors=null;
     if(this.isInterface){
       this.src="interface "+this.name+"{\n  \n}";
@@ -404,23 +405,20 @@ export class Clazz{
     /**bei allen membern muessen die nodes aktualisiert werden, 
      * die eine Methode muss neu kompiliert werden,
      * in allen anderen Methode muessen die Fehler bestehen bleiben*/
-    if(!this.ownErrors){
-      this.ownErrors=[];
-    }
-    this.errors=this.ownErrors.concat([]);
+    this.errors=this.attributeErrors.concat([]);
 
     for(let a in this.attributes){
       a=this.attributes[a];
-      a.shiftPosition(src,from,delta);
+      a.shiftPosition(this.source,from,delta);
       if(a.errors){
         this.errors=this.errors.concat(a.errors);
       }
     }
     for(let m in this.methods){
       m=this.methods[m];
-      m.shiftPosition(src,from,delta);
-      if(m.errors){
-        this.errors=this.errors.concat(m.errors);
+      m.shiftPosition(this.source,from,delta);
+      if(m.name!==method.name){
+        this.errors=this.errors.concat(m.getErrors());
       }
     }
 
@@ -438,6 +436,7 @@ export class Clazz{
       if(node.name==="MethodDeclaration" || node.name==="ConstrctorDeclaration"){   
         if(node.from===method.node.parent.from){
           method.recompileBody(node,this.source,optimizeCompiler);
+          this.errors=this.errors.concat(method.getErrors());
         }
       }
       node=node.nextSibling;
@@ -553,7 +552,7 @@ export class Clazz{
         }
       }catch(e){
         this.errors.push(e);
-      }compileMemberNodes
+      }
     }else{
       this.typeParameters=null;
     }
@@ -570,6 +569,7 @@ export class Clazz{
 
   compileMemberNodes(scope,node){
     let hasConstructor=false;
+    this.attributeErrors=[];
     while(node.nextSibling){
       // if(node.name==="ConstantDeclaration"){
       //   if(this.isInterface){
@@ -585,15 +585,19 @@ export class Clazz{
         var a=new Attribute(this);
         this.errors=this.errors.concat(a.compile(node,this.source,scope));
         let attr=a.getSingleAttributes();
-        for(var i=0;i<attr.length;i++){
-          let sa=attr[i];
-          if(sa.name){
-            if(this.attributes[sa.name]){
-              this.errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
-            }else if(this.methods[sa.name]){
-              this.errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
-            }else{
-              this.attributes[sa.name]=sa;
+        if(!attr){
+          concatArrays(this.attributeErrors,a.errors);
+        }else{
+          for(var i=0;i<attr.length;i++){
+            let sa=attr[i];
+            if(sa.name){
+              if(this.attributes[sa.name]){
+                this.errors.push(this.source.createError("Es gibt bereits ein Attribut namens '"+sa.name+"'.",sa.node));
+              }else if(this.methods[sa.name]){
+                this.errors.push(this.source.createError("Es gibt bereits eine Methode namens '"+sa.name+"'.",sa.node));
+              }else{
+                this.attributes[sa.name]=sa;
+              }
             }
           }
         }
@@ -689,6 +693,7 @@ export class Clazz{
     for(let mi in this.methods){
       let m=this.methods[mi];
       m.compileBody(this.source,optimizeCompiler);
+      concatArrays(this.errors,m.getErrors());
     }
   }
 }

@@ -10,6 +10,7 @@
     </template>
     <template #end>
       <template v-if="currentClazz && !currentClazz.isUIClazz()">
+        <badge style="margin-right: 0.5rem" v-if="caretPosition>=0">Pos: {{ caretPosition }}</badge>
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-undo" @click="$emit('undo')"/>
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-refresh" @click="$emit('redo')"/>
       </template>
@@ -24,7 +25,11 @@ export default {
     rightClosed: Boolean,
     isEasy: Boolean,
     allowTrash: Boolean,
-    currentClazz: Object
+    currentClazz: Object,
+    caretPosition: {
+      type: Number,
+      default: -1
+    }
   },
   data(){
     return {

@@ -16,6 +16,7 @@ import { defineMatrix, defineVector } from "./datatypes/Matrix";
 import { defineSystem } from "./datatypes/system";
 import { definePrintStream } from "./datatypes/printStream";
 import { defineArrayList } from "./datatypes/ArrayList";
+import { defineHTMLElement } from "./datatypes/HTMLElement.js";
 
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
@@ -84,13 +85,15 @@ let PrintStream=new Clazz("PrintStream");
 PrintStream.cannotBeInstantiated=true;
 
 let ArrayList=new Clazz("ArrayList");
+let HTMLElement=new Clazz("HTMLElement");
+HTMLElement.cannotBeInstantiated=true;
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, Mouse, JComponent,JButton, JPanel, JLabel, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement
 }
 
 export const Java={
@@ -121,3 +124,4 @@ defineFile(File);
 defineMatrix(Matrix);
 defineVector(Vector);
 defineArrayList(ArrayList);
+defineHTMLElement(HTMLElement);

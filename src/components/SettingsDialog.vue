@@ -7,6 +7,9 @@
     <div style="padding: 0.2rem">
       <InputSwitch id="autoUpdateUI" v-model="settings.autoUpdateUI"/><label for="autoUpdateUI">UI-Komponenten automatisch aktualisieren</label>
     </div>
+    <div style="padding: 0.2rem">
+      <InputSwitch id="showCaretPosition" v-model="settings.showCaretPosition"/><label for="showCaretPosition">Caret-Position anzeigen</label>
+    </div>
     <div style="padding: 0.2rem" :style="{display: 'flex', 'justify-content': 'center', 'align-items':'center'}">
       <Button icon="pi pi-minus" @click="changeFontSize(-1)"/>
       <span style="padding: 0.2rem">{{myFontSize}}px</span>

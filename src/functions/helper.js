@@ -110,3 +110,10 @@ export async function loadLocally(key){
   }
   return data;
 }
+
+export function concatArrays(array,array2){
+  //if(!array || !array2) return;
+  for(let a of array2){
+    array.push(a);
+  }
+}

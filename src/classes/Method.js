@@ -9,6 +9,7 @@ import { Scope } from "./Scope";
 import { Type } from "./Type";
 import { CompileFunctions } from "../language/CompileFunctions";
 import { FormalParameters } from "../language/compile/FormalParameters";
+import { concatArrays } from "../functions/helper";
 
 export class Method{
   constructor(clazz, isConstructorNode){
@@ -214,17 +215,17 @@ export class Method{
    * @param {*} delta 
    * @returns true, wenn das attribut dahinter liegt, sonst false
    */
-  shiftPosition(src,from,delta){
+  shiftPosition(source,from,delta){
     if(!this.node) return;
     if(this.node.from>=from){
       if(this.errors){
         for(let e of this.errors){
-          e.shift(src,delta);
+          e.shift(source,delta);
         }
       }
       if(this.bodyErrors){
         for(let e of this.bodyErrors){
-          e.shift(src,delta);
+          e.shift(source,delta);
         }
       }
       this.nodeOffset+=delta;
@@ -232,6 +233,23 @@ export class Method{
     }else{
       return false;
     }
+  }
+
+  getErrors(){
+    if(this.errors){
+      if(this.bodyErrors){
+        return this.errors.concat(this.bodyErrors);
+      }else{
+        return this.errors;
+      }
+    }else{
+      if(this.bodyErrors){
+        return this.bodyErrors;
+      }else{
+        return [];
+      }
+    }
+    
   }
 
   /**
