@@ -81,7 +81,7 @@ export function createAutocompletion(){
     //console.log("autocomplete: look for annotations");
     
     let annotation;
-    if(nodeBefore.name==="Identifier" && !nodeBefore.prevSibling && nodeBefore.parent){
+    if(nodeBefore.name==="Identifier" && !nodeBefore.prevSibling && nodeBefore.parent &&nodeBefore.parent.name==="MethodName"){
       nodeBefore=nodeBefore.parent;
     }
     if(nodeBefore.name==="Identifier" && nodeBefore.prevSibling){

@@ -433,8 +433,8 @@ export class Clazz{
     this.clazzBody=node;
     /**node ist jetzt der erste Member-Node */
     while(node){
-      if(node.name==="MethodDeclaration" || node.name==="ConstrctorDeclaration"){   
-        if(node.from===method.node.parent.from){
+      if(node.name==="MethodDeclaration" || node.name==="ConstructorDeclaration"){   
+        if(node.from===method.node.parent.from+method.nodeOffset){
           method.recompileBody(node,this.source,optimizeCompiler);
           this.errors=this.errors.concat(method.getErrors());
         }

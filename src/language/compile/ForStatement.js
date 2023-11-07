@@ -32,8 +32,10 @@ export function ForStatement(node,source,scope){
   }
   code+="{"+block.code+"}";
   scope.popLayer();
+  
   return {
     code: code,
-    type: null
+    type: null,
+    errors: block.errors
   }
 }

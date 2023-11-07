@@ -42,6 +42,9 @@ export function IfStatement(node,source,scope){
     if(elseBlock instanceof Scope){
       return elseBlock;
     }
+    if(elseBlock.errors && elseBlock.errors.length>0){
+      throw elseBlock.errors[0];
+    }
     code+="{"+elseBlock.code+"}";
     scope.popLayer();
   }

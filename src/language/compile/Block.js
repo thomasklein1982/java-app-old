@@ -1,6 +1,7 @@
 import { options } from "../../classes/Options";
 import { Scope } from "../../classes/Scope";
 import { Source } from "../../classes/Source";
+import { concatArrays } from "../../functions/helper";
 import { CompileFunctions } from "../CompileFunctions";
 
 function createUpdateLocalVariablesCode(scope){
@@ -47,6 +48,9 @@ export function Block(node,source,scope){
         console.log("res",res);
         if(res instanceof Scope){
           return res;
+        }
+        if(res.errors){
+          concatArrays(errors,res.errors);
         }
         if(!scope.optimizeCompiler){
           let line=source.getLineNumber(node.from);
