@@ -327,6 +327,7 @@ export class Method{
   }
 
   containsPosition(pos){
+    if(!this.bodyNode) return false;
     if(this.clazz){
       pos-=this.clazz.getPositionShift();
     }
