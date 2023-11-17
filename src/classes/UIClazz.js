@@ -322,9 +322,9 @@ export class UIClazz {
     code+="\nrerender(){\nlet lastComponent,component=this;";
     code+="\nif(this.$el.replaceChildren) this.$el.replaceChildren(); else this.$el.innerHTML='';";
     code+="\n"+this.componentCode;
-    code+="\nlet elements=document.querySelectorAll('*[id]');";
-    code+="\nfor(let e of elements){e.id='"+this.name+"-'+e.id;}";
-    code+="\n}";
+    // code+="\nlet elements=document.querySelectorAll('*[id]');";
+    // code+="\nfor(let e of elements){e.id='"+this.name+"-'+e.id;}";
+    code+="\nthis.$update();}";
     code+="\n$update(){\nif(!this.$el) return;\n";
     code+="\nfor(var i=0;i<this.$el.childNodes.length;i++){";
     code+="\nvar c=this.$el.childNodes[i];";
@@ -510,6 +510,7 @@ export class UIClazz {
           newCode+="\nuiControlStatement"+uiControlStatementIndex+".$update=function(component){";
           newCode+="\ncomponent.prepareForUpdate();";
           newCode+=updateCode+"};";
+          //newCode+="\nuiControlStatement"+uiControlStatementIndex+".$update();"
         }
         newCode+="\n}";
         continue;
@@ -632,12 +633,14 @@ export class UIClazz {
         updateCode+="\nvar c=component.$el.childNodes[i];";
         updateCode+="\nif(c && c.component && c.component.$update){c.component.$update.call(c.component.uiClazz,c.component);}";
         updateCode+="\n}";
+        
       }
       if(c.invisible){
         newCode+="\n"+last+".setVisible(false);";
       }
       if(updateCode.length>0){
         newCode+="\n"+last+".$update=function(component){"+updateCode+"};";
+        newCode+="\n"+last+".$update();";
       }
       newCode+="}\n"; //Klammer zu für den Scope
     }

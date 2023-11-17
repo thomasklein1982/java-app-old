@@ -9,8 +9,10 @@ function additionalJSCode(){
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
   function $getElementById(uiclazz, id){
-    console.log("get element by id",uiclazz,id);
-    return new HTMLElement(document.getElementById(uiclazz.constructor.name+"-"+id));
+    //return new HTMLElement(document.getElementById(uiclazz.constructor.name+"-"+id));
+    let e=document.getElementById(id);
+    if(!e) return null;
+    return new HTMLElement(e);
   }
 
   function $getFromArray(array,index){
@@ -131,18 +133,76 @@ function additionalJSCode(){
     return x*180/Math.PI;
   }
 
+  // <div id="dialog-backdrop" style="display: none">
+  //   <div id="dialog-frame">
+  //     <div id="dialog-content">Hallo</div>
+  //     <input type="text" id="dialog-input" style="display: none"></input>
+  //     <div class="dialog-footer" id="dialog-footer-alert" style="display: none">
+  //       <button class="dialog-footer-button" onclick="$clickDialogButton('alert')">OK</button>
+  //     </div>
+  //     <div class="dialog-footer" id="dialog-footer-confirm" style="display: none">
+  //       <button class="dialog-footer-button" onclick="$clickDialogButton('yes')">Ja</button>
+  //       <button class="dialog-footer-button" onclick="$clickDialogButton('no')">Nein</button>
+  //     </div>
+  //     <div class="dialog-footer" id="dialog-footer-prompt" style="display: none">
+  //       <button class="dialog-footer-button" onclick="$clickDialogButton('prompt')">OK</button>
+  //     </div>
+  //   </div>
+  // </div>
   function $setupDialog(){
     if($App.customDialog) return;
     $App.customDialog={
-      backdrop: document.getElementById("dialog-backdrop"),
-      frame: document.getElementById("dialog-frame"),
-      content: document.getElementById("dialog-content"),
-      input: document.getElementById("dialog-input"),
-      footerAlert: document.getElementById("dialog-footer-alert"),
-      footerPrompt: document.getElementById("dialog-footer-prompt"),
-      footerConfirm: document.getElementById("dialog-footer-confirm"),
+      backdrop: document.createElement("div"),
+      frame: document.createElement("div"),
+      content: document.createElement("div"),
+      input: document.createElement("input"),
+      footerAlert: document.createElement("div"),
+      footerPrompt: document.createElement("div"),
+      footerConfirm: document.createElement("div"),
       resolve: null
     };
+    let ui=$App.customDialog;
+    ui.backdrop.style="display: none";
+    ui.backdrop.id="dialog-backdrop";
+    ui.frame.id="dialog-frame";
+    ui.backdrop.appendChild(ui.frame);
+    ui.content.id="dialog-content";
+    ui.frame.appendChild(ui.content);
+    ui.input.id="dialog-input";
+    ui.input.style="display: none";
+    ui.frame.appendChild(ui.input);
+    ui.footerAlert.className="dialog-footer";
+    ui.footerAlert.id="dialog-footer-alert";
+    let button=document.createElement("button");
+    button.className="dialog-footer-button";
+    button.onclick=function(){$clickDialogButton('alert')};
+    button.innerHTML="OK";
+    ui.footerAlert.appendChild(button);
+    ui.frame.appendChild(ui.footerAlert);
+    
+    ui.footerConfirm.id="dialog-footer-confirm";
+    ui.footerConfirm.className="dialog-footer";
+    button=document.createElement("button");
+    button.className="dialog-footer-button";
+    button.onclick=function(){$clickDialogButton('yes')};
+    button.innerHTML="Ja";
+    ui.footerConfirm.appendChild(button);
+    button=document.createElement("button");
+    button.className="dialog-footer-button";
+    button.onclick=function(){$clickDialogButton('no')};
+    button.innerHTML="Nein";
+    ui.footerConfirm.appendChild(button);
+    ui.frame.appendChild(ui.footerConfirm);
+
+    ui.footerPrompt.id="dialog-footer-prompt";
+    ui.footerPrompt.className="dialog";
+    button=document.createElement("button");
+    button.className="dialog-footer-button";
+    button.onclick=function(){$clickDialogButton('prompt')};
+    button.innerHTML="OK";
+    ui.footerPrompt.appendChild(button);
+    ui.frame.appendChild(ui.footerPrompt);
+    document.body.appendChild(ui.backdrop);
   }
 
   $clickDialogButton=function(button){
@@ -661,11 +721,6 @@ function additionalJSCode(){
       this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
-      setTimeout(()=>{
-        if(this.$update){
-          this.$update();
-        }
-      },50);
     }
     add(comp,index){
       this.$el.add(comp.$el,index);
@@ -771,8 +826,8 @@ function additionalJSCode(){
     getRowAndColumnCount(){
       let cs=getComputedStyle(this.$el);
       return {
-        rows: cs.gridTemplateRows.split(" ").length,
-        cols: cs.gridTemplateColumns.split(" ").length
+        rows: cs.getPropertyValue("grid-template-rows").split(" ").length,
+        cols: cs.getPropertyValue("grid-template-columns").split(" ").length
       }
     }
     getRowCount(){

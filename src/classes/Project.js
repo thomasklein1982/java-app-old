@@ -211,22 +211,6 @@ export class Project{
     </head>
     <body>
       ${body}
-      <div id="dialog-backdrop" style="display: none">
-        <div id="dialog-frame">
-          <div id="dialog-content">Hallo</div>
-          <input type="text" id="dialog-input" style="display: none"></input>
-          <div class="dialog-footer" id="dialog-footer-alert" style="display: none">
-            <button class="dialog-footer-button" onclick="$clickDialogButton('alert')">OK</button>
-          </div>
-          <div class="dialog-footer" id="dialog-footer-confirm" style="display: none">
-            <button class="dialog-footer-button" onclick="$clickDialogButton('yes')">Ja</button>
-            <button class="dialog-footer-button" onclick="$clickDialogButton('no')">Nein</button>
-          </div>
-          <div class="dialog-footer" id="dialog-footer-prompt" style="display: none">
-            <button class="dialog-footer-button" onclick="$clickDialogButton('prompt')">OK</button>
-          </div>
-        </div>
-      </div>
     </body>
 </html>`;
     return code;

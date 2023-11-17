@@ -45,7 +45,6 @@ export function Block(node,source,scope){
       try{
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
-        console.log("res",res);
         if(res instanceof Scope){
           return res;
         }

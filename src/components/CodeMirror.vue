@@ -229,6 +229,7 @@ export default {
             if(!v.docChanged) return;
             if(!v.changedRanges || v.changedRanges.length===0) return;
             this.size=v.state.doc.length;
+            this.src=v.state.doc.toString();
             if(this.clazz.hasClazzDeclaration){
               /**stelle fest, ob alle Änderungen in einer Methode stattgefunden haben: */
               let from=v.changedRanges[0].fromA;

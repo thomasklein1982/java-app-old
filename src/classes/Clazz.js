@@ -376,7 +376,7 @@ export class Clazz{
   generateSrcAndTree(src){
     let code;
     if(!this.hasClazzDeclaration){
-      code="class Main{"+src+"}";
+      code="class Main{"+src;//+"}";
     }else{
       code=src;
     }
