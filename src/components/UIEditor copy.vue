@@ -1,29 +1,27 @@
 <template>
   <UIEditorCode ref="uiEditorCode" :ui-clazz="clazz"/>
-  <div class="ui-editor-component-list" :style="{flex: 1, display: 'flex', 'flex-direction': 'row', overflow: 'hidden'}">
-    <Sortable
-      :list="allComponents"
+  <div :style="{flex: 1, display: 'flex', 'flex-direction': 'row', overflow: 'hidden'}">
+    <draggable 
+      v-model="allComponents"
       item-key="id"
-      :options="{
-        group: {
-          name: 'components',
-          pull: 'clone',
-          put: false
-        },
-        handle: '.handle',
-        'ghost-class': 'drag-ghost',
-        sort: false
+      :group="{
+        name: 'components',
+        pull: 'clone',
+        put: false
       }"
+      handle=".handle"
+      ghost-class="drag-ghost"
       @drop="handleDrop"
       @add="handleAdd"
-      @clone="cloneItem"
+      :clone="cloneItem"
+      :sort="false"
       :style="{display: 'flex', 'flex-direction': 'column', 'align-items': 'stretch'}"
       style="overflow: auto"
     >
       <template #item="{element}">
         <UIComponent :component="element"/>
       </template>
-    </Sortable>
+    </draggable>
     <div class="ui-clazz" :style="{flex: 1}" style="overflow: auto">
       <UIComponent :auto-update="settings.autoUpdateUI" :component="clazz" is-editable @clickcomponent="clickComponent" :selected-component="selectedComponent" @recompile="emitRecompile" @isolatedupdate="emitIsolatedUpdate" @deselect-component="deselectComponent()" @duplicate-self="duplicateUIClazz()" @remove-self="removeUIClazz()"/>
       <div style="text-align: right">
@@ -36,8 +34,7 @@
 <script>
   import UIComponent from "./UIComponent.vue";
   //import draggable from "vuedraggable/dist/vuedraggable.common";
-  //import draggable from "vuedraggable";
-  import {Sortable} from "sortablejs-vue3";
+  import draggable from "vuedraggable";
   import UIEditorCode from "./UIEditorCode.vue";
   import { UIClazz } from "../classes/UIClazz";
 
@@ -117,8 +114,8 @@
       removeUIClazz(){
         this.clazz.project.removeClazz(this.clazz);
       },
-      cloneItem(event){
-        let item=this.allComponents[event.oldIndex];
+      cloneItem(item){
+        
         let copy=JSON.parse(JSON.stringify(item));
         if(copy.controlComponent){
           copy.components=[];
@@ -131,7 +128,6 @@
           copy.cssCode="";
           copy.invisible=false;
         }
-        event.clone.componentData=copy;
         return copy;
       },
       clickComponent(c){
@@ -152,7 +148,7 @@
       }
     },
     components: {
-      UIComponent, Sortable, UIEditorCode
+      UIComponent, draggable, UIEditorCode
     },
     emits: ['select','recompile','isolatedupdate']
   }

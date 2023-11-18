@@ -27,10 +27,10 @@ body,html{
   color: white;
 }
 
-button{
+/*button{
   background-color: lightgray;
   border-radius: 0;
-}
+}*/
 
 .asset .p-card-title{
   font-size: 100%;

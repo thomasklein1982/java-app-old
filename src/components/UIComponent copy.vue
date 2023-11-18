@@ -87,47 +87,30 @@
         </div>
         <div v-show="!hideContent" style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
           <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
-          <Sortable
-            v-if="renderSortable"
-            ref="sortable"
-            :list="component.components"
+          <draggable
+            v-model="component.components"
             item-key="id"
-            :options="{
-              group: {
-                name: 'components',
-                put: true
-              },
-              handle: '.handle',
-              'ghost-class': 'drag-ghost-component',
-              disabled: !isEditable,
-              removeCloneOnHide: true
+            :disabled="!isEditable"
+            :removeCloneOnHide="false"
+            :group="{
+              name: 'components',
+              put: true
             }"
+            handle=".handle"
+            ghost-class="drag-ghost-component"
             :style="{flex: 1,'padding-bottom': (!$root.printMode && isUIClazz)? '100%':'2rem'}"
-            @end="handleEndDrag"
-            @add="handleAdd"
-            @sort="handleSort"
-            @clone="cloneItem"
-            @remove="handleRemove"
-
+            @end="endDrag"
+            @add="emitIsolatedUpdate()"
+            @sort="emitIsolatedUpdate()"
           >
             <template #item="{element}">
               <div>
-                <UIComponent 
-                  @removethis="removeChildComponent(element)" 
-                  @recompile="emitRecompile()" 
-                  @isolatedupdate="emitIsolatedUpdate()" 
-                  :component="element" 
-                  is-editable 
-                  @clickcomponent="forwardClick" 
-                  @duplicate="clickDuplicate()" 
-                  :selected-component="selectedComponent" 
-                  @duplicate-child="duplicateSelectedChildComponent()"
-                  @deselect-component="deselectComponent()"
-                />
+                <UIComponent @removethis="removeChildComponent(element)" @recompile="emitRecompile()" @isolatedupdate="emitIsolatedUpdate()" :component="element" is-editable @clickcomponent="forwardClick" @duplicate="clickDuplicate()" :selected-component="selectedComponent" @duplicate-child="duplicateSelectedChildComponent()"
+                @deselect-component="deselectComponent()"/>
                 <ConfirmPopup></ConfirmPopup>
               </div>
             </template>
-          </Sortable>
+          </draggable>
         </div>
         <div v-if="!isUIClazz" @click="handleClick" class="jpanel-bottom">&nbsp;</div>
       </div>
@@ -138,9 +121,9 @@
 </template>
 
 <script>
-  import {Sortable} from "sortablejs-vue3";
+  import draggable from "vuedraggable";
+  //import draggable from "vuedraggable/dist/vuedraggable.common";
   import { UIClazz } from "../classes/UIClazz";
-import { nextTick } from "vue";
 
   export default{
     props: {
@@ -226,8 +209,7 @@ import { nextTick } from "vue";
     },
     data(){
       return {
-        hideContent: false,
-        renderSortable: true
+        hideContent: false
       }
     },
     methods: {
@@ -292,64 +274,8 @@ import { nextTick } from "vue";
       forwardClick(c){
         this.$emit('clickcomponent',c);
       },
-      cloneItem(event){
-        let copy=JSON.parse(JSON.stringify(this.component.components[event.oldIndex]));
-        event.clone.componentData=copy;
-      },
-      async updateSortable(){
-        this.renderSortable=false;
-        await this.$nextTick();
-        this.renderSortable=true;
-      },
-      handleRemove(ev){
-        this.component.components.splice(ev.oldIndex,1);
-        this.updateSortable();
-        this.emitIsolatedUpdate();
-        //this.$refs.sortable.$forceUpdate();
-      },
       handleAdd(ev){
-        //loesche html-element aus dem dom, parent ist schon die neue liste
-        let parent=ev.item.parentElement;
-        // parent.removeChild(ev.item);
-        //fuege component hinzu
-        this.component.components.splice(ev.newIndex,0,ev.clone.componentData);
         this.emitIsolatedUpdate();
-        //this.$refs.sortable.$forceUpdate();
-        this.updateSortable();
-      },
-      handleSort(ev){
-        if(!ev.item.parentElement || ev.from!==ev.to) return; //sort after add
-        let index1=ev.oldIndex;
-        let index2=ev.newIndex;
-        if(index1===index2) return;
-        if(index1>index2){
-          let c=index1;
-          index1=index2;
-          index2=c;
-        }
-        let comp1=this.component.components[index1];
-        let comp2=this.component.components[index2];
-        this.component.components[index1]=comp2;
-        this.component.components[index2]=comp1;
-        this.emitIsolatedUpdate();
-        
-        // let list=ev.item.parentElement;
-        // let el1=list.children[index1];
-        // let el2=list.children[index2];
-        // let el3;
-        // if(index2===list.children.length-1){
-        //   el3=null;
-        // }else{
-        //   el3=list.children[index2+1];
-        // }
-        // list.replaceChild(el2,el1);
-        // if(el3){
-        //   list.insertBefore(el1,el3);
-        // }else{
-        //   list.appendChild(el1);
-        // }
-        this.updateSortable();
-        //this.$refs.sortable.$forceUpdate();
       },
       emitIsolatedUpdate(){
         console.log("isolatedUpdate");
@@ -373,8 +299,7 @@ import { nextTick } from "vue";
           }
         });
       },
-      handleEndDrag(ev){
-        console.log("end-drag");
+      endDrag(ev){
         window.drag=ev;
         let from=ev.from;
         while(from && from.className!=="ui-clazz"){
@@ -401,7 +326,7 @@ import { nextTick } from "vue";
       }
     },
     components: {
-      Sortable
+      draggable
     }
   }
 </script>

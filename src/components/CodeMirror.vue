@@ -7,7 +7,8 @@
 </template>
 
 <script>
-import { EditorView, basicSetup } from "codemirror";
+import {basicSetup} from "codemirror";
+import { EditorView } from "@codemirror/view";
 import { java } from "@codemirror/lang-java";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
